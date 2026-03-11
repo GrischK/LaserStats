@@ -41,6 +41,8 @@ export default async function RunnerPage({params}: Props) {
     redirect(`/clubs/${clubId}`);
   }
 
+  console.log('test')
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-6 p-6">
       <div>
