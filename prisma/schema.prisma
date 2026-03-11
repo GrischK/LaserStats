@@ -51,6 +51,7 @@ model Membership {
   clubId    String
   role      ClubRole
   createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
@@ -71,6 +72,7 @@ model Invitation {
   acceptedById String?
   expiresAt    DateTime
   createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 
   club       Club  @relation(fields: [clubId], references: [id], onDelete: Cascade)
   invitedBy  User  @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
@@ -78,6 +80,7 @@ model Invitation {
 
   @@index([email])
   @@index([clubId])
+  @@index([status])
 }
 
 model Runner {

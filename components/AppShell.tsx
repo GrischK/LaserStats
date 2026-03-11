@@ -41,6 +41,7 @@ export default function AppShell({children}: Props) {
           </div>
 
           <div className="flex items-center gap-2">
+
             <Link
               href="/account"
               className="rounded-full px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
