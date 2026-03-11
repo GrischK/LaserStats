@@ -1,28 +1,145 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+enum ClubRole {
+  ADMIN
+  COACH
+  USER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
+model User {
+  id              String        @id @default(cuid())
+  email           String        @unique
+  name            String?
+  password        String?
+  createdAt       DateTime      @default(now())
+
+  memberships     Membership[]
+  sentInvites     Invitation[]  @relation("InvitationSender")
+  acceptedInvites Invitation[]  @relation("InvitationReceiver")
+  sessions        Session[]
+  accounts        Account[]
+
+  runner          Runner?
+}
+
+model Club {
+  id          String        @id @default(cuid())
+  name        String
+  createdAt   DateTime      @default(now())
+
+  memberships Membership[]
+  invitations Invitation[]
+  runners     Runner[]
+}
+
+model Membership {
+  id        String    @id @default(cuid())
+  userId    String
+  clubId    String
+  role      ClubRole
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clubId])
+  @@index([userId])
+  @@index([clubId])
+}
+
+model Invitation {
+  id           String           @id @default(cuid())
+  email        String
+  role         ClubRole
+  status       InvitationStatus @default(PENDING)
+  token        String           @unique
+  clubId       String
+  invitedById  String
+  acceptedById String?
+  expiresAt    DateTime
+  createdAt    DateTime         @default(now())
+
+  club       Club  @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  invitedBy  User  @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
+  acceptedBy User? @relation("InvitationReceiver", fields: [acceptedById], references: [id])
+
+  @@index([email])
+  @@index([clubId])
+}
+
 model Runner {
   id        String        @id @default(cuid())
   name      String
   active    Boolean       @default(true)
+  clubId    String
+  userId    String?       @unique
   createdAt DateTime      @default(now())
+
+  club      Club          @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  user      User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
   sessions  ShotSession[]
+
+  @@index([clubId])
 }
 
 model ShotSession {
   id         String    @id @default(cuid())
   runnerId   String
-  runner     Runner    @relation(fields: [runnerId], references: [id], onDelete: Cascade)
   sessionDay DateTime
   distance   Float?
   targetsHit Int
   createdAt  DateTime  @default(now())
 
+  runner Runner @relation(fields: [runnerId], references: [id], onDelete: Cascade)
+
   @@index([runnerId, sessionDay])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
