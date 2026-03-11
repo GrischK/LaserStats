@@ -47,75 +47,92 @@ export default function RunnerHistoryAccordion({ groupedSessions }: Props) {
   }
 
   if (groupedSessions.length === 0) {
-    return <p className="text-sm text-gray-600">Aucune session enregistrée.</p>;
+    return (
+      <div className="rounded-2xl bg-[var(--muted)] px-4 py-4 text-sm text-[var(--muted-foreground)]">
+        Aucune session enregistrée.
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="space-y-4">
       {groupedSessions.map((month) => {
         const isMonthOpen = !!openMonths[month.monthKey];
 
         return (
-          <div key={month.monthKey} className="overflow-hidden rounded-2xl border">
+          <div
+            key={month.monthKey}
+            className="overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--card)] shadow-[var(--shadow)]"
+          >
             <button
               type="button"
               onClick={() => toggleMonth(month.monthKey)}
-              className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left"
+              className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
             >
               <div>
-                <div className="text-lg font-semibold capitalize">{month.monthLabel}</div>
-                <div className="text-sm text-gray-600">
+                <div className="text-xl font-bold capitalize">{month.monthLabel}</div>
+                <div className="mt-1 text-sm text-[var(--muted-foreground)]">
                   {month.days.length} jour{month.days.length > 1 ? "s" : ""}
                 </div>
               </div>
 
-              <div className="text-xl">{isMonthOpen ? "−" : "+"}</div>
+              <div className="text-2xl text-[var(--muted-foreground)]">
+                {isMonthOpen ? "−" : "+"}
+              </div>
             </button>
 
             {isMonthOpen && (
-              <div className="border-t p-4">
-                <div className="flex flex-col gap-3">
+              <div className="border-t border-[var(--border)] px-4 pb-4 pt-2">
+                <div className="space-y-3">
                   {month.days.map((day) => {
                     const isDayOpen = !!openDays[day.dayKey];
                     const average =
-                      day.sessions.reduce((sum, item) => sum + item.targetsHit, 0) / day.sessions.length;
+                      day.sessions.reduce((sum, item) => sum + item.targetsHit, 0) /
+                      day.sessions.length;
 
                     return (
-                      <div key={day.dayKey} className="overflow-hidden rounded-xl border">
+                      <div
+                        key={day.dayKey}
+                        className="rounded-2xl bg-[var(--muted)]"
+                      >
                         <button
                           type="button"
                           onClick={() => toggleDay(day.dayKey)}
-                          className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left"
+                          className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left"
                         >
                           <div>
-                            <div className="font-medium capitalize">{day.dayLabel}</div>
-                            <div className="text-sm text-gray-600">
+                            <div className="font-semibold capitalize">{day.dayLabel}</div>
+                            <div className="mt-1 text-sm text-[var(--muted-foreground)]">
                               {day.sessions.length} session{day.sessions.length > 1 ? "s" : ""} . moyenne{" "}
-                              {average.toFixed(1)} cible{average > 1 ? "s" : ""}
+                              {average.toFixed(1)} cibles
                             </div>
                           </div>
 
-                          <div className="text-lg">{isDayOpen ? "−" : "+"}</div>
+                          <div className="text-xl text-[var(--muted-foreground)]">
+                            {isDayOpen ? "−" : "+"}
+                          </div>
                         </button>
 
                         {isDayOpen && (
-                          <div className="border-t p-3">
-                            <div className="grid gap-2">
+                          <div className="px-4 pb-4">
+                            <div className="space-y-2">
                               {day.sessions.map((item) => (
                                 <div
                                   key={item.id}
-                                  className="flex flex-col gap-1 rounded-xl border p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                                  className="flex flex-col gap-2 rounded-2xl bg-[var(--card)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                                 >
                                   <div className="font-medium">
-                                    {item.distance != null ? `${item.distance} m` : "Distance non renseignée"}
+                                    {item.distance != null
+                                      ? `${item.distance} m`
+                                      : "Distance non renseignée"}
                                   </div>
 
-                                  <div className="text-gray-700">
+                                  <div className="text-[var(--muted-foreground)]">
                                     {item.targetsHit} cible{item.targetsHit > 1 ? "s" : ""} touchée
                                     {item.targetsHit > 1 ? "s" : ""}
                                   </div>
 
-                                  <div className="text-gray-500">
+                                  <div className="text-sm text-[var(--muted-foreground)]">
                                     {new Date(item.createdAt).toLocaleTimeString("fr-FR", {
                                       hour: "2-digit",
                                       minute: "2-digit",

@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { getAuthSession } from "@/lib/session";
+import {redirect} from "next/navigation";
+import {prisma} from "@/lib/prisma";
+import {getAuthSession} from "@/lib/session";
 import SessionForm from "@/components/SessionForm";
 import RunnerHistoryAccordion from "@/components/RunnerHistoryAccordion";
 
@@ -88,8 +88,8 @@ function groupSessionsByMonthAndDay(sessions: SessionItem[]): MonthGroup[] {
     });
 }
 
-export default async function RunnerPage({ params }: Props) {
-  const { clubId, runnerId } = await params;
+export default async function RunnerPage({params}: Props) {
+  const {clubId, runnerId} = await params;
   const session = await getAuthSession();
 
   if (!session?.user?.email) {
@@ -97,8 +97,8 @@ export default async function RunnerPage({ params }: Props) {
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { memberships: true },
+    where: {email: session.user.email},
+    include: {memberships: true},
   });
 
   if (!user) {
@@ -119,7 +119,7 @@ export default async function RunnerPage({ params }: Props) {
     },
     include: {
       sessions: {
-        orderBy: { createdAt: "desc" },
+        orderBy: {createdAt: "desc"},
         take: 200,
       },
     },
@@ -139,19 +139,30 @@ export default async function RunnerPage({ params }: Props) {
   );
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">{runner.name}</h1>
-        <p className="text-sm text-gray-600">Rôle : {membership.role}</p>
-      </div>
+    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6">
+      <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+              Coureur
+            </p>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight">{runner.name}</h1>
+          </div>
+
+          <div
+            className="inline-flex w-fit rounded-full bg-[var(--muted)] px-4 py-2 text-sm font-medium text-[var(--muted-foreground)]">
+            Rôle : {membership.role}
+          </div>
+        </div>
+      </section>
 
       {(membership.role === "ADMIN" || membership.role === "COACH") && (
-        <SessionForm clubId={clubId} runnerId={runner.id} />
+        <SessionForm clubId={clubId} runnerId={runner.id}/>
       )}
 
-      <section className="rounded-2xl border p-4">
-        <h2 className="mb-4 text-xl font-semibold">Historique</h2>
-        <RunnerHistoryAccordion groupedSessions={groupedSessions} />
+      <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)] sm:p-6">
+        <h2 className="mb-4 text-2xl font-bold tracking-tight">Historique</h2>
+        <RunnerHistoryAccordion groupedSessions={groupedSessions}/>
       </section>
     </main>
   );
