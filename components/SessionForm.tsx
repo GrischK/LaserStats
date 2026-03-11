@@ -66,10 +66,11 @@ export default function SessionForm({ clubId, runnerId }: Props) {
 
           <input
             type="number"
-            step="0.1"
+            min="1"
+            step="1"
             value={distance}
             onChange={(e) => setDistance(e.target.value)}
-            placeholder="Ex. 10"
+            placeholder="Ex: 200 m"
             className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
           />
 

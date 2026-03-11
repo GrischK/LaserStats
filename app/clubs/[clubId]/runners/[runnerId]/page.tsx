@@ -162,7 +162,12 @@ export default async function RunnerPage({params}: Props) {
 
       <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)] sm:p-6">
         <h2 className="mb-4 text-2xl font-bold tracking-tight">Historique</h2>
-        <RunnerHistoryAccordion groupedSessions={groupedSessions}/>
+        <RunnerHistoryAccordion
+          groupedSessions={groupedSessions}
+          clubId={clubId}
+          runnerId={runner.id}
+          canManage={membership.role === "ADMIN" || membership.role === "COACH"}
+        />
       </section>
     </main>
   );

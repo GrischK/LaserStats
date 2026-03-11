@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import ShotSessionRow from "@/components/ShotSessionRow";
 
 type SessionItem = {
   id: string;
@@ -23,9 +24,19 @@ type MonthGroup = {
 
 type Props = {
   groupedSessions: MonthGroup[];
+  clubId: string;
+  runnerId: string;
+  canManage: boolean;
 };
 
-export default function RunnerHistoryAccordion({ groupedSessions }: Props) {
+export default function RunnerHistoryAccordion({
+                                                 groupedSessions,
+                                                 clubId,
+                                                 runnerId,
+                                                 canManage,
+                                               }: Props) {
+  const [history, setHistory] = useState<MonthGroup[]>(groupedSessions);
+
   const [openMonths, setOpenMonths] = useState<Record<string, boolean>>(
     Object.fromEntries(groupedSessions.map((month, index) => [month.monthKey, index === 0]))
   );
@@ -46,7 +57,39 @@ export default function RunnerHistoryAccordion({ groupedSessions }: Props) {
     }));
   }
 
-  if (groupedSessions.length === 0) {
+  function handleSessionUpdated(updatedSession: SessionItem) {
+    setHistory((prev) =>
+      prev.map((month) => ({
+        ...month,
+        days: month.days.map((day) => ({
+          ...day,
+          sessions: day.sessions.map((session) =>
+            session.id === updatedSession.id ? updatedSession : session
+          ),
+        })),
+      }))
+    );
+  }
+
+  function handleSessionDeleted(sessionId: string) {
+    setHistory((prev) =>
+      prev
+        .map((month) => ({
+          ...month,
+          days: month.days
+            .map((day) => ({
+              ...day,
+              sessions: day.sessions.filter((session) => session.id !== sessionId),
+            }))
+            .filter((day) => day.sessions.length > 0),
+        }))
+        .filter((month) => month.days.length > 0)
+    );
+  }
+
+  const visibleHistory = useMemo(() => history, [history]);
+
+  if (visibleHistory.length === 0) {
     return (
       <div className="rounded-2xl bg-[var(--muted)] px-4 py-4 text-sm text-[var(--muted-foreground)]">
         Aucune session enregistrée.
@@ -56,7 +99,7 @@ export default function RunnerHistoryAccordion({ groupedSessions }: Props) {
 
   return (
     <div className="space-y-4">
-      {groupedSessions.map((month) => {
+      {visibleHistory.map((month) => {
         const isMonthOpen = !!openMonths[month.monthKey];
 
         return (
@@ -91,10 +134,7 @@ export default function RunnerHistoryAccordion({ groupedSessions }: Props) {
                       day.sessions.length;
 
                     return (
-                      <div
-                        key={day.dayKey}
-                        className="rounded-2xl bg-[var(--muted)]"
-                      >
+                      <div key={day.dayKey} className="rounded-2xl bg-[var(--muted)]">
                         <button
                           type="button"
                           onClick={() => toggleDay(day.dayKey)}
@@ -117,28 +157,18 @@ export default function RunnerHistoryAccordion({ groupedSessions }: Props) {
                           <div className="px-4 pb-4">
                             <div className="space-y-2">
                               {day.sessions.map((item) => (
-                                <div
+                                <ShotSessionRow
                                   key={item.id}
-                                  className="flex flex-col gap-2 rounded-2xl bg-[var(--card)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                                >
-                                  <div className="font-medium">
-                                    {item.distance != null
-                                      ? `${item.distance} m`
-                                      : "Distance non renseignée"}
-                                  </div>
-
-                                  <div className="text-[var(--muted-foreground)]">
-                                    {item.targetsHit} cible{item.targetsHit > 1 ? "s" : ""} touchée
-                                    {item.targetsHit > 1 ? "s" : ""}
-                                  </div>
-
-                                  <div className="text-sm text-[var(--muted-foreground)]">
-                                    {new Date(item.createdAt).toLocaleTimeString("fr-FR", {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })}
-                                  </div>
-                                </div>
+                                  sessionId={item.id}
+                                  clubId={clubId}
+                                  runnerId={runnerId}
+                                  distance={item.distance}
+                                  targetsHit={item.targetsHit}
+                                  createdAt={item.createdAt}
+                                  canManage={canManage}
+                                  onUpdated={handleSessionUpdated}
+                                  onDeleted={handleSessionDeleted}
+                                />
                               ))}
                             </div>
                           </div>
