@@ -1,50 +1,77 @@
-import {NextResponse} from "next/server";
-import {prisma} from "@/lib/prisma";
-import {getStartOfDay} from "@/lib/utils";
-import {createSessionSchema} from "@/lib/validators";
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getAuthSession } from "@/lib/session";
 
-export async function GET(request: Request) {
-  const {searchParams} = new URL(request.url);
-  const dayParam = searchParams.get("day");
-  const day = dayParam ? new Date(dayParam) : getStartOfDay();
-  const start = new Date(day.getFullYear(), day.getMonth(), day.getDate());
-  const end = new Date(day.getFullYear(), day.getMonth(), day.getDate() + 1);
-
-  const sessions = await prisma.shotSession.findMany({
-    where: {
-      sessionDay: {
-        gte: start,
-        lt: end,
-      },
-    },
-    include: {
-      runner: true,
-    },
-    orderBy: [{runner: {name: "asc"}}, {createdAt: "desc"}],
-  });
-
-  return NextResponse.json(sessions);
+function getStartOfDay(date = new Date()) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const parsed = createSessionSchema.safeParse(body);
+  const session = await getAuthSession();
 
-  if (!parsed.success) {
-    return NextResponse.json({error: parsed.error.flatten()}, {status: 400});
+  if (!session?.user?.email) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const session = await prisma.shotSession.create({
+  const body = await request.json();
+
+  const runnerId = String(body?.runnerId ?? "").trim();
+  const distanceRaw = body?.distance;
+  const targetsHit = Number(body?.targetsHit);
+
+  if (!runnerId) {
+    return NextResponse.json({ error: "runnerId is required" }, { status: 400 });
+  }
+
+  if (!Number.isInteger(targetsHit) || targetsHit < 0 || targetsHit > 5) {
+    return NextResponse.json(
+      { error: "targetsHit must be an integer between 0 and 5" },
+      { status: 400 }
+    );
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    include: { memberships: true },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  const runner = await prisma.runner.findUnique({
+    where: { id: runnerId },
+  });
+
+  if (!runner) {
+    return NextResponse.json({ error: "Runner not found" }, { status: 404 });
+  }
+
+  const membership = user.memberships.find((m) => m.clubId === runner.clubId);
+
+  if (!membership) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  if (membership.role !== "ADMIN" && membership.role !== "COACH") {
+    return NextResponse.json({ error: "Insufficient role" }, { status: 403 });
+  }
+
+  const distance =
+    distanceRaw === "" || distanceRaw == null ? null : Number(distanceRaw);
+
+  if (distance !== null && Number.isNaN(distance)) {
+    return NextResponse.json({ error: "Invalid distance" }, { status: 400 });
+  }
+
+  const shotSession = await prisma.shotSession.create({
     data: {
-      runnerId: parsed.data.runnerId,
-      distance: parsed.data.distance,
-      targetsHit: parsed.data.targetsHit,
+      runnerId,
+      distance,
+      targetsHit,
       sessionDay: getStartOfDay(),
-    },
-    include: {
-      runner: true,
     },
   });
 
-  return NextResponse.json(session, {status: 201});
+  return NextResponse.json(shotSession, { status: 201 });
 }
