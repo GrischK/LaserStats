@@ -35,11 +35,11 @@ export async function cancelInvitation(params: {
   }
 
   if (membership.role !== "ADMIN" && membership.role !== "COACH") {
-    throw new Error("Vous n'avez pas le droit d'annuler cette invitation");
+    throw new Error("Vous n'avez pas le droit d'annuler cette invite");
   }
 
   if (invitation.status !== "PENDING") {
-    throw new Error("Cette invitation n'est plus annulable");
+    throw new Error("Cette invite n'est plus annulable");
   }
 
   const updatedInvitation = await prisma.invitation.update({

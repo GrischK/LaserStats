@@ -50,6 +50,7 @@ export default function InviteMemberForm({
         email: data.email,
         role: data.role,
         status: data.status,
+        token: data.token,
         createdAt: data.createdAt,
         expiresAt: data.expiresAt,
         invitedBy: data.invitedBy ?? null,
@@ -109,7 +110,7 @@ export default function InviteMemberForm({
           disabled={loading}
           className="rounded-xl bg-black px-4 py-2 text-white disabled:opacity-50"
         >
-          {loading ? "Envoi..." : "Envoyer l'invitation"}
+          {loading ? "Envoi..." : "Envoyer l'invite"}
         </button>
       </form>
     </div>

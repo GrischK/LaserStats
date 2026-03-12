@@ -26,14 +26,14 @@ export default function AcceptInvitationCard({ token, invitation }: Props) {
     setError(null);
 
     try {
-      const res = await fetch(`/api/invitations/${token}/accept`, {
+      const res = await fetch(`/api/invitation-by-token/${token}/accept`, {
         method: "POST",
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data?.message || "Impossible d'accepter l'invitation");
+        throw new Error(data?.message || "Impossible d'accepter l'invite");
       }
 
       router.push(`/clubs/${data.clubId}`);
@@ -78,7 +78,7 @@ export default function AcceptInvitationCard({ token, invitation }: Props) {
           disabled={loading || invitation.status !== "PENDING"}
           className="rounded-xl bg-black px-4 py-2 text-white disabled:opacity-50"
         >
-          {loading ? "Acceptation..." : "Accepter l'invitation"}
+          {loading ? "Acceptation..." : "Accepter l'invite"}
         </button>
       </div>
     </div>

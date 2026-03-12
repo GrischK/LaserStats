@@ -6,6 +6,7 @@ export type ClubInvitationItem = {
   email: string;
   role: ClubRole;
   status: InvitationStatus;
+  token: string;
   createdAt: Date;
   expiresAt: Date;
   invitedBy: {

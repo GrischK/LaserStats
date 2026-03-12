@@ -1,7 +1,12 @@
-import {prisma} from "@/lib/prisma";
-import type {ClubRole} from "./types";
-import {canInviteRole} from "./permissions";
-import {generateInviteToken, getInvitationExpirationDate, normalizeEmail,} from "./utils";
+import { prisma } from "@/lib/prisma";
+import type { ClubRole } from "./types";
+import { canInviteRole } from "./permissions";
+import {
+  generateInviteToken,
+  getInvitationExpirationDate,
+  normalizeEmail,
+} from "./utils";
+import { sendClubInvitationEmail } from "@/lib/mail";
 
 export async function createInvitation(params: {
   currentUserId: string;
@@ -9,7 +14,7 @@ export async function createInvitation(params: {
   email: string;
   role: ClubRole;
 }) {
-  const {currentUserId, clubId, email, role} = params;
+  const { currentUserId, clubId, email, role } = params;
 
   const normalizedEmail = normalizeEmail(email);
 
@@ -31,8 +36,8 @@ export async function createInvitation(params: {
   }
 
   const existingUser = await prisma.user.findUnique({
-    where: {email: normalizedEmail},
-    select: {id: true},
+    where: { email: normalizedEmail },
+    select: { id: true },
   });
 
   if (existingUser) {
@@ -62,10 +67,10 @@ export async function createInvitation(params: {
   });
 
   if (existingPendingInvitation) {
-    throw new Error("Une invitation en attente existe déjà pour cet email");
+    throw new Error("Une invite en attente existe déjà pour cet email");
   }
 
-  const invitation = await prisma.invitation.create({
+  const createdInvitation = await prisma.invitation.create({
     data: {
       email: normalizedEmail,
       role,
@@ -74,15 +79,47 @@ export async function createInvitation(params: {
       invitedById: currentUserId,
       expiresAt: getInvitationExpirationDate(),
     },
-    include: {
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      expiresAt: true,
+      token: true,
       club: {
+        select: {
+          name: true,
+        },
+      },
+      invitedBy: {
         select: {
           id: true,
           name: true,
+          email: true,
         },
       },
     },
   });
 
-  return invitation;
+  await sendClubInvitationEmail({
+    to: createdInvitation.email,
+    clubName: createdInvitation.club.name,
+    role: createdInvitation.role,
+    token: createdInvitation.token,
+  });
+
+  const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite?token=${createdInvitation.token}`;
+
+  return {
+    id: createdInvitation.id,
+    email: createdInvitation.email,
+    role: createdInvitation.role,
+    status: createdInvitation.status,
+    token: createdInvitation.token,
+    createdAt: createdInvitation.createdAt,
+    expiresAt: createdInvitation.expiresAt,
+    invitedBy: createdInvitation.invitedBy,
+    inviteUrl,
+  };
 }

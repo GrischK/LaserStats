@@ -37,6 +37,7 @@ export async function listClubInvitations(params: {
       email: true,
       role: true,
       status: true,
+      token: true,
       createdAt: true,
       expiresAt: true,
       invitedBy: {
@@ -54,6 +55,7 @@ export async function listClubInvitations(params: {
     email: invitation.email,
     role: invitation.role,
     status: invitation.status,
+    token: invitation.token,
     createdAt: invitation.createdAt,
     expiresAt: invitation.expiresAt,
     invitedBy: invitation.invitedBy

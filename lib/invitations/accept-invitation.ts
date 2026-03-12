@@ -30,12 +30,15 @@ export async function acceptInvitation(params: {
     },
   });
 
+  console.log("SESSION USER EMAIL:", user.email);
+  console.log("INVITATION EMAIL:", invitation.email);
+
   if (!invitation) {
     throw new Error("Invitation introuvable");
   }
 
   if (invitation.status !== "PENDING") {
-    throw new Error("Cette invitation n'est plus valide");
+    throw new Error("Cette invite n'est plus valide");
   }
 
   if (invitation.expiresAt.getTime() < Date.now()) {
@@ -44,7 +47,7 @@ export async function acceptInvitation(params: {
       data: {status: "EXPIRED"},
     });
 
-    throw new Error("Cette invitation a expiré");
+    throw new Error("Cette invite a expiré");
   }
 
   if (user.email.toLowerCase() !== invitation.email.toLowerCase()) {
