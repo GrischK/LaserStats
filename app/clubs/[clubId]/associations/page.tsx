@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { getAuthSession } from "@/lib/session";
+import {redirect} from "next/navigation";
+import {prisma} from "@/lib/prisma";
+import {getAuthSession} from "@/lib/session";
 import RunnerUserLinkSection from "@/components/club/RunnerUserLinkSection";
 
 type Props = {
@@ -9,14 +9,14 @@ type Props = {
   }>;
 };
 
-export default async function ClubAssociationsPage({ params }: Props) {
+export default async function ClubAssociationsPage({params}: Props) {
   const session = await getAuthSession();
 
   if (!session?.user?.id) {
     redirect("/login");
   }
 
-  const { clubId } = await params;
+  const {clubId} = await params;
 
   const membership = await prisma.membership.findUnique({
     where: {
@@ -35,7 +35,7 @@ export default async function ClubAssociationsPage({ params }: Props) {
     return <div>Vous n’avez pas les droits pour gérer les associations.</div>;
   }
 
-  const runners = await prisma.runner.findMany({
+  const unlinkedRunners = await prisma.runner.findMany({
     where: {
       clubId,
       userId: null,
@@ -56,20 +56,39 @@ export default async function ClubAssociationsPage({ params }: Props) {
     },
   });
 
-  const linkedUserIds = await prisma.runner.findMany({
+  const linkedRunners = await prisma.runner.findMany({
     where: {
       clubId,
       userId: {
         not: null,
       },
     },
+    orderBy: {
+      name: "asc",
+    },
     select: {
+      id: true,
+      name: true,
+      active: true,
+      createdAt: true,
       userId: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      _count: {
+        select: {
+          sessions: true,
+        },
+      },
     },
   });
 
-  const usedUserIds = linkedUserIds
-    .map((item) => item.userId)
+  const usedUserIds = linkedRunners
+    .map((runner) => runner.userId)
     .filter((value): value is string => Boolean(value));
 
   const availableMembers = await prisma.membership.findMany({
@@ -109,13 +128,13 @@ export default async function ClubAssociationsPage({ params }: Props) {
         <h1 className="text-2xl font-semibold">Associations coureurs / comptes</h1>
         <p className="mt-1 text-sm text-neutral-600">
           Associez un compte utilisateur à un coureur existant pour lui rattacher
-          ses anciennes sessions.
+          ses anciennes sessions, ou dissociez-le en cas d’erreur.
         </p>
       </div>
 
       <RunnerUserLinkSection
         clubId={clubId}
-        runners={runners.map((runner) => ({
+        runners={unlinkedRunners.map((runner) => ({
           id: runner.id,
           name: runner.name,
           active: runner.active,
@@ -123,6 +142,20 @@ export default async function ClubAssociationsPage({ params }: Props) {
           sessionsCount: runner._count.sessions,
         }))}
         members={members}
+        linkedRunners={linkedRunners.map((runner) => ({
+          id: runner.id,
+          name: runner.name,
+          active: runner.active,
+          createdAt: runner.createdAt,
+          sessionsCount: runner._count.sessions,
+          user: runner.user
+            ? {
+              id: runner.user.id,
+              name: runner.user.name,
+              email: runner.user.email,
+            }
+            : null,
+        }))}
       />
     </div>
   );

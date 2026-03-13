@@ -4,6 +4,7 @@ type Props = {
   open: boolean;
   title: string;
   description?: string;
+  label?: string;
   confirmLabel?: string;
   cancelLabel?: string;
   loading?: boolean;
@@ -15,6 +16,7 @@ export default function ConfirmModal({
                                        open,
                                        title,
                                        description,
+                                       label = "Suppression...",
                                        confirmLabel = "Confirmer",
                                        cancelLabel = "Annuler",
                                        loading = false,
@@ -51,7 +53,7 @@ export default function ConfirmModal({
             disabled={loading}
             className="rounded-2xl bg-[var(--danger)] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
           >
-            {loading ? "Suppression..." : confirmLabel}
+            {loading ? label : confirmLabel}
           </button>
         </div>
       </div>
