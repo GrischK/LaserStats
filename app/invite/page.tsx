@@ -1,11 +1,16 @@
-import {getServerSession} from "next-auth";
-import {authOptions} from "@/lib/auth";
-import {redirect} from "next/navigation";
-import {getInvitationByToken} from "@/lib/invitations/get-invitation-by-token";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getInvitationByToken } from "@/lib/invitations/get-invitation-by-token";
 import AcceptInvitationCard from "@/components/AcceptInvitationCard";
+import WrongInvitationAccountCard from "@/components/WrongInvitationAccountCard";
 
-export default async function InvitePage({searchParams,}: { searchParams: Promise<{ token?: string }>; }) {
-  const {token} = await searchParams;
+export default async function InvitePage({
+                                           searchParams,
+                                         }: {
+  searchParams: Promise<{ token?: string }>;
+}) {
+  const { token } = await searchParams;
 
   if (!token) {
     return <div>Invitation invalide</div>;
@@ -23,5 +28,18 @@ export default async function InvitePage({searchParams,}: { searchParams: Promis
     redirect(`/login?callbackUrl=${encodeURIComponent(`/invite?token=${token}`)}`);
   }
 
-  return <AcceptInvitationCard token={token} invitation={invitation}/>;
+  const sessionEmail = session.user.email?.toLowerCase() ?? "";
+  const invitationEmail = invitation.email.toLowerCase();
+
+  if (sessionEmail !== invitationEmail) {
+    return (
+      <WrongInvitationAccountCard
+        token={token}
+        sessionEmail={session.user.email ?? ""}
+        invitationEmail={invitation.email}
+      />
+    );
+  }
+
+  return <AcceptInvitationCard token={token} invitation={invitation} />;
 }

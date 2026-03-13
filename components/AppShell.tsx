@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
+import LogoutButton from "@/components/LogoutButton";
 
 type Props = {
   children: React.ReactNode;
@@ -48,7 +49,7 @@ export default function AppShell({children}: Props) {
             >
               Compte
             </Link>
-
+            <LogoutButton/>
             <ThemeToggle/>
           </div>
         </div>
