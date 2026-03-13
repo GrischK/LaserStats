@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { getAuthSession } from "@/lib/session";
+import {redirect} from "next/navigation";
+import {prisma} from "@/lib/prisma";
+import {getAuthSession} from "@/lib/session";
 
 type Props = {
   params: Promise<{ clubId: string }>;
 };
 
-export default async function ClubPage({ params }: Props) {
-  const { clubId } = await params;
+export default async function ClubPage({params}: Props) {
+  const {clubId} = await params;
   const session = await getAuthSession();
 
   if (!session?.user?.email) {
@@ -16,7 +16,7 @@ export default async function ClubPage({ params }: Props) {
   }
 
   const user = await prisma.user.findUnique({
-    where: { email: session.user.email },
+    where: {email: session.user.email},
     include: {
       memberships: true,
     },
@@ -33,11 +33,11 @@ export default async function ClubPage({ params }: Props) {
   }
 
   const club = await prisma.club.findUnique({
-    where: { id: clubId },
+    where: {id: clubId},
     include: {
       runners: {
-        where: { active: true },
-        orderBy: { name: "asc" },
+        where: {active: true},
+        orderBy: {name: "asc"},
       },
     },
   });
@@ -48,6 +48,14 @@ export default async function ClubPage({ params }: Props) {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-6">
+      {(membership.role === "ADMIN" || membership.role === "COACH") && (
+        <Link
+          href={`/clubs/${clubId}/associations`}
+          className="rounded-xl border px-4 py-2 text-sm font-medium"
+        >
+          Gérer les associations
+        </Link>
+      )}
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">{club.name}</h1>
@@ -61,6 +69,7 @@ export default async function ClubPage({ params }: Props) {
           >
             Ajouter un coureur
           </Link>
+
         )}
       </div>
 
