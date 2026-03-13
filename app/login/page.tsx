@@ -2,8 +2,13 @@
 
 import {signIn} from "next-auth/react";
 import {useState} from "react";
+import Link from "next/link";
+import {useSearchParams} from "next/navigation";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +25,7 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
-        callbackUrl: "/dashboard",
+        callbackUrl,
       });
 
       if (result?.error) {
@@ -28,7 +33,7 @@ export default function LoginPage() {
         return;
       }
 
-      window.location.href = "/dashboard";
+      window.location.href = result?.url || callbackUrl;
     } catch (err) {
       console.error(err);
       setError("Une erreur est survenue");
@@ -39,7 +44,10 @@ export default function LoginPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-md items-center p-6">
-      <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 rounded-2xl border p-6">
+      <form
+        onSubmit={handleSubmit}
+        className="flex w-full flex-col gap-4 rounded-2xl border p-6"
+      >
         <h1 className="text-2xl font-bold">Connexion</h1>
 
         <input
@@ -67,6 +75,17 @@ export default function LoginPage() {
         >
           {loading ? "Connexion..." : "Se connecter"}
         </button>
+
+        <p className="text-sm text-gray-600">
+          Pas encore de compte ?
+        </p>
+
+        <Link
+          href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+          className="text-sm font-medium underline"
+        >
+          Créer un compte
+        </Link>
       </form>
     </main>
   );
