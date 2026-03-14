@@ -13,6 +13,7 @@ export default function AppShell({children}: Props) {
   const pathname = usePathname();
 
   const isAuthPage =
+    pathname === "/" ||
     pathname?.startsWith("/login") ||
     pathname?.startsWith("/api/auth");
 
