@@ -2,6 +2,7 @@
 
 import {useState} from "react";
 import {signIn} from "next-auth/react";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   callbackUrl: string;
@@ -56,8 +57,8 @@ export default function RegisterForm({callbackUrl}: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-md rounded-2xl border p-6 shadow-sm">
-      <h1 className="text-xl font-semibold">Créer un compte</h1>
+    <div className="mx-auto max-w-md p-6">
+      <h1 className="text-2xl font-bold">Créer un compte</h1>
 
       <form onSubmit={onSubmit} className="mt-4 space-y-4">
         <div className="space-y-1">
@@ -97,13 +98,11 @@ export default function RegisterForm({callbackUrl}: Props) {
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-        <button
+        <BrutalButton
+          label={loading ? "Création..." : "Créer mon compte"}
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-black px-4 py-2 text-white disabled:opacity-50"
-        >
-          {loading ? "Création..." : "Créer mon compte"}
-        </button>
+        />
       </form>
     </div>
   );

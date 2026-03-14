@@ -1,19 +1,18 @@
 "use client";
 
 import {signOut} from "next-auth/react";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   callbackUrl?: string;
 };
 
-export default function LogoutButton({callbackUrl = "/login"}: Props) {
+export default function LogoutButton({callbackUrl = "/"}: Props) {
   return (
-    <button
+    <BrutalButton
+      label={"Logout"}
       type="button"
-      onClick={() => signOut({callbackUrl})}
-      className="rounded-lg border px-3 py-2 text-sm"
-    >
-      Se déconnecter
-    </button>
+      onClickFn={() => signOut({callbackUrl})}
+    />
   );
 }
