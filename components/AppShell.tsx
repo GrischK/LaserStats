@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {usePathname} from "next/navigation";
+import {useState} from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import LogoutButton from "@/components/LogoutButton";
 
@@ -11,6 +12,7 @@ type Props = {
 
 export default function AppShell({children}: Props) {
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isAuthPage =
     pathname === "/" ||
@@ -29,6 +31,7 @@ export default function AppShell({children}: Props) {
             <Link
               href="/dashboard"
               className="flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+              onClick={() => setMobileMenuOpen(false)}
             >
               <span className="text-base">🏠</span>
               <span className="hidden sm:inline">Accueil</span>
@@ -42,18 +45,76 @@ export default function AppShell({children}: Props) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-
+          <div className="hidden items-center gap-2 md:flex">
             <Link
               href="/account"
               className="rounded-full px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
             >
               Compte
             </Link>
-            <LogoutButton/>
-            <ThemeToggle/>
+            <LogoutButton />
+            <ThemeToggle />
           </div>
+
+          <button
+            type="button"
+            aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            className="inline-flex items-center justify-center rounded-lg border border-[var(--border)] p-2 text-[var(--fg)] transition hover:bg-[var(--muted)] md:hidden"
+          >
+            <span className="sr-only">
+              {mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            </span>
+            <div className="flex h-5 w-5 flex-col items-center justify-center gap-1">
+              <span
+                className={`block h-0.5 w-5 rounded bg-current transition-all ${
+                  mobileMenuOpen ? "translate-y-1.5 rotate-45" : ""
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-5 rounded bg-current transition-all ${
+                  mobileMenuOpen ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-5 rounded bg-current transition-all ${
+                  mobileMenuOpen ? "-translate-y-1.5 -rotate-45" : ""
+                }`}
+              />
+            </div>
+          </button>
         </div>
+
+        {mobileMenuOpen ? (
+          <div className="border-t border-[var(--border)] bg-[var(--header-bg)] md:hidden">
+            <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-4 sm:px-6">
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="rounded-xl px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+              >
+                Accueil
+              </Link>
+
+              <Link
+                href="/account"
+                onClick={() => setMobileMenuOpen(false)}
+                className="rounded-xl px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+              >
+                Compte
+              </Link>
+
+              <div className="flex items-center justify-between rounded-xl px-3 py-2">
+                <ThemeToggle />
+              </div>
+
+              <div className="px-3 py-2">
+                <LogoutButton />
+              </div>
+            </div>
+          </div>
+        ) : null}
       </header>
 
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
