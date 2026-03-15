@@ -2,6 +2,7 @@
 
 import {useState} from "react";
 import type {ClubInvitationItem, ClubRole} from "@/lib/invitations/types";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   clubId: string;
@@ -105,13 +106,11 @@ export default function InviteMemberForm({
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
         {success ? <p className="text-sm text-green-600">{success}</p> : null}
 
-        <button
+        <BrutalButton
           type="submit"
           disabled={loading}
-          className="rounded-xl bg-black px-4 py-2 text-white disabled:opacity-50"
-        >
-          {loading ? "Envoi..." : "Envoyer l'invite"}
-        </button>
+          label={loading ? "Envoi..." : "Envoyer l'invite"}
+        />
       </form>
     </div>
   );

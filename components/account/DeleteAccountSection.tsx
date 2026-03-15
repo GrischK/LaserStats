@@ -3,6 +3,7 @@
 import {signOut} from "next-auth/react";
 import {useState} from "react";
 import ConfirmModal from "@/components/ConfirmModal";
+import BrutalButton from "@/components/BrutalButton";
 
 export default function DeleteAccountSection() {
   const [password, setPassword] = useState("");
@@ -56,13 +57,12 @@ export default function DeleteAccountSection() {
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-        <button
+        <BrutalButton
           type="button"
-          onClick={() => setOpen(true)}
-          className="rounded-2xl bg-red-600 px-4 py-2 text-sm font-medium text-white"
-        >
-          Supprimer mon compte
-        </button>
+          onClickFn={() => setOpen(true)}
+          label='Supprimer mon compte'
+          variant="danger"
+        />
       </div>
 
       <ConfirmModal

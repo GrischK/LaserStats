@@ -1,6 +1,7 @@
 "use client";
 
 import {useState} from "react";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   hasPassword: boolean;
@@ -90,13 +91,11 @@ export default function PasswordForm({hasPassword}: Props) {
         {success ? <p className="text-sm text-green-600">{success}</p> : null}
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-        <button
+        <BrutalButton
           type="submit"
           disabled={loading}
-          className="rounded-2xl border px-4 py-2 font-medium"
-        >
-          {loading ? "Mise à jour..." : "Mettre à jour le mot de passe"}
-        </button>
+          label={loading ? "Mise à jour..." : "Mettre à jour le mot de passe"}
+        />
       </form>
     </section>
   );

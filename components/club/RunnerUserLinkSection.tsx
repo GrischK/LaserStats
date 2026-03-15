@@ -2,6 +2,7 @@
 
 import {useMemo, useState} from "react";
 import ConfirmModal from "@/components/ConfirmModal";
+import BrutalButton from "@/components/BrutalButton";
 
 type RunnerItem = {
   id: string;
@@ -273,14 +274,13 @@ export default function RunnerUserLinkSection({
                       ))}
                     </select>
 
-                    <button
+                    <BrutalButton
                       type="button"
-                      onClick={() => openConfirmLink(runner.id)}
+                      onClickFn={() => openConfirmLink(runner.id)}
                       disabled={loadingRunnerId === runner.id}
-                      className="rounded-xl border px-4 py-2 font-medium disabled:opacity-50"
+                      label={loadingRunnerId === runner.id ? "Association..." : "Associer"}
                     >
-                      {loadingRunnerId === runner.id ? "Association..." : "Associer"}
-                    </button>
+                    </BrutalButton>
                   </div>
                 </div>
               ))
@@ -311,14 +311,12 @@ export default function RunnerUserLinkSection({
                       </p>
                     </div>
 
-                    <button
+                    <BrutalButton
                       type="button"
-                      onClick={() => openConfirmUnlink(runner.id)}
+                      onClickFn={() => openConfirmUnlink(runner.id)}
                       disabled={loadingRunnerId === runner.id}
-                      className="rounded-xl border px-4 py-2 font-medium disabled:opacity-50"
-                    >
-                      {loadingRunnerId === runner.id ? "Dissociation..." : "Dissocier"}
-                    </button>
+                      label={loadingRunnerId === runner.id ? "Dissociation..." : "Dissocier"}
+                    />
                   </div>
                 </div>
               ))

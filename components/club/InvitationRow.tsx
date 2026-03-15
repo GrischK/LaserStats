@@ -2,6 +2,7 @@
 
 import {useState} from "react";
 import type {ClubInvitationItem} from "@/lib/invitations/types";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   invitation: ClubInvitationItem;
@@ -62,32 +63,26 @@ export default function InvitationRow({invitation, onCancelled}: Props) {
           </p>
         </div>
 
-        <button
+        <BrutalButton
           type="button"
-          onClick={handleCancel}
+          onClickFn={handleCancel}
           disabled={loading}
-          className="rounded-lg border px-3 py-1.5 text-sm hover:bg-neutral-50 disabled:opacity-50"
-        >
-          {loading ? "Suppression..." : "Supprimer"}
-        </button>
+          label={loading ? "Suppression..." : "Supprimer"}
+          variant="danger"
+        />
       </div>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <button
+        <BrutalButton
           type="button"
-          onClick={() => setShowLink((prev) => !prev)}
-          className="rounded-lg border px-3 py-1.5 text-sm hover:bg-neutral-50"
-        >
-          {showLink ? "Masquer le lien" : "Afficher le lien"}
-        </button>
-
-        <button
+          onClickFn={() => setShowLink((prev) => !prev)}
+          label={showLink ? "Masquer le lien" : "Afficher le lien"}
+        />
+        <BrutalButton
           type="button"
-          onClick={handleCopy}
-          className="rounded-lg border px-3 py-1.5 text-sm hover:bg-neutral-50"
-        >
-          {copied ? "Copié" : "Copier le lien"}
-        </button>
+          onClickFn={handleCopy}
+          label={copied ? "Copié" : "Copier le lien"}
+        />
       </div>
 
       {showLink ? (

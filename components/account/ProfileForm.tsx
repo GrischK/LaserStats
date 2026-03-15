@@ -1,6 +1,7 @@
 "use client";
 
 import {useState} from "react";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   initialName: string;
@@ -92,13 +93,11 @@ export default function ProfileForm({
         {success ? <p className="text-sm text-green-600">{success}</p> : null}
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-        <button
+        <BrutalButton
           type="submit"
           disabled={loading}
-          className="rounded-2xl border px-4 py-2 font-medium"
-        >
-          {loading ? "Enregistrement..." : "Enregistrer"}
-        </button>
+          label={loading ? "Enregistrement..." : "Enregistrer"}
+        />
       </form>
     </section>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import BrutalButton from "@/components/BrutalButton";
+
 type Props = {
   open: boolean;
   title: string;
@@ -38,23 +40,20 @@ export default function ConfirmModal({
         ) : null}
 
         <div className="mt-6 flex justify-end gap-3">
-          <button
+          <BrutalButton
             type="button"
-            onClick={onCancel}
+            onClickFn={onCancel}
             disabled={loading}
-            className="rounded-2xl border border-[var(--border)] px-4 py-2 text-sm font-medium"
-          >
-            {cancelLabel}
-          </button>
+            label={cancelLabel}
+          />
 
-          <button
+          <BrutalButton
             type="button"
-            onClick={onConfirm}
+            onClickFn={onConfirm}
             disabled={loading}
-            className="rounded-2xl bg-[var(--danger)] px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-          >
-            {loading ? label : confirmLabel}
-          </button>
+            label={loading ? label : confirmLabel}
+            variant="danger"
+          />
         </div>
       </div>
     </div>

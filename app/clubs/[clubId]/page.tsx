@@ -2,6 +2,7 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   params: Promise<{ clubId: string }>;
@@ -54,13 +55,13 @@ export default async function ClubPage({params}: Props) {
             href={`/clubs/${clubId}/associations`}
             className="rounded-xl border px-4 py-2 text-sm font-medium"
           >
-            Gérer les associations
+            <BrutalButton label="Gérer les associations"/>
           </Link>
           <Link
             href={`/clubs/${clubId}/settings`}
             className="rounded-xl border px-4 py-2"
           >
-            Inviter un coureur
+            <BrutalButton label="Inviter un coureur"/>
           </Link>
         </div>
       )}
@@ -73,9 +74,8 @@ export default async function ClubPage({params}: Props) {
         {(membership.role === "ADMIN" || membership.role === "COACH") && (
           <Link
             href={`/clubs/${clubId}/add-runner`}
-            className="rounded-xl border px-4 py-2"
           >
-            Ajouter un coureur
+            <BrutalButton label="Ajouter un coureur"/>
           </Link>
         )}
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   clubId: string;
@@ -10,7 +11,7 @@ type Props = {
 const hitOptions = [0, 1, 2, 3, 4, 5];
 const distanceOptions = [200, 400, 600, 800];
 
-export default function SessionForm({ clubId, runnerId }: Props) {
+export default function SessionForm({clubId, runnerId}: Props) {
   const [distance, setDistance] = useState("");
   const [targetsHit, setTargetsHit] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -137,13 +138,14 @@ export default function SessionForm({ clubId, runnerId }: Props) {
           </p>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-2xl bg-[var(--primary)] px-4 py-3 font-semibold text-[var(--primary-foreground)] transition hover:opacity-90 disabled:opacity-60"
-        >
-          {loading ? "Enregistrement..." : "Enregistrer"}
-        </button>
+        <div className="flex items-center justify-center">
+          <BrutalButton
+            type="submit"
+            disabled={loading}
+            label={loading ? "Enregistrement..." : "Enregistrer"}
+          />
+        </div>
+
       </div>
     </form>
   );

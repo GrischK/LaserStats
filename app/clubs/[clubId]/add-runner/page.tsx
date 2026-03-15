@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   params: Promise<{ clubId: string }>;
@@ -67,13 +68,11 @@ export default function AddRunnerPage({ params }: Props) {
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
-        <button
+        <BrutalButton
           type="submit"
           disabled={loading || !clubId}
-          className="rounded-xl border px-4 py-2 font-medium"
-        >
-          {loading ? "Ajout..." : "Ajouter"}
-        </button>
+          label={loading ? "Ajout..." : "Ajouter"}
+        />
       </form>
     </main>
   );
