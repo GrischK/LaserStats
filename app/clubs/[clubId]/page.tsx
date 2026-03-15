@@ -50,34 +50,24 @@ export default async function ClubPage({params}: Props) {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-6">
       {(membership.role === "ADMIN" || membership.role === "COACH") && (
-        <div>
+        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
           <Link
             href={`/clubs/${clubId}/associations`}
-            className="rounded-xl border px-4 py-2 text-sm font-medium"
           >
             <BrutalButton label="Gérer les associations"/>
           </Link>
           <Link
             href={`/clubs/${clubId}/settings`}
-            className="rounded-xl border px-4 py-2"
           >
             <BrutalButton label="Inviter un coureur"/>
           </Link>
         </div>
       )}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">{club.name}</h1>
           <p className="text-sm text-gray-600">Rôle : {membership.role}</p>
         </div>
-
-        {(membership.role === "ADMIN" || membership.role === "COACH") && (
-          <Link
-            href={`/clubs/${clubId}/add-runner`}
-          >
-            <BrutalButton label="Ajouter un coureur"/>
-          </Link>
-        )}
       </div>
 
       <section className="rounded-2xl border p-4">
@@ -99,6 +89,15 @@ export default async function ClubPage({params}: Props) {
           </div>
         )}
       </section>
+      <div className="w-full flex items-center justify-center">
+        {(membership.role === "ADMIN" || membership.role === "COACH") && (
+          <Link
+            href={`/clubs/${clubId}/add-runner`}
+          >
+            <BrutalButton label="Ajouter un coureur"/>
+          </Link>
+        )}
+      </div>
     </main>
   );
 }

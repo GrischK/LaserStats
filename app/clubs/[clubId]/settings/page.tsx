@@ -53,7 +53,7 @@ export default async function ClubSettingsPage({params}: Props) {
           initialInvitations={initialInvitations}
         />
       ) : (
-        <div className="rounded-2xl border bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
           <p className="text-sm text-neutral-600">
             Vous n’avez pas les droits pour gérer les invitations.
           </p>

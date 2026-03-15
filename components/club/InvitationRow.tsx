@@ -86,8 +86,8 @@ export default function InvitationRow({invitation, onCancelled}: Props) {
       </div>
 
       {showLink ? (
-        <div className="mt-3 rounded-lg bg-neutral-50 p-2">
-          <p className="break-all text-xs text-neutral-700">{inviteUrl}</p>
+        <div className="mt-3 rounded-lg bg-[var(--card)] p-2">
+          <p className="break-all text-xs text-neutral-200">{inviteUrl}</p>
         </div>
       ) : null}
 

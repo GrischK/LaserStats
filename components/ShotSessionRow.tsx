@@ -2,6 +2,7 @@
 
 import {FC, useState} from "react";
 import ConfirmModal from "@/components/ConfirmModal";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   sessionId: string;
@@ -130,23 +131,18 @@ const ShotSessionRow: FC<Props> = ({
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <button
+              <BrutalButton
                 type="button"
-                onClick={handleSave}
+                onClickFn={handleSave}
                 disabled={loading}
-                className="rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-medium text-[var(--primary-foreground)]"
-              >
-                Enregistrer
-              </button>
-
-              <button
+                label="Enregistrer"
+              />
+              <BrutalButton
                 type="button"
-                onClick={() => setIsEditing(false)}
+                onClickFn={() => setIsEditing(false)}
                 disabled={loading}
-                className="rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-medium"
-              >
-                Annuler
-              </button>
+                label="Annuler"
+              />
             </div>
           </div>
         </div>
@@ -176,21 +172,17 @@ const ShotSessionRow: FC<Props> = ({
 
         {canManage && (
           <div className="flex gap-2">
-            <button
+            <BrutalButton
+              label="Modifier"
               type="button"
-              onClick={() => setIsEditing(true)}
-              className="rounded-xl border border-[var(--border)] px-3 py-2 text-sm"
-            >
-              Modifier
-            </button>
-
-            <button
+              onClickFn={() => setIsEditing(true)}
+            />
+            <BrutalButton
+              label="Supprimer"
               type="button"
-              onClick={() => setIsDeleteModalOpen(true)}
-              className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-[var(--danger)]"
-            >
-              Supprimer
-            </button>
+              onClickFn={() => setIsDeleteModalOpen(true)}
+              variant="danger"
+            />
           </div>
         )}
       </div>

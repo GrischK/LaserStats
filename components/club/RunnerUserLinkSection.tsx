@@ -236,7 +236,7 @@ export default function RunnerUserLinkSection({
   return (
     <>
       <div className="space-y-6">
-        <div className="rounded-2xl border bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
           <h2 className="text-lg font-semibold">Runners non liés</h2>
 
           <div className="mt-4 space-y-4">
@@ -264,7 +264,7 @@ export default function RunnerUserLinkSection({
                           [runner.id]: e.target.value,
                         }))
                       }
-                      className="rounded-xl border px-3 py-2"
+                      className="rounded-xl border px-3 py-2 bg-[var(--card)]"
                     >
                       <option value="">Choisir un membre</option>
                       {memberList.map((member) => (
@@ -288,7 +288,7 @@ export default function RunnerUserLinkSection({
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
           <h2 className="text-lg font-semibold">Associations existantes</h2>
 
           <div className="mt-4 space-y-4">

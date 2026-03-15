@@ -68,7 +68,7 @@ export default function InviteMemberForm({
   }
 
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
       <h2 className="text-base font-semibold">Inviter un membre</h2>
 
       <form onSubmit={onSubmit} className="mt-4 space-y-4">
@@ -87,7 +87,7 @@ export default function InviteMemberForm({
         <div className="space-y-1">
           <label className="text-sm font-medium">Rôle</label>
           <select
-            className="w-full rounded-xl border px-3 py-2"
+            className="w-full rounded-xl border px-3 py-2 bg-[var(--card)]"
             value={role}
             onChange={(e) => setRole(e.target.value as ClubRole)}
           >

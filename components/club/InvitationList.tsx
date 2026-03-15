@@ -13,7 +13,7 @@ export default function InvitationList({
                                          onCancelled,
                                        }: Props) {
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
       <h2 className="text-base font-semibold">Invitations en attente</h2>
 
       <div className="mt-4 space-y-3">

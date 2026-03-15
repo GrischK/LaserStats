@@ -38,7 +38,7 @@ export default function DeleteAccountSection() {
   }
 
   return (
-    <section className="rounded-3xl border border-red-300 bg-white p-6 shadow-[var(--shadow)]">
+    <section className="rounded-3xl border border-red-300 bg-[var(--card)] p-6 shadow-[var(--shadow)]">
       <h2 className="text-xl font-semibold text-red-600">Zone dangereuse</h2>
 
       <p className="mt-2 text-sm text-neutral-600">

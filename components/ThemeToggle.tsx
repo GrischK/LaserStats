@@ -4,25 +4,31 @@ import { useEffect, useState } from "react";
 
 type Theme = "light" | "dark";
 
+function getInitialTheme(): Theme {
+  if (typeof window === "undefined") {
+    return "dark";
+  }
+
+  const savedTheme = localStorage.getItem("theme");
+  return savedTheme === "light" ? "light" : "dark";
+}
+
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const currentTheme =
-      document.documentElement.getAttribute("data-theme") === "light"
-        ? "light"
-        : "dark";
+    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("theme", theme);
+  }, [theme]);
 
-    setTheme(currentTheme);
+  useEffect(() => {
     setMounted(true);
   }, []);
 
   function toggleTheme() {
-    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    document.documentElement.setAttribute("data-theme", nextTheme);
-    localStorage.setItem("theme", nextTheme);
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }
 
   if (!mounted) {
