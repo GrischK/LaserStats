@@ -92,24 +92,20 @@ export type RunnerWithSessions = Prisma.RunnerGetPayload<{
   };
 }>;
 
-export type ClubInvitationItem = Prisma.InvitationGetPayload<{
-  select: {
-    id: true;
-    email: true;
-    role: true;
-    status: true;
-    token: true;
-    createdAt: true;
-    expiresAt: true;
-    invitedBy: {
-      select: {
-        id: true;
-        name: true;
-        email: true;
-      };
-    };
-  };
-}>;
+export type ClubInvitationItem = {
+  id: string;
+  email: string;
+  role: ClubRole;
+  status: InvitationStatus;
+  token: string;
+  createdAt: Date;
+  expiresAt: Date;
+  invitedBy: {
+    id: string;
+    name: string | null;
+    email: string;
+  } | null;
+};
 
 export type InvitationDetails = {
   id: string;
