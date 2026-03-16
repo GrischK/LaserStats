@@ -1,4 +1,4 @@
-import type {ClubRole} from "./types";
+import type {ClubRole} from "@/lib/types";
 
 export function canInviteRole(
   inviterRole: ClubRole,

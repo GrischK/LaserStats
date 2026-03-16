@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { ClubRole } from "./types";
+import type { ClubRole } from "@/lib//types";
 import { canInviteRole } from "./permissions";
 import {
   generateInviteToken,
