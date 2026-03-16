@@ -1,5 +1,5 @@
 import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
-import type { ClubRole } from "@/lib/invitations/types";
+import type { ClubRole } from "@/lib/types";
 
 const mailersend = new MailerSend({
   apiKey: process.env.MAILERSEND_API_KEY!,
