@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { InvitationDetails } from "@/lib/invitations/types";
+import type { InvitationDetails } from "@/lib/types";
 
 type Props = {
   token: string;

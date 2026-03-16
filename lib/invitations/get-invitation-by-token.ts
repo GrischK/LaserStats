@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { InvitationDetails, InvitationStatus } from "./types";
+import type { InvitationDetails, InvitationStatus } from "@/lib/types";
 
 export async function getInvitationByToken(
   token: string

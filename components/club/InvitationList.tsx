@@ -1,7 +1,7 @@
 "use client";
 
 import InvitationRow from "./InvitationRow";
-import type {ClubInvitationItem} from "@/lib/invitations/types";
+import type {ClubInvitationItem} from "@/lib/types";
 
 type Props = {
   invitations: ClubInvitationItem[];

@@ -3,7 +3,7 @@
 import {useState} from "react";
 import InviteMemberForm from "./InviteMemberForm";
 import InvitationList from "./InvitationList";
-import type {ClubInvitationItem, ClubRole} from "@/lib/invitations/types";
+import type {ClubInvitationItem, ClubRole} from "@/lib/types";
 
 type Props = {
   clubId: string;

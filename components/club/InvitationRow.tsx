@@ -1,7 +1,7 @@
 "use client";
 
 import {useState} from "react";
-import type {ClubInvitationItem} from "@/lib/invitations/types";
+import type {ClubInvitationItem} from "@/lib/types";
 import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
