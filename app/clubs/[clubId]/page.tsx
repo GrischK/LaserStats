@@ -3,6 +3,7 @@ import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import BrutalButton from "@/components/BrutalButton";
+import type {Membership, UserWithMemberships} from "@/lib/types";
 
 type Props = {
   params: Promise<{ clubId: string }>;
@@ -16,7 +17,7 @@ export default async function ClubPage({params}: Props) {
     redirect("/login");
   }
 
-  const user = await prisma.user.findUnique({
+  const user: UserWithMemberships | null = await prisma.user.findUnique({
     where: {email: session.user.email},
     include: {
       memberships: true,
@@ -27,7 +28,9 @@ export default async function ClubPage({params}: Props) {
     redirect("/login");
   }
 
-  const membership = user.memberships.find((m) => m.clubId === clubId);
+  const membership = user.memberships.find(
+    (m: Membership) => m.clubId === clubId
+  );
 
   if (!membership) {
     redirect("/dashboard");
