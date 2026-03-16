@@ -1,13 +1,13 @@
-import { prisma } from "@/lib/prisma";
-import type { ClubInvitationItem } from "./types";
+import {prisma} from "@/lib/prisma";
+import type {ClubInvitationItem, InvitationListItem, Membership} from "@/lib/types";
 
 export async function listClubInvitations(params: {
   clubId: string;
   currentUserId: string;
 }): Promise<ClubInvitationItem[]> {
-  const { clubId, currentUserId } = params;
+  const {clubId, currentUserId} = params;
 
-  const membership = await prisma.membership.findUnique({
+  const membership: Membership | null = await prisma.membership.findUnique({
     where: {
       userId_clubId: {
         userId: currentUserId,
@@ -24,7 +24,7 @@ export async function listClubInvitations(params: {
     throw new Error("Vous n'avez pas accès aux invitations");
   }
 
-  const invitations = await prisma.invitation.findMany({
+  const invitations: InvitationListItem[] = await prisma.invitation.findMany({
     where: {
       clubId,
       status: "PENDING",
@@ -50,7 +50,7 @@ export async function listClubInvitations(params: {
     },
   });
 
-  return invitations.map((invitation) => ({
+  return invitations.map((invitation: InvitationListItem) => ({
     id: invitation.id,
     email: invitation.email,
     role: invitation.role,
