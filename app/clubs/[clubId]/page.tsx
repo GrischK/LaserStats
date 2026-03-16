@@ -3,11 +3,7 @@ import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import BrutalButton from "@/components/BrutalButton";
-import type {
-  ClubWithActiveRunners,
-  Membership,
-  UserWithMemberships,
-} from "@/lib/types";
+import type {Membership, UserWithMemberships} from "@/lib/types";
 
 type Props = {
   params: Promise<{ clubId: string }>;
@@ -40,7 +36,7 @@ export default async function ClubPage({params}: Props) {
     redirect("/dashboard");
   }
 
-  const club: ClubWithActiveRunners | null = await prisma.club.findUnique({
+  const club = await prisma.club.findUnique({
     where: {id: clubId},
     include: {
       runners: {
@@ -82,7 +78,7 @@ export default async function ClubPage({params}: Props) {
           <p className="text-sm text-gray-600">Aucun coureur pour le moment.</p>
         ) : (
           <div className="grid gap-2">
-            {club.runners.map((runner: ClubWithActiveRunners["runners"][number]) => (
+            {club.runners.map((runner) => (
               <Link
                 key={runner.id}
                 href={`/clubs/${clubId}/runners/${runner.id}`}
