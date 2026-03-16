@@ -8,7 +8,7 @@ export type InvitationStatus =
   | "EXPIRED"
   | "CANCELLED";
 
-export type Membership = Prisma.MembershipGetPayload<object>;
+export type Membership = Prisma.MembershipGetPayload<{}>;
 
 export type UserWithMemberships = Prisma.UserGetPayload<{
   include: {
@@ -32,7 +32,12 @@ export type UserWithMembershipsAndClub = Prisma.UserGetPayload<{
 }>;
 
 export type LinkedRunner = Prisma.RunnerGetPayload<{
-  include: {
+  select: {
+    id: true;
+    name: true;
+    active: true;
+    createdAt: true;
+    userId: true;
     user: {
       select: {
         id: true;
@@ -49,7 +54,11 @@ export type LinkedRunner = Prisma.RunnerGetPayload<{
 }>;
 
 export type UnlinkedRunner = Prisma.RunnerGetPayload<{
-  include: {
+  select: {
+    id: true;
+    name: true;
+    active: true;
+    createdAt: true;
     _count: {
       select: {
         sessions: true;
@@ -58,14 +67,18 @@ export type UnlinkedRunner = Prisma.RunnerGetPayload<{
   };
 }>;
 
-export type AvailableMember = {
-  user: {
-    id: string;
-    name: string | null;
-    email: string;
+export type AvailableMember = Prisma.MembershipGetPayload<{
+  select: {
+    role: true;
+    user: {
+      select: {
+        id: true;
+        name: true;
+        email: true;
+      };
+    };
   };
-  role: ClubRole;
-};
+}>;
 
 export type ClubWithActiveRunners = Prisma.ClubGetPayload<{
   include: {

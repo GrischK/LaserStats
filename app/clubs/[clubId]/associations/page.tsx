@@ -2,7 +2,7 @@ import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import RunnerUserLinkSection from "@/components/club/RunnerUserLinkSection";
-import type {LinkedRunner, Membership, UnlinkedRunner, AvailableMember} from "@/lib/types";
+import type {AvailableMember, LinkedRunner, Membership, UnlinkedRunner} from "@/lib/types";
 
 type Props = {
   params: Promise<{
