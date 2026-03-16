@@ -100,3 +100,13 @@ export type RunnerWithSessions = Prisma.RunnerGetPayload<{
     sessions: true;
   };
 }>;
+
+export type UserWithMembershipsAndClub = Prisma.UserGetPayload<{
+  include: {
+    memberships: {
+      include: {
+        club: true;
+      };
+    };
+  };
+}>;

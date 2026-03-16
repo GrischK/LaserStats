@@ -2,6 +2,7 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
+import type {UserWithMembershipsAndClub} from "@/lib/types";
 
 export default async function SelectClubPage() {
   const session = await getAuthSession();
@@ -10,7 +11,7 @@ export default async function SelectClubPage() {
     redirect("/login");
   }
 
-  const user = await prisma.user.findUnique({
+  const user: UserWithMembershipsAndClub | null = await prisma.user.findUnique({
     where: {email: session.user.email},
     include: {
       memberships: {
@@ -46,16 +47,18 @@ export default async function SelectClubPage() {
       </div>
 
       <div className="grid gap-3">
-        {user.memberships.map((membership) => (
-          <Link
-            key={membership.id}
-            href={`/clubs/${membership.clubId}`}
-            className="rounded-2xl border p-4 transition hover:bg-gray-50"
-          >
-            <div className="text-lg font-semibold">{membership.club.name}</div>
-            <div className="text-sm text-gray-500">{membership.role}</div>
-          </Link>
-        ))}
+        {user.memberships.map(
+          (membership: UserWithMembershipsAndClub["memberships"][number]) => (
+            <Link
+              key={membership.id}
+              href={`/clubs/${membership.clubId}`}
+              className="rounded-2xl border p-4 transition hover:bg-gray-50"
+            >
+              <div className="text-lg font-semibold">{membership.club.name}</div>
+              <div className="text-sm text-gray-500">{membership.role}</div>
+            </Link>
+          )
+        )}
       </div>
     </main>
   );
