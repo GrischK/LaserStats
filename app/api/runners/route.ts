@@ -25,7 +25,9 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const membership = user.memberships.find((m) => m.clubId === clubId);
+  const membership = user.memberships.find(
+    (m: { clubId: string; role: string }) => m.clubId === clubId
+  );
 
   if (!membership) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -70,7 +72,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const membership = user.memberships.find((m) => m.clubId === clubId);
+  const membership = user.memberships.find(
+    (m: { clubId: string; role: string }) => m.clubId === clubId
+  );
 
   if (!membership) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
