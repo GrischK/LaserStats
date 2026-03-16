@@ -1,7 +1,9 @@
-import type { Membership, Prisma } from "@prisma/client";
+import type {Prisma} from "@prisma/client";
+
 export type ClubRole = "ADMIN" | "COACH" | "USER";
 export type InvitationStatus = "PENDING" | "ACCEPTED" | "EXPIRED" | "CANCELLED";
-export type { Membership };
+
+export type Membership = Prisma.MembershipGetPayload<object>;
 
 export type ClubInvitationItem = {
   id: string;
