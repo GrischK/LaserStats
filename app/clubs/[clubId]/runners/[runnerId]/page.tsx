@@ -3,7 +3,7 @@ import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import SessionForm from "@/components/SessionForm";
 import RunnerHistoryAccordion from "@/components/RunnerHistoryAccordion";
-import type {Membership, UserWithMemberships} from "@/lib/types";
+import type {Membership, RunnerWithSessions, UserWithMemberships} from "@/lib/types";
 
 type Props = {
   params: Promise<{ clubId: string; runnerId: string }>;
@@ -115,7 +115,7 @@ export default async function RunnerPage({params}: Props) {
     redirect("/dashboard");
   }
 
-  const runner = await prisma.runner.findFirst({
+  const runner: RunnerWithSessions | null = await prisma.runner.findFirst({
     where: {
       id: runnerId,
       clubId,
@@ -134,7 +134,7 @@ export default async function RunnerPage({params}: Props) {
   }
 
   const groupedSessions = groupSessionsByMonthAndDay(
-    runner.sessions.map((item) => ({
+    runner.sessions.map((item: RunnerWithSessions["sessions"][number]) => ({
       id: item.id,
       createdAt: item.createdAt,
       distance: item.distance,

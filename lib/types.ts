@@ -94,3 +94,9 @@ export type ClubWithActiveRunners = Prisma.ClubGetPayload<{
     runners: true;
   };
 }>;
+
+export type RunnerWithSessions = Prisma.RunnerGetPayload<{
+  include: {
+    sessions: true;
+  };
+}>;
