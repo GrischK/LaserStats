@@ -4,6 +4,7 @@ import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import BrutalButton from "@/components/BrutalButton";
 import type {Membership, UserWithMemberships} from "@/lib/types";
+import RunnerLink from "@/components/RunnerLink";
 
 type Props = {
   params: Promise<{ clubId: string }>;
@@ -79,13 +80,11 @@ export default async function ClubPage({params}: Props) {
         ) : (
           <div className="grid gap-2">
             {club.runners.map((runner) => (
-              <Link
+              <RunnerLink
                 key={runner.id}
                 href={`/clubs/${clubId}/runners/${runner.id}`}
-                className="rounded-xl border p-3 transition hover:bg-gray-50"
-              >
-                {runner.name}
-              </Link>
+                name={runner.name}
+              />
             ))}
           </div>
         )}
