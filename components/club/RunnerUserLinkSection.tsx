@@ -299,7 +299,7 @@ export default function RunnerUserLinkSection({
             ) : (
               linkedRunnerList.map((runner) => (
                 <div key={runner.id} className="rounded-xl border p-4">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                     <div>
                       <p className="font-medium">{runner.name}</p>
                       <p className="text-sm text-neutral-600">

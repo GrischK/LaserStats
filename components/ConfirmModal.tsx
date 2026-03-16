@@ -39,7 +39,7 @@ export default function ConfirmModal({
           </p>
         ) : null}
 
-        <div className="mt-6 flex justify-end gap-3">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <BrutalButton
             type="button"
             onClickFn={onCancel}
