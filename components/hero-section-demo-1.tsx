@@ -2,9 +2,11 @@
 
 import {motion} from "motion/react";
 import {Modal, ModalBody, ModalTrigger} from "./ui/animated-modal";
-import LoginPage from "@/app/login/page";
+import LoginPage from "@/components/login/Login";
 import ThemeToggle from "@/components/ThemeToggle";
 import BrutalButton from "@/components/BrutalButton";
+import {useSyncExternalStore} from "react";
+import {getThemeServerSnapshot, getThemeSnapshot, subscribeTheme} from "@/lib/theme";
 
 export default function HeroSectionOne() {
   return (
@@ -12,6 +14,21 @@ export default function HeroSectionOne() {
       <div className="hero-bg m-10"></div>
       <div className=" mx-auto flex w-full h-full flex-col items-center md:justify-between">
         <Navbar/>
+        <motion.div
+          initial={{
+            opacity: 0,
+          }}
+          animate={{
+            opacity: 1,
+          }}
+          transition={{
+            duration: 0.3,
+            delay: 1.5,
+          }}
+          className="relative z-10 flex flex-wrap items-center justify-center gap-4"
+        >
+          <ThemeToggle/>
+        </motion.div>
         <div className="absolute top-0 left-10 h-full w-2px bg-neutral-200/80 dark:bg-neutral-800/80 z-10">
           <div className="absolute top-0 h-full w-px bg-neutral-400/50  "/>
         </div>
@@ -92,30 +109,23 @@ export default function HeroSectionOne() {
 }
 
 const Navbar = () => {
+  const theme = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot
+  );
+
+  const logo = theme === "light" ? "/logo.png" : "/logo-dark.png";
+
   return (
     <nav
       className="flex w-full items-center justify-between px-4 py-4 dark:border-neutral-800 z-20">
       <div className="flex items-center gap-2">
         <div className="w-20">
-          <img src="/logo.png" alt="logo" className="w-full" />
+          <img src={logo} alt="logo" className="w-full"/>
         </div>
         <h1 className="text-base font-bold md:text-2xl">Laser-stats</h1>
       </div>
-      <motion.div
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 1,
-        }}
-        transition={{
-          duration: 0.3,
-          delay: 1,
-        }}
-        className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-4"
-      >
-        <ThemeToggle/>
-      </motion.div>
     </nav>
   );
 };

@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {useState} from "react";
+import {useState, useSyncExternalStore} from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import LogoutButton from "@/components/LogoutButton";
+import {getThemeServerSnapshot, getThemeSnapshot, subscribeTheme,} from "@/lib/theme";
 
 type Props = {
   children: React.ReactNode;
@@ -14,6 +15,12 @@ export default function AppShell({children}: Props) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const theme = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot
+  );
+
   const isAuthPage =
     pathname === "/" ||
     pathname?.startsWith("/login") ||
@@ -22,6 +29,8 @@ export default function AppShell({children}: Props) {
   if (isAuthPage) {
     return <>{children}</>;
   }
+
+  const logo = theme === "light" ? "/logo.png" : "/logo-dark.png";
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)] transition-colors">
@@ -33,12 +42,13 @@ export default function AppShell({children}: Props) {
               className="flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <span className="text-base">🏠</span>
-              <span className="hidden sm:inline">Accueil</span>
+              <div className="w-20">
+                <img src={logo} alt="logo" className="w-full"/>
+              </div>
             </Link>
 
             <div>
-              <div className="text-lg font-bold tracking-tight">LaserStats</div>
+              <div className="text-lg font-bold tracking-tight">Laser-stats</div>
               <div className="hidden text-xs text-[var(--muted-foreground)] sm:block">
                 Suivi des tirs Laser Run
               </div>
@@ -52,8 +62,8 @@ export default function AppShell({children}: Props) {
             >
               Compte
             </Link>
-            <LogoutButton />
-            <ThemeToggle />
+            <LogoutButton/>
+            <ThemeToggle/>
           </div>
 
           <button
@@ -106,11 +116,11 @@ export default function AppShell({children}: Props) {
               </Link>
 
               <div className="flex items-center justify-between rounded-xl px-3 py-2">
-                <ThemeToggle />
+                <ThemeToggle/>
               </div>
 
               <div className="px-3 py-2">
-                <LogoutButton />
+                <LogoutButton/>
               </div>
             </div>
           </div>

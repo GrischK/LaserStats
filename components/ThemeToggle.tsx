@@ -1,54 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-type Theme = "light" | "dark";
-
-function getInitialTheme(): Theme {
-  if (typeof window === "undefined") {
-    return "dark";
-  }
-
-  const savedTheme = localStorage.getItem("theme");
-  return savedTheme === "light" ? "light" : "dark";
-}
+import {useSyncExternalStore} from "react";
+import {applyTheme, getThemeServerSnapshot, getThemeSnapshot, subscribeTheme, Theme,} from "@/lib/theme";
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const theme = useSyncExternalStore(
+    subscribeTheme,
+    getThemeSnapshot,
+    getThemeServerSnapshot
+  );
 
   function toggleTheme() {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
+    applyTheme(nextTheme);
   }
 
-  if (!mounted) {
-    return (
-      <button
-        type="button"
-        className="rounded-full border border-[var(--border)] px-3 py-2 text-sm"
-      >
-        ...
-      </button>
-    );
-  }
+  const icon = theme === "dark" ? "☀️" : "🌙";
+  const label = theme === "dark" ? "Clair" : "Sombre";
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      className="rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
+      aria-label={`Passer en mode ${label.toLowerCase()}`}
+      className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
     >
-      {theme === "dark" ? "☀️ Clair" : "🌙 Sombre"}
+      <span aria-hidden="true">{icon}</span>
+      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 }

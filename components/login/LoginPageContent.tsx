@@ -2,12 +2,13 @@
 
 import {signIn} from "next-auth/react";
 import {useState} from "react";
-import {useSearchParams} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import BrutalButton from "@/components/BrutalButton";
 import RegisterForm from "@/components/RegisterForm";
 
 export default function LoginPageContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
 
   const [mode, setMode] = useState<"login" | "register">("login");
@@ -19,10 +20,9 @@ export default function LoginPageContent() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      setLoading(true);
-
       const result = await signIn("credentials", {
         email,
         password,
@@ -32,14 +32,14 @@ export default function LoginPageContent() {
 
       if (result?.error) {
         setError("Email ou mot de passe incorrect");
+        setLoading(false);
         return;
       }
 
-      window.location.href = result?.url || callbackUrl;
+      router.replace(result?.url || callbackUrl);
     } catch (err) {
       console.error(err);
       setError("Une erreur est survenue");
-    } finally {
       setLoading(false);
     }
   }

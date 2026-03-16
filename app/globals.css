@@ -182,12 +182,31 @@ a {
   position: absolute;
   top: 0;
   left: 0;
+
   background-image:
     linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
     url("/hero-1.avif");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.65;
-  filter: blur(1px);
+
+  opacity: 0;
+  filter: blur(6px);
+  transform: scale(1.05);
+
+  animation: heroFade 1.6s ease forwards;
+}
+
+@keyframes heroFade {
+  0% {
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(1.5);
+  }
+
+  100% {
+    opacity: 0.65;
+    filter: blur(1px);
+    transform: scale(1);
+  }
 }
