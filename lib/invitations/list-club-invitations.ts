@@ -1,5 +1,5 @@
 import {prisma} from "@/lib/prisma";
-import type {ClubInvitationItem, InvitationListItem, Membership} from "@/lib/types";
+import type {ClubInvitationItem, Membership} from "@/lib/types";
 
 export async function listClubInvitations(params: {
   clubId: string;
@@ -24,7 +24,7 @@ export async function listClubInvitations(params: {
     throw new Error("Vous n'avez pas accès aux invitations");
   }
 
-  const invitations: InvitationListItem[] = await prisma.invitation.findMany({
+  const invitations: ClubInvitationItem[] = await prisma.invitation.findMany({
     where: {
       clubId,
       status: "PENDING",
@@ -50,7 +50,7 @@ export async function listClubInvitations(params: {
     },
   });
 
-  return invitations.map((invitation: InvitationListItem) => ({
+  return invitations.map((invitation: ClubInvitationItem) => ({
     id: invitation.id,
     email: invitation.email,
     role: invitation.role,
