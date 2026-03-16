@@ -47,7 +47,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Runner not found" }, { status: 404 });
   }
 
-  const membership = user.memberships.find((m) => m.clubId === runner.clubId);
+  const membership = user.memberships.find(
+    (m: { clubId: string; role: string }) => m.clubId === runner.clubId
+  );
 
   if (!membership) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
