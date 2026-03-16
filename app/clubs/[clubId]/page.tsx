@@ -3,7 +3,11 @@ import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import BrutalButton from "@/components/BrutalButton";
-import type {Membership, UserWithMemberships} from "@/lib/types";
+import type {
+  ClubWithActiveRunners,
+  Membership,
+  UserWithMemberships,
+} from "@/lib/types";
 
 type Props = {
   params: Promise<{ clubId: string }>;
@@ -36,7 +40,7 @@ export default async function ClubPage({params}: Props) {
     redirect("/dashboard");
   }
 
-  const club = await prisma.club.findUnique({
+  const club: ClubWithActiveRunners | null = await prisma.club.findUnique({
     where: {id: clubId},
     include: {
       runners: {
@@ -53,20 +57,18 @@ export default async function ClubPage({params}: Props) {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-6">
       {(membership.role === "ADMIN" || membership.role === "COACH") && (
-        <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-          <Link
-            href={`/clubs/${clubId}/associations`}
-          >
+        <div className="flex flex-col items-center justify-center gap-6 md:flex-row">
+          <Link href={`/clubs/${clubId}/associations`}>
             <BrutalButton label="Gérer les associations"/>
           </Link>
-          <Link
-            href={`/clubs/${clubId}/settings`}
-          >
+
+          <Link href={`/clubs/${clubId}/settings`}>
             <BrutalButton label="Inviter un coureur"/>
           </Link>
         </div>
       )}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+
+      <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
         <div>
           <h1 className="text-3xl font-bold">{club.name}</h1>
           <p className="text-sm text-gray-600">Rôle : {membership.role}</p>
@@ -80,7 +82,7 @@ export default async function ClubPage({params}: Props) {
           <p className="text-sm text-gray-600">Aucun coureur pour le moment.</p>
         ) : (
           <div className="grid gap-2">
-            {club.runners.map((runner) => (
+            {club.runners.map((runner: ClubWithActiveRunners["runners"][number]) => (
               <Link
                 key={runner.id}
                 href={`/clubs/${clubId}/runners/${runner.id}`}
@@ -92,11 +94,10 @@ export default async function ClubPage({params}: Props) {
           </div>
         )}
       </section>
-      <div className="w-full flex items-center justify-center">
+
+      <div className="flex w-full items-center justify-center">
         {(membership.role === "ADMIN" || membership.role === "COACH") && (
-          <Link
-            href={`/clubs/${clubId}/add-runner`}
-          >
+          <Link href={`/clubs/${clubId}/add-runner`}>
             <BrutalButton label="Ajouter un coureur"/>
           </Link>
         )}

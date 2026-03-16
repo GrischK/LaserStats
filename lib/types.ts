@@ -37,7 +37,7 @@ export type InvitationDetails = {
 };
 
 export type UserWithMemberships = Prisma.UserGetPayload<{
-  include: { memberships: true };
+  include: {memberships: true};
 }>;
 
 export type LinkedRunner = Prisma.RunnerGetPayload<{
@@ -86,5 +86,11 @@ export type AvailableMember = Prisma.MembershipGetPayload<{
       };
     };
     role: true;
+  };
+}>;
+
+export type ClubWithActiveRunners = Prisma.ClubGetPayload<{
+  include: {
+    runners: true;
   };
 }>;
