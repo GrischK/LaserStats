@@ -47,7 +47,8 @@ export async function PATCH(request: Request, {params}: Props) {
   }
 
   const membership = user.memberships.find(
-    (m) => m.clubId === existingShotSession.runner.clubId
+    (m: { clubId: string; role: string }) =>
+      m.clubId === existingShotSession.runner.clubId
   );
 
   if (!membership) {
@@ -105,7 +106,8 @@ export async function DELETE(_: Request, {params}: Props) {
   }
 
   const membership = user.memberships.find(
-    (m) => m.clubId === existingShotSession.runner.clubId
+    (m: { clubId: string; role: string }) =>
+      m.clubId === existingShotSession.runner.clubId
   );
 
   if (!membership) {
