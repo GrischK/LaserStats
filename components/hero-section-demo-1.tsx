@@ -1,9 +1,10 @@
 "use client";
 
 import {motion} from "motion/react";
-import Link from "next/link";
-import {Modal, ModalBody, ModalContent, ModalFooter, ModalTrigger} from "./ui/animated-modal";
+import {Modal, ModalBody, ModalTrigger} from "./ui/animated-modal";
 import LoginPage from "@/app/login/page";
+import ThemeToggle from "@/components/ThemeToggle";
+import BrutalButton from "@/components/BrutalButton";
 
 export default function HeroSectionOne() {
   return (
@@ -57,8 +58,33 @@ export default function HeroSectionOne() {
             }}
             className="relative z-10 mx-auto max-w-xl py-4 px-4 md:px-0 text-center text-lg font-semibold text-neutral-800 dark:text-neutral-400"
           >
-            Une application conçue pour les clubs de Laser Run pour enregistrer les séances de tir et analyser les performances des athlètes.
+            Une application conçue pour les clubs de Laser Run pour enregistrer les séances de tir et analyser les
+            performances des athlètes.
           </motion.p>
+          <motion.div
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+            }}
+            transition={{
+              duration: 0.3,
+              delay: 1,
+            }}
+            className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-4"
+          >
+            <Modal>
+              <ModalTrigger className="">
+                <BrutalButton
+                  label="Login"
+                />
+              </ModalTrigger>
+              <ModalBody>
+                <LoginPage/>
+              </ModalBody>
+            </Modal>
+          </motion.div>
         </div>
       </div>
     </div>
@@ -70,7 +96,9 @@ const Navbar = () => {
     <nav
       className="flex w-full items-center justify-between px-4 py-4 dark:border-neutral-800 z-20">
       <div className="flex items-center gap-2">
-        <div className="size-7 rounded-full bg-gradient-to-br from-violet-500 to-pink-500"/>
+        <div className="w-20">
+          <img src="/logo.png" alt="logo" className="w-full" />
+        </div>
         <h1 className="text-base font-bold md:text-2xl">Laser-stats</h1>
       </div>
       <motion.div
@@ -86,16 +114,7 @@ const Navbar = () => {
         }}
         className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-4"
       >
-          <Modal>
-            <ModalTrigger className="">
-              <button className="px-8 py-0.5  border-2 border-black dark:border-white uppercase bg-white text-black transition duration-200 text-sm shadow-[1px_1px_rgba(0,0,0),2px_2px_rgba(0,0,0),3px_3px_rgba(0,0,0),4px_4px_rgba(0,0,0),5px_5px_0px_0px_rgba(0,0,0)] dark:shadow-[1px_1px_rgba(255,255,255),2px_2px_rgba(255,255,255),3px_3px_rgba(255,255,255),4px_4px_rgba(255,255,255),5px_5px_0px_0px_rgba(255,255,255)] ">
-                Login
-              </button>
-            </ModalTrigger>
-            <ModalBody>
-              <LoginPage/>
-            </ModalBody>
-          </Modal>
+        <ThemeToggle/>
       </motion.div>
     </nav>
   );

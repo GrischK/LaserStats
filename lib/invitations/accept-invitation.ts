@@ -30,9 +30,6 @@ export async function acceptInvitation(params: {
     },
   });
 
-  console.log("SESSION USER EMAIL:", user.email);
-  console.log("INVITATION EMAIL:", invitation.email);
-
   if (!invitation) {
     throw new Error("Invitation introuvable");
   }
