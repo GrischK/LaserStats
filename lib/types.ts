@@ -111,20 +111,19 @@ export type ClubInvitationItem = Prisma.InvitationGetPayload<{
   };
 }>;
 
-export type InvitationDetails = Prisma.InvitationGetPayload<{
-  include: {
-    club: {
-      select: {
-        id: true;
-        name: true;
-      };
-    };
-    invitedBy: {
-      select: {
-        id: true;
-        name: true;
-        email: true;
-      };
-    };
+export type InvitationDetails = {
+  id: string;
+  email: string;
+  role: ClubRole;
+  status: InvitationStatus;
+  expiresAt: Date;
+  club: {
+    id: string;
+    name: string;
   };
-}>;
+  invitedBy: {
+    id: string;
+    name: string | null;
+    email: string;
+  };
+};
