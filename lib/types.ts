@@ -75,3 +75,16 @@ export type UnlinkedRunner = Prisma.RunnerGetPayload<{
     };
   };
 }>;
+
+export type AvailableMember = Prisma.MembershipGetPayload<{
+  select: {
+    user: {
+      select: {
+        id: true;
+        name: true;
+        email: true;
+      };
+    };
+    role: true;
+  };
+}>;

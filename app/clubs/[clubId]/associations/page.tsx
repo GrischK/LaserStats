@@ -2,7 +2,7 @@ import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import RunnerUserLinkSection from "@/components/club/RunnerUserLinkSection";
-import type {LinkedRunner, Membership, UnlinkedRunner} from "@/lib/types";
+import type {LinkedRunner, Membership, UnlinkedRunner, AvailableMember} from "@/lib/types";
 
 type Props = {
   params: Promise<{
@@ -92,7 +92,7 @@ export default async function ClubAssociationsPage({params}: Props) {
     .map((runner) => runner.userId)
     .filter((value): value is string => Boolean(value));
 
-  const availableMembers = await prisma.membership.findMany({
+  const availableMembers: AvailableMember[] = await prisma.membership.findMany({
     where: {
       clubId,
       userId: {
