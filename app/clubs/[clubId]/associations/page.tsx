@@ -2,6 +2,7 @@ import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import RunnerUserLinkSection from "@/components/club/RunnerUserLinkSection";
+import type {LinkedRunner, Membership, UnlinkedRunner} from "@/lib/types";
 
 type Props = {
   params: Promise<{
@@ -18,7 +19,7 @@ export default async function ClubAssociationsPage({params}: Props) {
 
   const {clubId} = await params;
 
-  const membership = await prisma.membership.findUnique({
+  const membership: Membership | null = await prisma.membership.findUnique({
     where: {
       userId_clubId: {
         userId: session.user.id,
@@ -35,7 +36,7 @@ export default async function ClubAssociationsPage({params}: Props) {
     return <div>Vous n’avez pas les droits pour gérer les associations.</div>;
   }
 
-  const unlinkedRunners = await prisma.runner.findMany({
+  const unlinkedRunners: UnlinkedRunner[] = await prisma.runner.findMany({
     where: {
       clubId,
       userId: null,
@@ -56,7 +57,7 @@ export default async function ClubAssociationsPage({params}: Props) {
     },
   });
 
-  const linkedRunners = await prisma.runner.findMany({
+  const linkedRunners: LinkedRunner[] = await prisma.runner.findMany({
     where: {
       clubId,
       userId: {
