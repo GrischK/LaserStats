@@ -8,6 +8,7 @@ type SessionItem = {
   createdAt: Date | string;
   distance: number | null;
   targetsHit: number;
+  durationSeconds: number | null;
 };
 
 type DayGroup = {
@@ -38,7 +39,9 @@ export default function RunnerHistoryAccordion({
   const [history, setHistory] = useState<MonthGroup[]>(groupedSessions);
 
   const [openMonths, setOpenMonths] = useState<Record<string, boolean>>(
-    Object.fromEntries(groupedSessions.map((month, index) => [month.monthKey, index === 0]))
+    Object.fromEntries(
+      groupedSessions.map((month, index) => [month.monthKey, index === 0])
+    )
   );
 
   const [openDays, setOpenDays] = useState<Record<string, boolean>>({});
@@ -77,11 +80,11 @@ export default function RunnerHistoryAccordion({
         .map((month) => ({
           ...month,
           days: month.days
-            .map((day) => ({
-              ...day,
-              sessions: day.sessions.filter((session) => session.id !== sessionId),
-            }))
-            .filter((day) => day.sessions.length > 0),
+                     .map((day) => ({
+                       ...day,
+                       sessions: day.sessions.filter((session) => session.id !== sessionId),
+                     }))
+                     .filter((day) => day.sessions.length > 0),
         }))
         .filter((month) => month.days.length > 0)
     );
@@ -129,9 +132,22 @@ export default function RunnerHistoryAccordion({
                 <div className="space-y-3">
                   {month.days.map((day) => {
                     const isDayOpen = !!openDays[day.dayKey];
-                    const average =
+
+                    const averageTargets =
                       day.sessions.reduce((sum, item) => sum + item.targetsHit, 0) /
                       day.sessions.length;
+
+                    const sessionsWithDuration = day.sessions.filter(
+                      (item) => item.durationSeconds != null
+                    );
+
+                    const averageDuration =
+                      sessionsWithDuration.length > 0
+                        ? sessionsWithDuration.reduce(
+                        (sum, item) => sum + (item.durationSeconds ?? 0),
+                        0
+                      ) / sessionsWithDuration.length
+                        : null;
 
                     return (
                       <div key={day.dayKey} className="rounded-2xl bg-[var(--muted)]">
@@ -143,8 +159,11 @@ export default function RunnerHistoryAccordion({
                           <div>
                             <div className="font-semibold capitalize">{day.dayLabel}</div>
                             <div className="mt-1 text-sm text-[var(--muted-foreground)]">
-                              {day.sessions.length} session{day.sessions.length > 1 ? "s" : ""} . moyenne{" "}
-                              {average.toFixed(1)} cibles
+                              {day.sessions.length} session{day.sessions.length > 1 ? "s" : ""} : moyenne{" "}
+                              {averageTargets.toFixed(1)} cibles
+                              {averageDuration !== null
+                                ? ` . temps moyen ${averageDuration.toFixed(0)} s`
+                                : ""}
                             </div>
                           </div>
 
@@ -164,6 +183,7 @@ export default function RunnerHistoryAccordion({
                                   runnerId={runnerId}
                                   distance={item.distance}
                                   targetsHit={item.targetsHit}
+                                  durationSeconds={item.durationSeconds}
                                   createdAt={item.createdAt}
                                   canManage={canManage}
                                   onUpdated={handleSessionUpdated}

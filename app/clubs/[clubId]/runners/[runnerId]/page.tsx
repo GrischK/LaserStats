@@ -14,6 +14,7 @@ type SessionItem = {
   createdAt: Date;
   distance: number | null;
   targetsHit: number;
+  durationSeconds: number | null;
 };
 
 type DayGroup = {
@@ -139,6 +140,7 @@ export default async function RunnerPage({params}: Props) {
       createdAt: item.createdAt,
       distance: item.distance,
       targetsHit: item.targetsHit,
+      durationSeconds: item.durationSeconds,
     }))
   );
 

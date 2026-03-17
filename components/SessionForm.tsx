@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import { useState } from "react";
 import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
@@ -11,15 +11,27 @@ type Props = {
 const hitOptions = [0, 1, 2, 3, 4, 5];
 const distanceOptions = [200, 400, 600, 800];
 
-export default function SessionForm({clubId, runnerId}: Props) {
+export default function SessionForm({ clubId, runnerId }: Props) {
   const [distance, setDistance] = useState("");
   const [targetsHit, setTargetsHit] = useState(0);
+  const [durationSeconds, setDurationSeconds] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+
+    const duration =
+      durationSeconds === "" ? null : Number(durationSeconds);
+
+    if (
+      duration !== null &&
+      (!Number.isInteger(duration) || duration < 0 || duration > 50)
+    ) {
+      setError("Le temps doit être un entier entre 0 et 50 secondes");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -33,6 +45,7 @@ export default function SessionForm({clubId, runnerId}: Props) {
           runnerId,
           distance: distance === "" ? null : Number(distance),
           targetsHit,
+          durationSeconds: duration,
         }),
       });
 
@@ -74,7 +87,9 @@ export default function SessionForm({clubId, runnerId}: Props) {
             placeholder="Ex: 200 m"
             className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
           />
-
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Optionnel
+          </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {distanceOptions.map((value) => {
               const active = distance === String(value);
@@ -132,6 +147,29 @@ export default function SessionForm({clubId, runnerId}: Props) {
           </div>
         </div>
 
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Temps de la session
+          </label>
+
+          <div className="grid grid-cols-2 gap-3">
+            <input
+              type="number"
+              min="0"
+              max="50"
+              step="1"
+              value={durationSeconds}
+              onChange={(e) => setDurationSeconds(e.target.value)}
+              placeholder="Ex: 35 secondes"
+              className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
+            />
+          </div>
+
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Optionnel
+          </p>
+        </div>
+
         {error ? (
           <p className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-[var(--danger)]">
             {error}
@@ -145,7 +183,6 @@ export default function SessionForm({clubId, runnerId}: Props) {
             label={loading ? "Enregistrement..." : "Enregistrer"}
           />
         </div>
-
       </div>
     </form>
   );

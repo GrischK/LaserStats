@@ -18,6 +18,7 @@ export async function PATCH(request: Request, {params}: Props) {
 
   const distanceRaw = body?.distance;
   const targetsHit = Number(body?.targetsHit);
+  const durationSecondsRaw = body?.durationSeconds;
 
   if (!Number.isInteger(targetsHit) || targetsHit < 0 || targetsHit > 5) {
     return NextResponse.json(
@@ -62,8 +63,25 @@ export async function PATCH(request: Request, {params}: Props) {
   const distance =
     distanceRaw === "" || distanceRaw == null ? null : Number(distanceRaw);
 
-  if (distance !== null && Number.isNaN(distance)) {
+  if (distance !== null && !Number.isFinite(distance)) {
     return NextResponse.json({error: "Invalid distance"}, {status: 400});
+  }
+
+  const durationSeconds =
+    durationSecondsRaw === "" || durationSecondsRaw == null
+      ? null
+      : Number(durationSecondsRaw);
+
+  if (
+    durationSeconds !== null &&
+    (!Number.isInteger(durationSeconds) ||
+      durationSeconds < 0 ||
+      durationSeconds > 50)
+  ) {
+    return NextResponse.json(
+      {error: "durationSeconds must be an integer between 0 and 50"},
+      {status: 400}
+    );
   }
 
   const updatedShotSession = await prisma.shotSession.update({
@@ -71,6 +89,7 @@ export async function PATCH(request: Request, {params}: Props) {
     data: {
       distance,
       targetsHit,
+      durationSeconds,
     },
   });
 

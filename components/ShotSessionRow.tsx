@@ -10,12 +10,14 @@ type Props = {
   runnerId: string;
   distance: number | null;
   targetsHit: number;
+  durationSeconds: number | null;
   createdAt: string | Date;
   canManage: boolean;
   onUpdated: (session: {
     id: string;
     distance: number | null;
     targetsHit: number;
+    durationSeconds: number | null;
     createdAt: string | Date;
   }) => void;
   onDeleted: (sessionId: string) => void;
@@ -27,6 +29,7 @@ const ShotSessionRow: FC<Props> = ({
                                      sessionId,
                                      distance,
                                      targetsHit,
+                                     durationSeconds,
                                      createdAt,
                                      canManage,
                                      onUpdated,
@@ -38,9 +41,36 @@ const ShotSessionRow: FC<Props> = ({
     distance != null ? String(distance) : ""
   );
   const [targetsHitValue, setTargetsHitValue] = useState(targetsHit);
+  const [durationSecondsValue, setDurationSecondsValue] = useState(
+    durationSeconds != null ? String(durationSeconds) : ""
+  );
   const [loading, setLoading] = useState(false);
 
   async function handleSave() {
+    const parsedDistance =
+      distanceValue === "" ? null : Number(distanceValue);
+
+    const parsedDuration =
+      durationSecondsValue === "" ? null : Number(durationSecondsValue);
+
+    if (
+      parsedDistance !== null &&
+      (!Number.isFinite(parsedDistance) || parsedDistance < 0)
+    ) {
+      alert("Distance invalide");
+      return;
+    }
+
+    if (
+      parsedDuration !== null &&
+      (!Number.isInteger(parsedDuration) ||
+        parsedDuration < 0 ||
+        parsedDuration > 50)
+    ) {
+      alert("Le temps doit être un entier entre 0 et 50 secondes");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -50,8 +80,9 @@ const ShotSessionRow: FC<Props> = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          distance: distanceValue === "" ? null : Number(distanceValue),
+          distance: parsedDistance,
           targetsHit: targetsHitValue,
+          durationSeconds: parsedDuration,
         }),
       });
 
@@ -65,6 +96,7 @@ const ShotSessionRow: FC<Props> = ({
         id: updatedSession.id,
         distance: updatedSession.distance,
         targetsHit: updatedSession.targetsHit,
+        durationSeconds: updatedSession.durationSeconds,
         createdAt: updatedSession.createdAt,
       });
 
@@ -107,6 +139,7 @@ const ShotSessionRow: FC<Props> = ({
             <input
               type="number"
               step="0.1"
+              min="0"
               value={distanceValue}
               onChange={(e) => setDistanceValue(e.target.value)}
               placeholder="Distance"
@@ -128,6 +161,21 @@ const ShotSessionRow: FC<Props> = ({
                   {value}
                 </button>
               ))}
+            </div>
+
+            <input
+              type="number"
+              min="0"
+              max="50"
+              step="1"
+              value={durationSecondsValue}
+              onChange={(e) => setDurationSecondsValue(e.target.value)}
+              placeholder="Temps en secondes"
+              className="w-full rounded-xl border border-[var(--border)] bg-[var(--bg)] px-3 py-2 outline-none"
+            />
+
+            <div className="text-xs text-[var(--muted-foreground)]">
+              Laisser vide si non renseigné. Maximum 50 secondes.
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -152,8 +200,7 @@ const ShotSessionRow: FC<Props> = ({
 
   return (
     <>
-      <div
-        className="flex flex-col gap-2 rounded-2xl bg-[var(--card)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 rounded-2xl bg-[var(--card)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="font-medium">
           {distance != null ? `${distance} m` : "Distance non renseignée"}
         </div>
@@ -161,6 +208,12 @@ const ShotSessionRow: FC<Props> = ({
         <div className="text-[var(--muted-foreground)]">
           {targetsHit} cible{targetsHit > 1 ? "s" : ""} touchée
           {targetsHit > 1 ? "s" : ""}
+        </div>
+
+        <div className="text-[var(--muted-foreground)]">
+          {durationSeconds != null
+            ? `${durationSeconds} s`
+            : "Temps non renseigné"}
         </div>
 
         <div className="text-sm text-[var(--muted-foreground)]">
@@ -171,7 +224,7 @@ const ShotSessionRow: FC<Props> = ({
         </div>
 
         {canManage && (
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <BrutalButton
               label="Modifier"
               type="button"

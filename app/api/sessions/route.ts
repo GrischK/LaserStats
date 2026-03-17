@@ -62,8 +62,23 @@ export async function POST(request: Request) {
   const distance =
     distanceRaw === "" || distanceRaw == null ? null : Number(distanceRaw);
 
-  if (distance !== null && Number.isNaN(distance)) {
+  if (distance !== null && (!Number.isInteger(distance) || distance < 0)) {
     return NextResponse.json({ error: "Invalid distance" }, { status: 400 });
+  }
+
+  const durationSeconds =
+    body?.durationSeconds === null || body?.durationSeconds === ""
+      ? null
+      : Number(body?.durationSeconds);
+
+  if (
+    durationSeconds !== null &&
+    (!Number.isInteger(durationSeconds) || durationSeconds < 0 || durationSeconds > 50)
+  ) {
+    return NextResponse.json(
+      { error: "durationSeconds must be an integer between 0 and 50" },
+      { status: 400 }
+    );
   }
 
   const shotSession = await prisma.shotSession.create({
@@ -71,6 +86,7 @@ export async function POST(request: Request) {
       runnerId,
       distance,
       targetsHit,
+      durationSeconds,
       sessionDay: getStartOfDay(),
     },
   });

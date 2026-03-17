@@ -106,6 +106,7 @@ model ShotSession {
   distance   Float?
   targetsHit Int
   createdAt  DateTime  @default(now())
+  durationSeconds Int?
 
   runner Runner @relation(fields: [runnerId], references: [id], onDelete: Cascade)
 
