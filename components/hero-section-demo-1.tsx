@@ -12,7 +12,7 @@ export default function HeroSectionOne() {
   return (
     <div className="h-screen relative p-10 overflow-hidden">
       <div className="hero-bg m-10"></div>
-      <div className=" mx-auto flex w-full h-full flex-col items-center md:justify-between">
+      <div className="relative z-10 mx-auto flex h-full w-full flex-col items-center">
         <Navbar/>
         <motion.div
           initial={{
@@ -41,7 +41,7 @@ export default function HeroSectionOne() {
         <div className="absolute top-10 h-2px w-full bg-neutral-200/80 dark:bg-neutral-800/80 z-10">
           <div className="absolute mx-auto h-px w-full bg-neutral-400/50  "/>
         </div>
-        <div className="flex flex-col justify-between md:justify-baseline py-10 md:py-20 h-full md:h-fit">
+        <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4 py-16 md:py-20">
           <h1
             className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-neutral-800 md:text-4xl lg:text-7xl dark:text-slate-300">
             {"Suivez chaque tir, Analysez chaque progression."
