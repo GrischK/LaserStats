@@ -1,9 +1,8 @@
-import {redirect} from "next/navigation";
-import {prisma} from "@/lib/prisma";
-import {getAuthSession} from "@/lib/session";
-import SessionForm from "@/components/SessionForm";
-import RunnerHistoryAccordion from "@/components/RunnerHistoryAccordion";
-import type {Membership, RunnerWithSessions, UserWithMemberships} from "@/lib/types";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { getAuthSession } from "@/lib/session";
+import RunnerSessionsPanel from "@/components/runner/RunnerSessionsPanel";
+import type { Membership, RunnerWithSessions, UserWithMemberships } from "@/lib/types";
 
 type Props = {
   params: Promise<{ clubId: string; runnerId: string }>;
@@ -54,45 +53,45 @@ function groupSessionsByMonthAndDay(sessions: SessionItem[]): MonthGroup[] {
   }
 
   return Array.from(monthMap.entries())
-    .sort((a, b) => b[0].localeCompare(a[0]))
-    .map(([monthKey, dayMap]) => {
-      const [year, month] = monthKey.split("-").map(Number);
-      const monthDate = new Date(year, month - 1, 1);
+              .sort((a, b) => b[0].localeCompare(a[0]))
+              .map(([monthKey, dayMap]) => {
+                const [year, month] = monthKey.split("-").map(Number);
+                const monthDate = new Date(year, month - 1, 1);
 
-      const days: DayGroup[] = Array.from(dayMap.entries())
-        .sort((a, b) => b[0].localeCompare(a[0]))
-        .map(([dayKey, daySessions]) => {
-          const [dayYear, dayMonth, day] = dayKey.split("-").map(Number);
-          const dayDate = new Date(dayYear, dayMonth - 1, day);
+                const days: DayGroup[] = Array.from(dayMap.entries())
+                                              .sort((a, b) => b[0].localeCompare(a[0]))
+                                              .map(([dayKey, daySessions]) => {
+                                                const [dayYear, dayMonth, day] = dayKey.split("-").map(Number);
+                                                const dayDate = new Date(dayYear, dayMonth - 1, day);
 
-          return {
-            dayKey,
-            dayLabel: dayDate.toLocaleDateString("fr-FR", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }),
-            sessions: daySessions.sort(
-              (a, b) =>
-                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-            ),
-          };
-        });
+                                                return {
+                                                  dayKey,
+                                                  dayLabel: dayDate.toLocaleDateString("fr-FR", {
+                                                    weekday: "long",
+                                                    day: "numeric",
+                                                    month: "long",
+                                                    year: "numeric",
+                                                  }),
+                                                  sessions: daySessions.sort(
+                                                    (a, b) =>
+                                                      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                                                  ),
+                                                };
+                                              });
 
-      return {
-        monthKey,
-        monthLabel: monthDate.toLocaleDateString("fr-FR", {
-          month: "long",
-          year: "numeric",
-        }),
-        days,
-      };
-    });
+                return {
+                  monthKey,
+                  monthLabel: monthDate.toLocaleDateString("fr-FR", {
+                    month: "long",
+                    year: "numeric",
+                  }),
+                  days,
+                };
+              });
 }
 
-export default async function RunnerPage({params}: Props) {
-  const {clubId, runnerId} = await params;
+export default async function RunnerPage({ params }: Props) {
+  const { clubId, runnerId } = await params;
   const session = await getAuthSession();
 
   if (!session?.user?.email) {
@@ -100,8 +99,8 @@ export default async function RunnerPage({params}: Props) {
   }
 
   const user: UserWithMemberships | null = await prisma.user.findUnique({
-    where: {email: session.user.email},
-    include: {memberships: true},
+    where: { email: session.user.email },
+    include: { memberships: true },
   });
 
   if (!user) {
@@ -124,7 +123,7 @@ export default async function RunnerPage({params}: Props) {
     },
     include: {
       sessions: {
-        orderBy: {createdAt: "desc"},
+        orderBy: { createdAt: "desc" },
         take: 200,
       },
     },
@@ -156,25 +155,19 @@ export default async function RunnerPage({params}: Props) {
           </div>
 
           <div
-            className="inline-flex w-fit rounded-full bg-[var(--muted)] px-4 py-2 text-sm font-medium text-[var(--muted-foreground)]">
+            className="inline-flex w-fit rounded-full bg-[var(--muted)] px-4 py-2 text-sm font-medium text-[var(--muted-foreground)]"
+          >
             Rôle : {membership.role}
           </div>
         </div>
       </section>
 
-      {(membership.role === "ADMIN" || membership.role === "COACH") && (
-        <SessionForm clubId={clubId} runnerId={runner.id}/>
-      )}
-
-      <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)] sm:p-6">
-        <h2 className="mb-4 text-2xl font-bold tracking-tight">Historique</h2>
-        <RunnerHistoryAccordion
-          groupedSessions={groupedSessions}
-          clubId={clubId}
-          runnerId={runner.id}
-          canManage={membership.role === "ADMIN" || membership.role === "COACH"}
-        />
-      </section>
+      <RunnerSessionsPanel
+        clubId={clubId}
+        runnerId={runner.id}
+        groupedSessions={groupedSessions}
+        canManage={membership.role === "ADMIN" || membership.role === "COACH"}
+      />
     </main>
   );
 }

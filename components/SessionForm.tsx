@@ -6,12 +6,19 @@ import BrutalButton from "@/components/BrutalButton";
 type Props = {
   clubId: string;
   runnerId: string;
+  onCreated: (session: {
+    id: string;
+    createdAt: string | Date;
+    distance: number | null;
+    targetsHit: number;
+    durationSeconds: number | null;
+  }) => void;
 };
 
 const hitOptions = [0, 1, 2, 3, 4, 5];
 const distanceOptions = [200, 400, 600, 800];
 
-export default function SessionForm({ clubId, runnerId }: Props) {
+export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
   const [distance, setDistance] = useState("");
   const [targetsHit, setTargetsHit] = useState(0);
   const [durationSeconds, setDurationSeconds] = useState("");
@@ -53,7 +60,20 @@ export default function SessionForm({ clubId, runnerId }: Props) {
         throw new Error("Erreur lors de l’enregistrement");
       }
 
-      window.location.href = `/clubs/${clubId}/runners/${runnerId}`;
+      const createdSession = await response.json();
+
+      onCreated({
+        id: createdSession.id,
+        createdAt: createdSession.createdAt,
+        distance: createdSession.distance,
+        targetsHit: createdSession.targetsHit,
+        durationSeconds: createdSession.durationSeconds,
+      });
+
+      setDistance("");
+      setTargetsHit(0);
+      setDurationSeconds("");
+      setError("");
     } catch (err) {
       console.error(err);
       setError("Impossible d’enregistrer la session");
@@ -90,6 +110,7 @@ export default function SessionForm({ clubId, runnerId }: Props) {
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
             Optionnel
           </p>
+
           <div className="mt-3 flex flex-wrap gap-2">
             {distanceOptions.map((value) => {
               const active = distance === String(value);
@@ -152,18 +173,16 @@ export default function SessionForm({ clubId, runnerId }: Props) {
             Temps de la session
           </label>
 
-          <div className="grid grid-cols-2 gap-3">
-            <input
-              type="number"
-              min="0"
-              max="50"
-              step="1"
-              value={durationSeconds}
-              onChange={(e) => setDurationSeconds(e.target.value)}
-              placeholder="Ex: 35 secondes"
-              className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
-            />
-          </div>
+          <input
+            type="number"
+            min="0"
+            max="50"
+            step="1"
+            value={durationSeconds}
+            onChange={(e) => setDurationSeconds(e.target.value)}
+            placeholder="Ex: 35 secondes"
+            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
+          />
 
           <p className="mt-2 text-sm text-[var(--muted-foreground)]">
             Optionnel

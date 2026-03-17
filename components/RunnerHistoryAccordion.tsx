@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import ShotSessionRow from "@/components/ShotSessionRow";
 
 type SessionItem = {
@@ -28,6 +28,8 @@ type Props = {
   clubId: string;
   runnerId: string;
   canManage: boolean;
+  onSessionUpdated: (session: SessionItem) => void;
+  onSessionDeleted: (sessionId: string) => void;
 };
 
 export default function RunnerHistoryAccordion({
@@ -35,9 +37,9 @@ export default function RunnerHistoryAccordion({
                                                  clubId,
                                                  runnerId,
                                                  canManage,
+                                                 onSessionUpdated,
+                                                 onSessionDeleted,
                                                }: Props) {
-  const [history, setHistory] = useState<MonthGroup[]>(groupedSessions);
-
   const [openMonths, setOpenMonths] = useState<Record<string, boolean>>(
     Object.fromEntries(
       groupedSessions.map((month, index) => [month.monthKey, index === 0])
@@ -60,39 +62,7 @@ export default function RunnerHistoryAccordion({
     }));
   }
 
-  function handleSessionUpdated(updatedSession: SessionItem) {
-    setHistory((prev) =>
-      prev.map((month) => ({
-        ...month,
-        days: month.days.map((day) => ({
-          ...day,
-          sessions: day.sessions.map((session) =>
-            session.id === updatedSession.id ? updatedSession : session
-          ),
-        })),
-      }))
-    );
-  }
-
-  function handleSessionDeleted(sessionId: string) {
-    setHistory((prev) =>
-      prev
-        .map((month) => ({
-          ...month,
-          days: month.days
-                     .map((day) => ({
-                       ...day,
-                       sessions: day.sessions.filter((session) => session.id !== sessionId),
-                     }))
-                     .filter((day) => day.sessions.length > 0),
-        }))
-        .filter((month) => month.days.length > 0)
-    );
-  }
-
-  const visibleHistory = useMemo(() => history, [history]);
-
-  if (visibleHistory.length === 0) {
+  if (groupedSessions.length === 0) {
     return (
       <div className="rounded-2xl bg-[var(--muted)] px-4 py-4 text-sm text-[var(--muted-foreground)]">
         Aucune session enregistrée.
@@ -102,7 +72,7 @@ export default function RunnerHistoryAccordion({
 
   return (
     <div className="space-y-4">
-      {visibleHistory.map((month) => {
+      {groupedSessions.map((month) => {
         const isMonthOpen = !!openMonths[month.monthKey];
 
         return (
@@ -160,7 +130,7 @@ export default function RunnerHistoryAccordion({
                             <div className="font-semibold capitalize">{day.dayLabel}</div>
                             <div className="mt-1 text-sm text-[var(--muted-foreground)]">
                               {day.sessions.length} session{day.sessions.length > 1 ? "s" : ""} : moyenne{" "}
-                              {averageTargets.toFixed(1)} cibles
+                              {parseFloat(averageTargets.toFixed(2))} cibles
                               {averageDuration !== null
                                 ? ` . temps moyen ${averageDuration.toFixed(0)} s`
                                 : ""}
@@ -186,8 +156,8 @@ export default function RunnerHistoryAccordion({
                                   durationSeconds={item.durationSeconds}
                                   createdAt={item.createdAt}
                                   canManage={canManage}
-                                  onUpdated={handleSessionUpdated}
-                                  onDeleted={handleSessionDeleted}
+                                  onUpdated={onSessionUpdated}
+                                  onDeleted={onSessionDeleted}
                                 />
                               ))}
                             </div>
