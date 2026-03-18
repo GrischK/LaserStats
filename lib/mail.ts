@@ -1,9 +1,7 @@
-import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
-import type { ClubRole } from "@/lib/types";
+import {Resend} from "resend";
+import type {ClubRole} from "@/lib/types";
 
-const mailersend = new MailerSend({
-  apiKey: process.env.MAILERSEND_API_KEY!,
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 function roleLabel(role: ClubRole) {
   if (role === "ADMIN") return "Admin";
@@ -17,30 +15,38 @@ export async function sendClubInvitationEmail(params: {
   role: ClubRole;
   token: string;
 }) {
-  try {
-    const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite?token=${params.token}`;
-
-    const sentFrom = new Sender(process.env.MAIL_FROM!, "LaserStats");
-    const recipients = [new Recipient(params.to)];
-
-    const emailParams = new EmailParams()
-      .setFrom(sentFrom)
-      .setTo(recipients)
-      .setSubject(`Invitation à rejoindre ${params.clubName}`)
-      .setHtml(`
-        <h2>Invitation à rejoindre ${params.clubName}</h2>
-        <p>Rôle : ${roleLabel(params.role)}</p>
-        <p><a href="${inviteUrl}">Rejoindre le club</a></p>
-      `)
-      .setText(`Invitation à rejoindre ${params.clubName} : ${inviteUrl}`);
-
-    const response = await mailersend.email.send(emailParams);
-
-    console.log("MAILERSEND OK:", response);
-
-    return response;
-  } catch (error) {
-    console.error("MAILERSEND ERROR:", error);
-    throw error;
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY manquant");
   }
+
+  if (!process.env.MAIL_FROM) {
+    throw new Error("MAIL_FROM manquant");
+  }
+
+  if (!process.env.NEXT_PUBLIC_APP_URL) {
+    throw new Error("NEXT_PUBLIC_APP_URL manquant");
+  }
+
+  const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite?token=${params.token}`;
+
+  const response = await resend.emails.send({
+    from: process.env.MAIL_FROM,
+    to: params.to,
+    subject: `Invitation à rejoindre ${params.clubName}`,
+    html: `
+      <h2>Invitation à rejoindre ${params.clubName}</h2>
+      <p>Rôle : ${roleLabel(params.role)}</p>
+      <p><a href="${inviteUrl}">Rejoindre le club</a></p>
+    `,
+    text: `Invitation à rejoindre ${params.clubName} (${roleLabel(params.role)}) : ${inviteUrl}`,
+  });
+
+  if (response.error) {
+    console.error("RESEND ERROR:", response.error);
+    throw new Error(response.error.message);
+  }
+
+  console.log("RESEND OK:", response.data);
+
+  return response.data;
 }

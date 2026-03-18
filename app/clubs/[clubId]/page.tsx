@@ -3,13 +3,11 @@ import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import BrutalButton from "@/components/BrutalButton";
-import type {Membership, UserWithMemberships} from "@/lib/types";
 import RunnerLink from "@/components/RunnerLink";
 
 type Props = {
   params: Promise<{ clubId: string }>;
 };
-
 export default async function ClubPage({params}: Props) {
   const {clubId} = await params;
   const session = await getAuthSession();
@@ -18,20 +16,14 @@ export default async function ClubPage({params}: Props) {
     redirect("/login");
   }
 
-  const user: UserWithMemberships | null = await prisma.user.findUnique({
-    where: {email: session.user.email},
-    include: {
-      memberships: true,
+  const membership = await prisma.membership.findUnique({
+    where: {
+      userId_clubId: {
+        userId: session.user.id,
+        clubId,
+      },
     },
   });
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const membership = user.memberships.find(
-    (m: Membership) => m.clubId === clubId
-  );
 
   if (!membership) {
     redirect("/dashboard");
@@ -52,7 +44,7 @@ export default async function ClubPage({params}: Props) {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-3xl flex-col gap-6 p-6">
+    <>
       {(membership.role === "ADMIN" || membership.role === "COACH") && (
         <div className="flex flex-col items-center justify-center gap-6 md:flex-row">
           <Link href={`/clubs/${clubId}/associations`}>
@@ -97,6 +89,6 @@ export default async function ClubPage({params}: Props) {
           </Link>
         )}
       </div>
-    </main>
+    </>
   );
 }
