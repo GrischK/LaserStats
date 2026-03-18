@@ -2,28 +2,23 @@
 
 import {signIn} from "next-auth/react";
 import {useState} from "react";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useRouter} from "next/navigation";
 import BrutalButton from "@/components/BrutalButton";
 import RegisterForm from "@/components/RegisterForm";
-import {Eye, EyeOff} from "lucide-react";
 
 type Props = {
   callbackUrl?: string;
 };
 
-export default function LoginPageContent({callbackUrl: callbackUrlProp}: Props) {
-  const searchParams = useSearchParams();
+export default function LoginPageContent({
+                                           callbackUrl = "/dashboard",
+                                         }: Props) {
   const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-
-  const callbackUrl =
-    callbackUrlProp ||
-    searchParams.get("callbackUrl") ||
-    "/dashboard";
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -77,15 +72,15 @@ export default function LoginPageContent({callbackUrl: callbackUrlProp}: Props) 
               placeholder="Mot de passe"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border px-3 py-2 pr-10"
+              className="w-full rounded-xl border px-3 py-2 pr-12"
             />
 
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black dark:hover:text-white"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500"
             >
-              {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+              {showPassword ? "Masquer" : "Voir"}
             </button>
           </div>
 
