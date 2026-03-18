@@ -1,14 +1,7 @@
 "use client";
-import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "motion/react";
-import React, {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import {cn} from "@/lib/utils";
+import {AnimatePresence, motion} from "motion/react";
+import React, {createContext, ReactNode, useContext, useEffect, useRef, useState,} from "react";
 
 interface ModalContextType {
   open: boolean;
@@ -17,11 +10,17 @@ interface ModalContextType {
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
-export const ModalProvider = ({ children }: { children: ReactNode }) => {
-  const [open, setOpen] = useState(false);
+export const ModalProvider = ({
+                                children,
+                                defaultOpen = false,
+                              }: {
+  children: ReactNode;
+  defaultOpen?: boolean;
+}) => {
+  const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <ModalContext.Provider value={{ open, setOpen }}>
+    <ModalContext.Provider value={{open, setOpen}}>
       {children}
     </ModalContext.Provider>
   );
@@ -35,8 +34,14 @@ export const useModal = () => {
   return context;
 };
 
-export function Modal({ children }: { children: ReactNode }) {
-  return <ModalProvider>{children}</ModalProvider>;
+export function Modal({
+                        children,
+                        defaultOpen = false,
+                      }: {
+  children: ReactNode;
+  defaultOpen?: boolean;
+}) {
+  return <ModalProvider defaultOpen={defaultOpen}>{children}</ModalProvider>;
 }
 
 export const ModalTrigger = ({
@@ -46,7 +51,7 @@ export const ModalTrigger = ({
   children: ReactNode;
   className?: string;
 }) => {
-  const { setOpen } = useModal();
+  const {setOpen} = useModal();
 
   return (
     <div
@@ -68,7 +73,7 @@ export const ModalBody = ({
   children: ReactNode;
   className?: string;
 }) => {
-  const { open, setOpen } = useModal();
+  const {open, setOpen} = useModal();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
@@ -85,12 +90,12 @@ export const ModalBody = ({
     <AnimatePresence>
       {open && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, backdropFilter: "blur(10px)" }}
-          exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+          initial={{opacity: 0}}
+          animate={{opacity: 1, backdropFilter: "blur(10px)"}}
+          exit={{opacity: 0, backdropFilter: "blur(0px)"}}
           className="fixed inset-0 z-50 flex h-full w-full items-center justify-center [perspective:800px] [transform-style:preserve-3d]"
         >
-          <Overlay />
+          <Overlay/>
 
           <motion.div
             ref={modalRef}
@@ -121,7 +126,7 @@ export const ModalBody = ({
               damping: 15,
             }}
           >
-            <CloseIcon />
+            <CloseIcon/>
             {children}
           </motion.div>
         </motion.div>
@@ -163,19 +168,19 @@ export const ModalFooter = ({
   );
 };
 
-const Overlay = ({ className }: { className?: string }) => {
+const Overlay = ({className}: { className?: string }) => {
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1, backdropFilter: "blur(10px)" }}
-      exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+      initial={{opacity: 0}}
+      animate={{opacity: 1, backdropFilter: "blur(10px)"}}
+      exit={{opacity: 0, backdropFilter: "blur(0px)"}}
       className={cn("fixed inset-0 z-50 h-full w-full bg-opacity-50", className)}
     />
   );
 };
 
 const CloseIcon = () => {
-  const { setOpen } = useModal();
+  const {setOpen} = useModal();
 
   return (
     <button
@@ -194,9 +199,9 @@ const CloseIcon = () => {
         strokeLinejoin="round"
         className="h-4 w-4 text-black transition duration-200 group-hover:rotate-3 group-hover:scale-125 dark:text-white"
       >
-        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-        <path d="M18 6l-12 12" />
-        <path d="M6 6l12 12" />
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+        <path d="M18 6l-12 12"/>
+        <path d="M6 6l12 12"/>
       </svg>
     </button>
   );

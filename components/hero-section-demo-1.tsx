@@ -11,7 +11,7 @@ import {getThemeServerSnapshot, getThemeSnapshot, subscribeTheme} from "@/lib/th
 export default function HeroSectionOne() {
   return (
     <div className="h-screen relative p-10 overflow-hidden">
-      <div className="hero-bg m-10"></div>
+      <div className="hero-bg hero_one m-10"></div>
       <div className="relative z-10 mx-auto flex h-full w-full flex-col items-center">
         <Navbar/>
         <motion.div

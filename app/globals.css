@@ -182,10 +182,6 @@ a {
   position: absolute;
   top: 0;
   left: 0;
-
-  background-image:
-    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
-    url("/hero-1.avif");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -195,6 +191,18 @@ a {
   transform: scale(1.05);
 
   animation: heroFade 1.6s ease forwards;
+}
+
+.hero_one {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+    url("/hero-1.avif");
+}
+
+.hero_two {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.45)),
+    url("/hero-2.avif");
 }
 
 @keyframes heroFade {

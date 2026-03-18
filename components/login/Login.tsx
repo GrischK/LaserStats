@@ -1,10 +1,14 @@
-import { Suspense } from "react";
+import {Suspense} from "react";
 import LoginPageContent from "./LoginPageContent";
 
-export default function LoginPage() {
+type Props = {
+  callbackUrl?: string;
+};
+
+export default function LoginPage({callbackUrl}: Props) {
   return (
     <Suspense fallback={<div>Chargement...</div>}>
-      <LoginPageContent />
+      <LoginPageContent callbackUrl={callbackUrl}/>
     </Suspense>
   );
 }

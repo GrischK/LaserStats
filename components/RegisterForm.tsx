@@ -3,6 +3,7 @@
 import {useState} from "react";
 import {signIn} from "next-auth/react";
 import BrutalButton from "@/components/BrutalButton";
+import {Eye, EyeOff} from "lucide-react";
 
 type Props = {
   callbackUrl: string;
@@ -14,6 +15,7 @@ export default function RegisterForm({callbackUrl}: Props) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -86,14 +88,24 @@ export default function RegisterForm({callbackUrl}: Props) {
 
         <div className="space-y-1">
           <label className="text-sm font-medium">Mot de passe</label>
-          <input
-            type="password"
-            className="w-full rounded-xl border px-3 py-2"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            required
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-xl border px-3 py-2 pr-10"
+              required
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black dark:hover:text-white"
+            >
+              {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+            </button>
+          </div>
         </div>
 
         {error ? <p className="text-sm text-red-600">{error}</p> : null}

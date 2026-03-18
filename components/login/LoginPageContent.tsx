@@ -5,11 +5,21 @@ import {useState} from "react";
 import {useRouter, useSearchParams} from "next/navigation";
 import BrutalButton from "@/components/BrutalButton";
 import RegisterForm from "@/components/RegisterForm";
+import {Eye, EyeOff} from "lucide-react";
 
-export default function LoginPageContent() {
+type Props = {
+  callbackUrl?: string;
+};
+
+export default function LoginPageContent({callbackUrl: callbackUrlProp}: Props) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const [showPassword, setShowPassword] = useState(false);
+
+  const callbackUrl =
+    callbackUrlProp ||
+    searchParams.get("callbackUrl") ||
+    "/dashboard";
 
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
@@ -45,7 +55,7 @@ export default function LoginPageContent() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-md items-center p-6">
+    <div className="mx-auto flex w-full max-w-md items-center p-6">
       {mode === "login" ? (
         <form
           onSubmit={handleSubmit}
@@ -61,13 +71,23 @@ export default function LoginPageContent() {
             className="rounded-xl border px-3 py-2"
           />
 
-          <input
-            type="password"
-            placeholder="Mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="rounded-xl border px-3 py-2"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-xl border px-3 py-2 pr-10"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black dark:hover:text-white"
+            >
+              {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+            </button>
+          </div>
 
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
@@ -102,6 +122,6 @@ export default function LoginPageContent() {
           </button>
         </div>
       )}
-    </main>
+    </div>
   );
 }
