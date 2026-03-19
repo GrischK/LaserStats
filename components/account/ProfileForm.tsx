@@ -1,6 +1,7 @@
 "use client";
 
-import {useState} from "react";
+import { useState } from "react";
+import { upload } from "@vercel/blob/client";
 import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
@@ -17,9 +18,32 @@ export default function ProfileForm({
   const [name, setName] = useState(initialName);
   const [email, setEmail] = useState(initialEmail);
   const [image, setImage] = useState(initialImage);
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  async function handleUploadAvatar() {
+    if (!file) return image;
+
+    setUploading(true);
+
+    try {
+      const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const pathname = `avatars/avatar-${Date.now()}.${extension}`;
+
+      const blob = await upload(pathname, file, {
+        access: "public",
+        handleUploadUrl: "/api/account/avatar",
+      });
+
+      setImage(blob.url);
+      return blob.url;
+    } finally {
+      setUploading(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,6 +52,8 @@ export default function ProfileForm({
     setError("");
 
     try {
+      const uploadedImageUrl = await handleUploadAvatar();
+
       const res = await fetch("/api/account/profile", {
         method: "PATCH",
         headers: {
@@ -36,7 +62,7 @@ export default function ProfileForm({
         body: JSON.stringify({
           name,
           email,
-          image,
+          image: uploadedImageUrl,
         }),
       });
 
@@ -79,13 +105,21 @@ export default function ProfileForm({
           />
         </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Photo de profil (URL)</label>
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Photo de profil</label>
+
+          {image ? (
+            <img
+              src={image}
+              alt="Avatar"
+              className="h-20 w-20 rounded-full object-cover border"
+            />
+          ) : null}
+
           <input
-            type="text"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            placeholder="https://..."
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             className="w-full rounded-2xl border px-3 py-2"
           />
         </div>
@@ -95,8 +129,8 @@ export default function ProfileForm({
 
         <BrutalButton
           type="submit"
-          disabled={loading}
-          label={loading ? "Enregistrement..." : "Enregistrer"}
+          disabled={loading || uploading}
+          label={loading || uploading ? "Enregistrement..." : "Enregistrer"}
         />
       </form>
     </section>
