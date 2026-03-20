@@ -54,12 +54,16 @@ export default async function ClubPage({params}: Props) {
     <>
       {(membership.role === "ADMIN" || membership.role === "COACH") && (
         <div className="flex flex-col items-center justify-center gap-6 md:flex-row">
+          <Link href={`/clubs/${clubId}/settings`}>
+            <BrutalButton label="Inviter un membre"/>
+          </Link>
+
           <Link href={`/clubs/${clubId}/associations`}>
             <BrutalButton label="Gérer les associations"/>
           </Link>
 
-          <Link href={`/clubs/${clubId}/settings`}>
-            <BrutalButton label="Inviter un coureur"/>
+          <Link href={`/clubs/${clubId}/manage-runners`}>
+            <BrutalButton label="Gérer les coureurs"/>
           </Link>
         </div>
       )}
