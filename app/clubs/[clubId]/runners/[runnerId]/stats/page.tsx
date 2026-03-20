@@ -75,56 +75,12 @@ function getLastMonthsLabels(monthsBack: number) {
   return labels;
 }
 
-function computeStreaks(dayKeysAsc: string[]) {
-  if (dayKeysAsc.length === 0) {
-    return { current: 0, longest: 0 };
-  }
-
-  let longest = 1;
-  let currentRun = 1;
-
-  for (let i = 1; i < dayKeysAsc.length; i += 1) {
-    const prev = new Date(`${dayKeysAsc[i - 1]}T00:00:00`);
-    const curr = new Date(`${dayKeysAsc[i]}T00:00:00`);
-    const diffDays = Math.round(
-      (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24)
-    );
-
-    if (diffDays === 1) {
-      currentRun += 1;
-      if (currentRun > longest) longest = currentRun;
-    } else {
-      currentRun = 1;
-    }
-  }
-
-  const todayKey = getSessionDayKey(new Date());
-  const yesterdayDate = new Date();
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-  const yesterdayKey = getSessionDayKey(yesterdayDate);
-
-  let current = 0;
-  const lastKey = dayKeysAsc[dayKeysAsc.length - 1];
-
-  if (lastKey === todayKey || lastKey === yesterdayKey) {
-    current = 1;
-
-    for (let i = dayKeysAsc.length - 1; i > 0; i -= 1) {
-      const curr = new Date(`${dayKeysAsc[i]}T00:00:00`);
-      const prev = new Date(`${dayKeysAsc[i - 1]}T00:00:00`);
-      const diffDays = Math.round(
-        (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24)
-      );
-
-      if (diffDays === 1) {
-        current += 1;
-      } else {
-        break;
-      }
-    }
-  }
-
-  return { current, longest };
+function getWeekStartKey(date: Date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - day);
+  return getSessionDayKey(d);
 }
 
 export default async function RunnerStatsPage({ params }: Props) {
@@ -225,7 +181,6 @@ export default async function RunnerStatsPage({ params }: Props) {
   const dayKeys = Array.from(
     new Set(sessions.map((item) => getSessionDayKey(new Date(item.sessionDay))))
   ).sort();
-  const { current: currentStreak, longest: longestStreak } = computeStreaks(dayKeys);
 
   const weekdayLabels = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
   const weekdayCounts = weekdayLabels.map((label, dayIndex) => ({
@@ -233,6 +188,56 @@ export default async function RunnerStatsPage({ params }: Props) {
     count: sessions.filter((item) => getWeekday(new Date(item.sessionDay)) === dayIndex).length,
   }));
   const maxWeekdayCount = Math.max(1, ...weekdayCounts.map((item) => item.count), 1);
+  const favoriteWeekday = [...weekdayCounts].sort((a, b) => b.count - a.count)[0];
+
+  const now = new Date();
+  const currentWeekStart = new Date(now);
+  currentWeekStart.setHours(0, 0, 0, 0);
+  currentWeekStart.setDate(currentWeekStart.getDate() - ((currentWeekStart.getDay() + 6) % 7));
+
+  const last12WeekKeys = Array.from({ length: 12 }, (_, index) => {
+    const d = new Date(currentWeekStart);
+    d.setDate(d.getDate() - index * 7);
+    return getWeekStartKey(d);
+  });
+
+  const weekActivityMap = new Map<string, number>();
+  for (const item of sessions) {
+    const key = getWeekStartKey(new Date(item.sessionDay));
+    weekActivityMap.set(key, (weekActivityMap.get(key) ?? 0) + 1);
+  }
+
+  const activeWeeksCount = last12WeekKeys.filter((key) => (weekActivityMap.get(key) ?? 0) > 0).length;
+  const weeklyActiveRate = activeWeeksCount / 12;
+
+  const sessionsLast12Weeks = last12WeekKeys.reduce(
+    (sum, key) => sum + (weekActivityMap.get(key) ?? 0),
+    0
+  );
+  const weeklyFrequency = sessionsLast12Weeks / 12;
+
+  const last4WeekKeys = Array.from({ length: 4 }, (_, index) => {
+    const d = new Date(currentWeekStart);
+    d.setDate(d.getDate() - index * 7);
+    return getWeekStartKey(d);
+  });
+  const activeWeeksLast4 = last4WeekKeys.filter(
+    (key) => (weekActivityMap.get(key) ?? 0) > 0
+  ).length;
+  const weeklyGoal4 = 4;
+
+  const sortedByDay = [...sessions].sort(
+    (a, b) => new Date(a.sessionDay).getTime() - new Date(b.sessionDay).getTime()
+  );
+  const dayGaps: number[] = [];
+  for (let i = 1; i < sortedByDay.length; i += 1) {
+    const prev = new Date(sortedByDay[i - 1].sessionDay);
+    const curr = new Date(sortedByDay[i].sessionDay);
+    const gapDays = Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
+    dayGaps.push(gapDays);
+  }
+  const avgGapDays = avg(dayGaps);
+  const maxGapDays = dayGaps.length > 0 ? Math.max(...dayGaps) : null;
 
   const monthLabels = getLastMonthsLabels(6);
   const monthMap = new Map<string, RunnerSessionItem[]>();
@@ -272,7 +277,6 @@ export default async function RunnerStatsPage({ params }: Props) {
     })
     .filter((item): item is { date: Date; avgTargets: number } => item !== null);
 
-  const now = new Date();
   const last30Start = new Date(now);
   last30Start.setDate(now.getDate() - 30);
   const prev30Start = new Date(now);
@@ -373,9 +377,27 @@ export default async function RunnerStatsPage({ params }: Props) {
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <h2 className="text-lg font-semibold">Régularité</h2>
           <div className="mt-3 space-y-2 text-sm">
-            <p>Streak actuel: <strong>{currentStreak} jour(s)</strong></p>
-            <p>Meilleur streak: <strong>{longestStreak} jour(s)</strong></p>
-            <p>Jours actifs: <strong>{dayKeys.length}</strong></p>
+            <p>
+              Semaines actives (12 sem.):{" "}
+              <strong>{activeWeeksCount}/12 ({toPercent(weeklyActiveRate, 0)})</strong>
+            </p>
+            <p>
+              Fréquence moyenne: <strong>{formatNumber(weeklyFrequency, 2)} session/sem.</strong>
+            </p>
+            <p>
+              Gap moyen entre sessions: <strong>{avgGapDays === null ? "N/A" : `${formatNumber(avgGapDays, 1)} jours`}</strong>
+            </p>
+            <p>
+              Plus long gap: <strong>{maxGapDays === null ? "N/A" : `${maxGapDays} jours`}</strong>
+            </p>
+            <p>
+              Assiduité 4 sem.: <strong>{activeWeeksLast4}/{weeklyGoal4}</strong>
+            </p>
+            <p>
+              Jour le plus fréquent:{" "}
+              <strong>{favoriteWeekday?.count ? `${favoriteWeekday.label} (${favoriteWeekday.count} sessions)` : "N/A"}</strong>
+            </p>
+            <p>Jours actifs (historique): <strong>{dayKeys.length}</strong></p>
           </div>
         </div>
       </section>
