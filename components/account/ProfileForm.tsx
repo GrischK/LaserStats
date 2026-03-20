@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { upload } from "@vercel/blob/client";
+import { useEffect, useState } from "react";
 import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
@@ -9,6 +8,10 @@ type Props = {
   initialEmail: string;
   initialImage: string;
 };
+
+const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
+const MIN_AVATAR_SIZE = 128;
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export default function ProfileForm({
                                       initialName,
@@ -19,10 +22,94 @@ export default function ProfileForm({
   const [email, setEmail] = useState(initialEmail);
   const [image, setImage] = useState(initialImage);
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  async function getImageDimensions(selectedFile: File) {
+    const objectUrl = URL.createObjectURL(selectedFile);
+
+    try {
+      const dimensions = await new Promise<{ width: number; height: number }>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          resolve({ width: img.width, height: img.height });
+        };
+        img.onerror = () => {
+          reject(new Error("Impossible de lire les dimensions de l'image"));
+        };
+        img.src = objectUrl;
+      });
+
+      return dimensions;
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+
+  function clearLocalPreview() {
+    setPreviewUrl((currentPreview) => {
+      if (currentPreview?.startsWith("blob:")) {
+        URL.revokeObjectURL(currentPreview);
+      }
+      return null;
+    });
+  }
+
+  async function validateFile(selectedFile: File) {
+    if (!ALLOWED_TYPES.includes(selectedFile.type)) {
+      throw new Error("Format invalide. Formats acceptés: JPG, PNG ou WebP");
+    }
+
+    if (selectedFile.size > MAX_AVATAR_BYTES) {
+      throw new Error("Le fichier est trop lourd (max 2 Mo)");
+    }
+
+    const { width, height } = await getImageDimensions(selectedFile);
+
+    if (
+      width < MIN_AVATAR_SIZE ||
+      height < MIN_AVATAR_SIZE
+    ) {
+      throw new Error("Image trop petite. Minimum 128px x 128px");
+    }
+  }
+
+  async function handleFileChange(selectedFile: File | null) {
+    setSuccess("");
+    setError("");
+
+    if (!selectedFile) {
+      setFile(null);
+      clearLocalPreview();
+      return;
+    }
+
+    try {
+      await validateFile(selectedFile);
+      setFile(selectedFile);
+      setPreviewUrl((currentPreview) => {
+        if (currentPreview?.startsWith("blob:")) {
+          URL.revokeObjectURL(currentPreview);
+        }
+        return URL.createObjectURL(selectedFile);
+      });
+    } catch (err) {
+      setFile(null);
+      clearLocalPreview();
+      setError(err instanceof Error ? err.message : "Image invalide");
+    }
+  }
 
   async function handleUploadAvatar() {
 
@@ -33,20 +120,28 @@ export default function ProfileForm({
     setUploading(true);
 
     try {
-      const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const pathname = `avatars/avatar-${Date.now()}.${extension}`;
+      const formData = new FormData();
+      formData.append("avatar", file);
 
-      const blob = await upload(pathname, file, {
-        access: "public",
-        handleUploadUrl: "/api/account/avatar",
+      const res = await fetch("/api/account/avatar", {
+        method: "POST",
+        body: formData,
       });
 
-      if (!blob?.url) {
-        throw new Error("Aucune URL renvoyée par Vercel Blob");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Upload impossible");
       }
 
-      setImage(blob.url);
-      return blob.url;
+      if (typeof data?.url !== "string" || !data.url) {
+        throw new Error("Aucune URL renvoyée par le serveur");
+      }
+
+      clearLocalPreview();
+      setFile(null);
+      setImage(data.url);
+      return data.url;
     } catch (error) {
       console.error("upload error =", error);
       throw error;
@@ -106,6 +201,7 @@ export default function ProfileForm({
         throw new Error(data?.message || "Impossible de supprimer l'image");
       }
 
+      clearLocalPreview();
       setImage("");
       setFile(null);
       setSuccess("Photo de profil supprimée");
@@ -144,10 +240,10 @@ export default function ProfileForm({
         <div className="space-y-2">
           <label className="text-sm font-medium">Photo de profil</label>
 
-          {image ? (
+          {previewUrl || image ? (
             <div>
               <img
-                src={image}
+                src={previewUrl ?? image}
                 alt="Avatar"
                 className="h-20 w-20 rounded-full object-cover border"
               />
@@ -166,9 +262,12 @@ export default function ProfileForm({
             accept="image/png,image/jpeg,image/webp"
             onChange={(e) => {
               const selectedFile = e.currentTarget.files?.[0] ?? null;
-              setFile(selectedFile);
+              void handleFileChange(selectedFile);
             }}
           />
+          <p className="text-xs text-gray-600">
+            JPG/PNG/WebP, max 2 Mo, minimum 128px x 128px.
+          </p>
         </div>
 
         {success ? <p className="text-sm text-green-600">{success}</p> : null}
