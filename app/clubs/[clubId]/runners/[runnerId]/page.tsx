@@ -168,11 +168,11 @@ export default async function RunnerPage({ params }: Props) {
             </div>
           </div>
 
-          <div
-            className="inline-flex w-fit rounded-full bg-[var(--muted)] px-4 py-2 text-sm font-medium text-[var(--muted-foreground)]"
-          >
-            Rôle : {membership.role}
-          </div>
+          {/*<div*/}
+          {/*  className="inline-flex w-fit rounded-full bg-[var(--muted)] px-4 py-2 text-sm font-medium text-[var(--muted-foreground)]"*/}
+          {/*>*/}
+          {/*  Rôle : {membership.role}*/}
+          {/*</div>*/}
         </div>
       </section>
 

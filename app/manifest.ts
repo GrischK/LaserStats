@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Laser-stats",
-    short_name: "LaserStats",
+    short_name: "Laser-stats",
     description: "Suivi des tirs Laser Run",
     start_url: "/dashboard",
     scope: "/",
