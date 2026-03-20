@@ -48,7 +48,7 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const outputBuffer = await sharp(inputBuffer)
       .rotate()
-      .resize(512, 512, { fit: "cover", position: "attention" })
+      .resize(512, 512, { fit: "cover", position: "center" })
       .webp({ quality: 82, effort: 4 })
       .toBuffer();
 
