@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getAuthSession } from "@/lib/session";
 import RunnerSessionsPanel from "@/components/runner/RunnerSessionsPanel";
 import type { Membership, UserWithMemberships } from "@/lib/types";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   params: Promise<{ clubId: string; runnerId: string }>;
@@ -149,7 +151,7 @@ export default async function RunnerPage({ params }: Props) {
   );
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-6">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6">
       <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -168,11 +170,21 @@ export default async function RunnerPage({ params }: Props) {
             </div>
           </div>
 
-          {/*<div*/}
-          {/*  className="inline-flex w-fit rounded-full bg-[var(--muted)] px-4 py-2 text-sm font-medium text-[var(--muted-foreground)]"*/}
-          {/*>*/}
-          {/*  Rôle : {membership.role}*/}
-          {/*</div>*/}
+          <div className="flex flex-wrap items-center gap-2">
+            {/*<div*/}
+            {/*  className="inline-flex w-fit rounded-full bg-[var(--muted)] px-4 py-2 text-sm font-medium text-[var(--muted-foreground)]"*/}
+            {/*>*/}
+            {/*  Rôle : {membership.role}*/}
+            {/*</div>*/}
+            <Link
+              href={`/clubs/${clubId}/runners/${runner.id}/stats`}
+            >
+              <BrutalButton
+                type="button"
+                label={"Voir les stats"}
+              />
+            </Link>
+          </div>
         </div>
       </section>
 

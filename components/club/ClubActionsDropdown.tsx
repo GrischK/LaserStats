@@ -33,6 +33,7 @@ export default function ClubActionsDropdown({ clubId }: Props) {
         <Link
           href={`/clubs/${clubId}/settings`}
           onClick={() => setOpen(false)}
+          className="rounded-xl border px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
         >
           <BrutalButton
             type="button"
