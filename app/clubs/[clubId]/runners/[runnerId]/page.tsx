@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getAuthSession } from "@/lib/session";
 import RunnerSessionsPanel from "@/components/runner/RunnerSessionsPanel";
-import type { Membership, RunnerWithSessions, UserWithMemberships } from "@/lib/types";
+import type { Membership, UserWithMemberships } from "@/lib/types";
 
 type Props = {
   params: Promise<{ clubId: string; runnerId: string }>;
@@ -115,13 +115,18 @@ export default async function RunnerPage({ params }: Props) {
     redirect("/dashboard");
   }
 
-  const runner: RunnerWithSessions | null = await prisma.runner.findFirst({
+  const runner = await prisma.runner.findFirst({
     where: {
       id: runnerId,
       clubId,
       active: true,
     },
     include: {
+      user: {
+        select: {
+          image: true,
+        },
+      },
       sessions: {
         orderBy: { createdAt: "desc" },
         take: 200,
@@ -134,7 +139,7 @@ export default async function RunnerPage({ params }: Props) {
   }
 
   const groupedSessions = groupSessionsByMonthAndDay(
-    runner.sessions.map((item: RunnerWithSessions["sessions"][number]) => ({
+    runner.sessions.map((item) => ({
       id: item.id,
       createdAt: item.createdAt,
       distance: item.distance,
@@ -151,7 +156,16 @@ export default async function RunnerPage({ params }: Props) {
             <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
               Coureur
             </p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight">{runner.name}</h1>
+            <div className="mt-1 flex items-center gap-3">
+              {runner.user?.image ? (
+                <img
+                  src={runner.user.image}
+                  alt={`Avatar de ${runner.name}`}
+                  className="h-10 w-10 rounded-full border object-cover"
+                />
+              ) : null}
+              <h1 className="text-3xl font-bold tracking-tight">{runner.name}</h1>
+            </div>
           </div>
 
           <div

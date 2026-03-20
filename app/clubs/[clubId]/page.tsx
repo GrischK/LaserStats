@@ -34,6 +34,13 @@ export default async function ClubPage({params}: Props) {
     include: {
       runners: {
         where: {active: true},
+        include: {
+          user: {
+            select: {
+              image: true,
+            },
+          },
+        },
         orderBy: {name: "asc"},
       },
     },
@@ -76,6 +83,7 @@ export default async function ClubPage({params}: Props) {
                 key={runner.id}
                 href={`/clubs/${clubId}/runners/${runner.id}`}
                 name={runner.name}
+                avatarUrl={runner.user?.image ?? null}
               />
             ))}
           </div>
