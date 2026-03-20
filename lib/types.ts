@@ -123,3 +123,15 @@ export type InvitationDetails = {
     email: string;
   };
 };
+
+export type ClubMemberItem = {
+  userId: string;
+  role: ClubRole;
+  createdAt: Date;
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+    image: string | null;
+  };
+};

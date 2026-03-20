@@ -3,6 +3,8 @@ import {getAuthSession} from "@/lib/session";
 import {getInvitableRoles} from "@/lib/invitations/permissions";
 import {listClubInvitations} from "@/lib/invitations/list-club-invitations";
 import ClubInvitationsSection from "@/components/club/ClubInvitationsSection";
+import ClubMembersSection from "@/components/club/ClubMembersSection";
+import type { ClubMemberItem } from "@/lib/types";
 
 type Props = {
   params: Promise<{
@@ -33,6 +35,7 @@ export default async function ClubSettingsPage({params}: Props) {
   }
 
   const availableRoles = getInvitableRoles(membership.role);
+  const canManageMembers = membership.role === "ADMIN";
 
   const initialInvitations =
     availableRoles.length > 0
@@ -41,6 +44,29 @@ export default async function ClubSettingsPage({params}: Props) {
         currentUserId: session.user.id,
       })
       : [];
+
+  const initialMembers: ClubMemberItem[] = canManageMembers
+    ? await prisma.membership.findMany({
+      where: { clubId },
+      orderBy: [
+        { role: "asc" },
+        { createdAt: "asc" },
+      ],
+      select: {
+        userId: true,
+        role: true,
+        createdAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+      },
+    })
+    : [];
 
   return (
     <div className="space-y-6">
@@ -59,6 +85,15 @@ export default async function ClubSettingsPage({params}: Props) {
           </p>
         </div>
       )}
+
+      {canManageMembers ? (
+        <ClubMembersSection
+          clubId={clubId}
+          currentUserId={session.user.id}
+          canManageMembers={canManageMembers}
+          initialMembers={initialMembers}
+        />
+      ) : null}
     </div>
   );
 }
