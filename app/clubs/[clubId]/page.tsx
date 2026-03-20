@@ -4,6 +4,7 @@ import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
 import BrutalButton from "@/components/BrutalButton";
 import RunnerLink from "@/components/RunnerLink";
+import ClubActionsDropdown from "@/components/club/ClubActionsDropdown";
 
 type Props = {
   params: Promise<{ clubId: string }>;
@@ -52,27 +53,16 @@ export default async function ClubPage({params}: Props) {
 
   return (
     <>
-      {(membership.role === "ADMIN" || membership.role === "COACH") && (
-        <div className="flex flex-col items-center justify-center gap-6 md:flex-row">
-          <Link href={`/clubs/${clubId}/settings`}>
-            <BrutalButton label="Inviter un membre"/>
-          </Link>
-
-          <Link href={`/clubs/${clubId}/associations`}>
-            <BrutalButton label="Gérer les associations"/>
-          </Link>
-
-          <Link href={`/clubs/${clubId}/manage-runners`}>
-            <BrutalButton label="Gérer les coureurs"/>
-          </Link>
-        </div>
-      )}
-
       <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
         <div>
           <h1 className="text-3xl font-bold">{club.name}</h1>
           <p className="text-sm text-gray-600">Rôle : {membership.role}</p>
         </div>
+        {(membership.role === "ADMIN" || membership.role === "COACH") && (
+          <div className="flex justify-center">
+            <ClubActionsDropdown clubId={clubId}/>
+          </div>
+        )}
       </div>
 
       <section className="rounded-2xl border p-4">
