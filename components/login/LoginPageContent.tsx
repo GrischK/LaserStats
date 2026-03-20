@@ -5,6 +5,7 @@ import {useState} from "react";
 import {useRouter} from "next/navigation";
 import BrutalButton from "@/components/BrutalButton";
 import RegisterForm from "@/components/RegisterForm";
+import {Eye, EyeOff} from "lucide-react";
 
 type Props = {
   callbackUrl?: string;
@@ -80,7 +81,7 @@ export default function LoginPageContent({
               onClick={() => setShowPassword((prev) => !prev)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500"
             >
-              {showPassword ? "Masquer" : "Voir"}
+              {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
             </button>
           </div>
 

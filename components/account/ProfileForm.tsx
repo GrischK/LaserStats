@@ -25,7 +25,10 @@ export default function ProfileForm({
   const [error, setError] = useState("");
 
   async function handleUploadAvatar() {
-    if (!file) return image;
+
+    if (!file) {
+      return image;
+    }
 
     setUploading(true);
 
@@ -38,8 +41,15 @@ export default function ProfileForm({
         handleUploadUrl: "/api/account/avatar",
       });
 
+      if (!blob?.url) {
+        throw new Error("Aucune URL renvoyée par Vercel Blob");
+      }
+
       setImage(blob.url);
       return blob.url;
+    } catch (error) {
+      console.error("upload error =", error);
+      throw error;
     } finally {
       setUploading(false);
     }
@@ -80,6 +90,32 @@ export default function ProfileForm({
     }
   }
 
+  async function handleRemoveImage() {
+    setLoading(true);
+    setSuccess("");
+    setError("");
+
+    try {
+      const res = await fetch("/api/account/profile/image", {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Impossible de supprimer l'image");
+      }
+
+      setImage("");
+      setFile(null);
+      setSuccess("Photo de profil supprimée");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
       <h2 className="text-xl font-semibold">Profil</h2>
@@ -109,18 +145,29 @@ export default function ProfileForm({
           <label className="text-sm font-medium">Photo de profil</label>
 
           {image ? (
-            <img
-              src={image}
-              alt="Avatar"
-              className="h-20 w-20 rounded-full object-cover border"
-            />
+            <div>
+              <img
+                src={image}
+                alt="Avatar"
+                className="h-20 w-20 rounded-full object-cover border"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="text-sm underline"
+              >
+                Supprimer la photo
+              </button>
+            </div>
           ) : null}
 
           <input
             type="file"
             accept="image/png,image/jpeg,image/webp"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="w-full rounded-2xl border px-3 py-2"
+            onChange={(e) => {
+              const selectedFile = e.currentTarget.files?.[0] ?? null;
+              setFile(selectedFile);
+            }}
           />
         </div>
 
