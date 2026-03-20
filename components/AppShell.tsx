@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import {usePathname} from "next/navigation";
-import {useState, useSyncExternalStore} from "react";
+import {useRef, useState, useSyncExternalStore} from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import LogoutButton from "@/components/LogoutButton";
 import {getThemeServerSnapshot, getThemeSnapshot, subscribeTheme,} from "@/lib/theme";
+import {useOutsideClick} from "@/lib/use-outside-click";
 
 type Props = {
   children: React.ReactNode;
@@ -14,6 +15,9 @@ type Props = {
 export default function AppShell({children}: Props) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
+
+  useOutsideClick(headerRef, () => setMobileMenuOpen(false), mobileMenuOpen);
 
   const theme = useSyncExternalStore(
     subscribeTheme,
@@ -34,7 +38,10 @@ export default function AppShell({children}: Props) {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)] transition-colors">
-      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--header-bg)]/90 backdrop-blur">
+      <header
+        ref={headerRef}
+        className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--header-bg)]/90 backdrop-blur"
+      >
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
@@ -96,35 +103,39 @@ export default function AppShell({children}: Props) {
           </button>
         </div>
 
-        {mobileMenuOpen ? (
-          <div className="border-t border-[var(--border)] bg-[var(--header-bg)] md:hidden">
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-4 sm:px-6">
-              <Link
-                href="/dashboard"
-                onClick={() => setMobileMenuOpen(false)}
-                className="rounded-xl px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
-              >
-                Accueil
-              </Link>
+        <div
+          className={`border-t border-[var(--border)] bg-[var(--header-bg)] transition-all duration-200 md:hidden ${
+            mobileMenuOpen
+              ? "max-h-96 translate-y-0 opacity-100"
+              : "pointer-events-none max-h-0 -translate-y-2 opacity-0"
+          } overflow-hidden`}
+        >
+          <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-4 sm:px-6">
+            <Link
+              href="/dashboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className="rounded-xl px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+            >
+              Accueil
+            </Link>
 
-              <Link
-                href="/account"
-                onClick={() => setMobileMenuOpen(false)}
-                className="rounded-xl px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
-              >
-                Compte
-              </Link>
+            <Link
+              href="/account"
+              onClick={() => setMobileMenuOpen(false)}
+              className="rounded-xl px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+            >
+              Compte
+            </Link>
 
-              <div className="flex items-center justify-between rounded-xl px-3 py-2">
-                <ThemeToggle/>
-              </div>
+            <div className="flex items-center justify-between rounded-xl px-3 py-2">
+              <ThemeToggle/>
+            </div>
 
-              <div className="px-3 py-2">
-                <LogoutButton/>
-              </div>
+            <div className="px-3 py-2">
+              <LogoutButton/>
             </div>
           </div>
-        ) : null}
+        </div>
       </header>
 
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
