@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
@@ -18,12 +18,59 @@ type Props = {
 const hitOptions = [0, 1, 2, 3, 4, 5];
 const distanceOptions = [200, 400, 600, 800];
 
+function formatChrono(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
 export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
   const [distance, setDistance] = useState("");
   const [targetsHit, setTargetsHit] = useState(0);
   const [durationSeconds, setDurationSeconds] = useState("");
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [timerElapsedSeconds, setTimerElapsedSeconds] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const timerStartedAtRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!timerRunning) return;
+
+    const intervalId = window.setInterval(() => {
+      if (!timerStartedAtRef.current) return;
+
+      const elapsed = Math.floor((Date.now() - timerStartedAtRef.current) / 1000);
+      setTimerElapsedSeconds(elapsed);
+    }, 200);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [timerRunning]);
+
+  function handleStartTimer() {
+    setError("");
+    timerStartedAtRef.current = Date.now();
+    setTimerElapsedSeconds(0);
+    setTimerRunning(true);
+  }
+
+  function handleStopTimer() {
+    if (!timerStartedAtRef.current) return;
+
+    const elapsed = Math.floor((Date.now() - timerStartedAtRef.current) / 1000);
+    setTimerElapsedSeconds(elapsed);
+    setDurationSeconds(String(elapsed));
+    setTimerRunning(false);
+    timerStartedAtRef.current = null;
+  }
+
+  function handleResetTimer() {
+    setTimerRunning(false);
+    setTimerElapsedSeconds(0);
+    timerStartedAtRef.current = null;
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -73,6 +120,7 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
       setDistance("");
       setTargetsHit(0);
       setDurationSeconds("");
+      handleResetTimer();
       setError("");
     } catch (err) {
       console.error(err);
@@ -96,8 +144,10 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
 
       <div className="space-y-6">
         <div>
-          <label className="mb-2 block text-sm font-semibold">Distance</label>
-
+          <label className="block text-sm font-semibold">Distance</label>
+          <p className="mb-2 text-sm text-[var(--muted-foreground)]">
+            Optionnel
+          </p>
           <input
             type="number"
             min="1"
@@ -107,9 +157,6 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
             placeholder="Ex: 200 m"
             className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
           />
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Optionnel
-          </p>
 
           <div className="mt-3 flex flex-wrap gap-2">
             {distanceOptions.map((value) => {
@@ -169,9 +216,47 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-semibold">
+          <label className="block text-sm font-semibold">
             Temps de la session
           </label>
+          <p className="mb-2 text-sm text-[var(--muted-foreground)]">
+            Optionnel
+          </p>
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-4">
+            <p className="text-xs uppercase tracking-wide text-[var(--muted-foreground)]">
+              Chrono
+            </p>
+            <p className="mt-1 text-3xl font-bold tabular-nums">
+              {formatChrono(timerElapsedSeconds)}
+            </p>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                disabled={timerRunning || loading}
+                onClick={handleStartTimer}
+                className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Démarrer
+              </button>
+              <button
+                type="button"
+                disabled={!timerRunning || loading}
+                onClick={handleStopTimer}
+                className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Arrêter et remplir
+              </button>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={handleResetTimer}
+                className="rounded-xl border border-[var(--border)] bg-transparent px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
 
           <input
             type="number"
@@ -181,12 +266,8 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
             value={durationSeconds}
             onChange={(e) => setDurationSeconds(e.target.value)}
             placeholder="Ex: 35 secondes"
-            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
+            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] mt-4 px-4 py-3 outline-none transition focus:border-[var(--primary)]"
           />
-
-          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
-            Optionnel
-          </p>
         </div>
 
         {error ? (
