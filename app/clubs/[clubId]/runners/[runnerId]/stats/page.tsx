@@ -2,11 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getAuthSession } from "@/lib/session";
+import RunnerComparisonSelector from "@/components/runner/RunnerComparisonSelector";
 import type { Membership, UserWithMemberships } from "@/lib/types";
-import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   params: Promise<{ clubId: string; runnerId: string }>;
+  searchParams: Promise<{ compareRunnerId?: string }>;
 };
 
 type RunnerSessionItem = {
@@ -16,6 +17,46 @@ type RunnerSessionItem = {
   targetsHit: number;
   distance: number | null;
   durationSeconds: number | null;
+};
+
+type MonthlyStat = {
+  key: string;
+  label: string;
+  count: number;
+  avgTargets: number | null;
+};
+
+type RunnerStats = {
+  totalSessions: number;
+  avgTargets: number | null;
+  successRate: number | null;
+  avgDistance: number | null;
+  avgDuration: number | null;
+  durationSessionsCount: number;
+  bestTargets: number | null;
+  bestDistance: number | null;
+  fastestDuration: number | null;
+  lastSessionDate: Date | null;
+  scoreDistribution: { score: number; count: number }[];
+  distanceDistribution: { label: string; count: number }[];
+  weekdayCounts: { label: string; count: number }[];
+  favoriteWeekday: { label: string; count: number } | null;
+  weekly: {
+    activeWeeksCount: number;
+    weeklyActiveRate: number;
+    weeklyFrequency: number;
+    activeWeeksLast4: number;
+    gapAverageDays: number | null;
+    gapMaxDays: number | null;
+    dayKeysCount: number;
+  };
+  monthlyStats: MonthlyStat[];
+  rollingStats: { date: Date; avgTargets: number }[];
+  delta30: {
+    last30Count: number;
+    prev30Count: number;
+    scoreDelta: number | null;
+  };
 };
 
 function avg(values: number[]) {
@@ -46,11 +87,25 @@ function formatDate(date: Date | null) {
   });
 }
 
+function formatSigned(value: number | null, digits = 2, suffix = "") {
+  if (value === null || Number.isNaN(value)) return "N/A";
+  const sign = value > 0 ? "+" : "";
+  return `${sign}${value.toFixed(digits)}${suffix}`;
+}
+
 function getSessionDayKey(date: Date) {
   const year = date.getFullYear();
   const month = `${date.getMonth() + 1}`.padStart(2, "0");
   const day = `${date.getDate()}`.padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function getWeekStartKey(date: Date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - day);
+  return getSessionDayKey(d);
 }
 
 function getWeekday(date: Date) {
@@ -63,76 +118,23 @@ function getMonthKey(date: Date) {
   return `${year}-${month}`;
 }
 
-function getLastMonthsLabels(monthsBack: number) {
+function getLastMonthKeys(monthsBack: number) {
   const now = new Date();
-  const labels: string[] = [];
+  const keys: string[] = [];
 
   for (let i = monthsBack - 1; i >= 0; i -= 1) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    labels.push(getMonthKey(d));
+    keys.push(getMonthKey(d));
   }
 
-  return labels;
+  return keys;
 }
 
-function getWeekStartKey(date: Date) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  const day = (d.getDay() + 6) % 7;
-  d.setDate(d.getDate() - day);
-  return getSessionDayKey(d);
-}
-
-export default async function RunnerStatsPage({ params }: Props) {
-  const { clubId, runnerId } = await params;
-  const session = await getAuthSession();
-
-  if (!session?.user?.email) {
-    redirect("/login");
-  }
-
-  const user: UserWithMemberships | null = await prisma.user.findUnique({
-    where: { email: session.user.email },
-    include: { memberships: true },
-  });
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const membership = user.memberships.find(
-    (item: Membership) => item.clubId === clubId
-  );
-
-  if (!membership) {
-    redirect("/dashboard");
-  }
-
-  const runner = await prisma.runner.findFirst({
-    where: {
-      id: runnerId,
-      clubId,
-      active: true,
-    },
-    include: {
-      user: {
-        select: {
-          image: true,
-        },
-      },
-      sessions: {
-        orderBy: { createdAt: "asc" },
-      },
-    },
-  });
-
-  if (!runner) {
-    redirect(`/clubs/${clubId}`);
-  }
-
-  const sessions = runner.sessions as RunnerSessionItem[];
+function computeRunnerStats(
+  sessions: RunnerSessionItem[],
+  monthKeys: string[]
+): RunnerStats {
   const totalSessions = sessions.length;
-
   const scoreValues = sessions.map((item) => item.targetsHit);
   const distanceValues = sessions
     .map((item) => item.distance)
@@ -142,26 +144,19 @@ export default async function RunnerStatsPage({ params }: Props) {
     .filter((value): value is number => value !== null);
 
   const avgTargets = avg(scoreValues);
+  const successRate = avgTargets === null ? null : avgTargets / 5;
   const avgDistance = avg(distanceValues);
   const avgDuration = avg(durationValues);
-  const successRate = avgTargets === null ? null : avgTargets / 5;
 
   const bestTargets = scoreValues.length > 0 ? Math.max(...scoreValues) : null;
-  const bestDistance =
-    distanceValues.length > 0 ? Math.max(...distanceValues) : null;
-  const fastestDuration =
-    durationValues.length > 0 ? Math.min(...durationValues) : null;
-  const lastSessionDate =
-    sessions.length > 0 ? sessions[sessions.length - 1].createdAt : null;
+  const bestDistance = distanceValues.length > 0 ? Math.max(...distanceValues) : null;
+  const fastestDuration = durationValues.length > 0 ? Math.min(...durationValues) : null;
+  const lastSessionDate = totalSessions > 0 ? sessions[sessions.length - 1].createdAt : null;
 
   const scoreDistribution = [0, 1, 2, 3, 4, 5].map((score) => ({
     score,
     count: sessions.filter((item) => item.targetsHit === score).length,
   }));
-  const maxScoreDistCount = Math.max(
-    1,
-    ...scoreDistribution.map((item) => item.count)
-  );
 
   const distanceMap = new Map<string, number>();
   for (const item of sessions) {
@@ -172,34 +167,18 @@ export default async function RunnerStatsPage({ params }: Props) {
   const distanceDistribution = Array.from(distanceMap.entries())
     .map(([label, count]) => ({ label, count }))
     .sort((a, b) => b.count - a.count);
-  const maxDistanceDistCount = Math.max(
-    1,
-    ...distanceDistribution.map((item) => item.count),
-    1
-  );
-
-  const dayKeys = Array.from(
-    new Set(sessions.map((item) => getSessionDayKey(new Date(item.sessionDay))))
-  ).sort();
 
   const weekdayLabels = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
   const weekdayCounts = weekdayLabels.map((label, dayIndex) => ({
     label,
     count: sessions.filter((item) => getWeekday(new Date(item.sessionDay)) === dayIndex).length,
   }));
-  const maxWeekdayCount = Math.max(1, ...weekdayCounts.map((item) => item.count), 1);
-  const favoriteWeekday = [...weekdayCounts].sort((a, b) => b.count - a.count)[0];
+  const favoriteWeekday = [...weekdayCounts].sort((a, b) => b.count - a.count)[0] ?? null;
 
   const now = new Date();
   const currentWeekStart = new Date(now);
   currentWeekStart.setHours(0, 0, 0, 0);
   currentWeekStart.setDate(currentWeekStart.getDate() - ((currentWeekStart.getDay() + 6) % 7));
-
-  const last12WeekKeys = Array.from({ length: 12 }, (_, index) => {
-    const d = new Date(currentWeekStart);
-    d.setDate(d.getDate() - index * 7);
-    return getWeekStartKey(d);
-  });
 
   const weekActivityMap = new Map<string, number>();
   for (const item of sessions) {
@@ -207,9 +186,13 @@ export default async function RunnerStatsPage({ params }: Props) {
     weekActivityMap.set(key, (weekActivityMap.get(key) ?? 0) + 1);
   }
 
+  const last12WeekKeys = Array.from({ length: 12 }, (_, index) => {
+    const d = new Date(currentWeekStart);
+    d.setDate(d.getDate() - index * 7);
+    return getWeekStartKey(d);
+  });
   const activeWeeksCount = last12WeekKeys.filter((key) => (weekActivityMap.get(key) ?? 0) > 0).length;
   const weeklyActiveRate = activeWeeksCount / 12;
-
   const sessionsLast12Weeks = last12WeekKeys.reduce(
     (sum, key) => sum + (weekActivityMap.get(key) ?? 0),
     0
@@ -224,22 +207,17 @@ export default async function RunnerStatsPage({ params }: Props) {
   const activeWeeksLast4 = last4WeekKeys.filter(
     (key) => (weekActivityMap.get(key) ?? 0) > 0
   ).length;
-  const weeklyGoal4 = 4;
 
-  const sortedByDay = [...sessions].sort(
-    (a, b) => new Date(a.sessionDay).getTime() - new Date(b.sessionDay).getTime()
-  );
+  const uniqueDayKeys = Array.from(
+    new Set(sessions.map((item) => getSessionDayKey(new Date(item.sessionDay))))
+  ).sort();
   const dayGaps: number[] = [];
-  for (let i = 1; i < sortedByDay.length; i += 1) {
-    const prev = new Date(sortedByDay[i - 1].sessionDay);
-    const curr = new Date(sortedByDay[i].sessionDay);
-    const gapDays = Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
-    dayGaps.push(gapDays);
+  for (let i = 1; i < uniqueDayKeys.length; i += 1) {
+    const prev = new Date(`${uniqueDayKeys[i - 1]}T00:00:00`);
+    const curr = new Date(`${uniqueDayKeys[i]}T00:00:00`);
+    dayGaps.push(Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24)));
   }
-  const avgGapDays = avg(dayGaps);
-  const maxGapDays = dayGaps.length > 0 ? Math.max(...dayGaps) : null;
 
-  const monthLabels = getLastMonthsLabels(6);
   const monthMap = new Map<string, RunnerSessionItem[]>();
   for (const item of sessions) {
     const key = getMonthKey(new Date(item.createdAt));
@@ -248,18 +226,17 @@ export default async function RunnerStatsPage({ params }: Props) {
     }
     monthMap.get(key)!.push(item);
   }
-  const monthlyStats = monthLabels.map((label) => {
-    const monthSessions = monthMap.get(label) ?? [];
-    const monthAvgTargets = avg(monthSessions.map((item) => item.targetsHit));
+  const monthlyStats = monthKeys.map((key) => {
+    const monthSessions = monthMap.get(key) ?? [];
     return {
-      label: new Date(`${label}-01T00:00:00`).toLocaleDateString("fr-FR", {
+      key,
+      label: new Date(`${key}-01T00:00:00`).toLocaleDateString("fr-FR", {
         month: "short",
       }),
       count: monthSessions.length,
-      avgTargets: monthAvgTargets,
+      avgTargets: avg(monthSessions.map((item) => item.targetsHit)),
     };
   });
-  const maxMonthlyCount = Math.max(1, ...monthlyStats.map((item) => item.count), 1);
 
   const recentSessionsDesc = [...sessions].sort(
     (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
@@ -293,6 +270,153 @@ export default async function RunnerStatsPage({ params }: Props) {
       ? last30AvgTargets - prev30AvgTargets
       : null;
 
+  return {
+    totalSessions,
+    avgTargets,
+    successRate,
+    avgDistance,
+    avgDuration,
+    durationSessionsCount: durationValues.length,
+    bestTargets,
+    bestDistance,
+    fastestDuration,
+    lastSessionDate,
+    scoreDistribution,
+    distanceDistribution,
+    weekdayCounts,
+    favoriteWeekday,
+    weekly: {
+      activeWeeksCount,
+      weeklyActiveRate,
+      weeklyFrequency,
+      activeWeeksLast4,
+      gapAverageDays: avg(dayGaps),
+      gapMaxDays: dayGaps.length > 0 ? Math.max(...dayGaps) : null,
+      dayKeysCount: uniqueDayKeys.length,
+    },
+    monthlyStats,
+    rollingStats,
+    delta30: {
+      last30Count: last30.length,
+      prev30Count: prev30.length,
+      scoreDelta,
+    },
+  };
+}
+
+export default async function RunnerStatsPage({ params, searchParams }: Props) {
+  const { clubId, runnerId } = await params;
+  const { compareRunnerId } = await searchParams;
+  const session = await getAuthSession();
+
+  if (!session?.user?.email) {
+    redirect("/login");
+  }
+
+  const user: UserWithMemberships | null = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    include: { memberships: true },
+  });
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const membership = user.memberships.find(
+    (item: Membership) => item.clubId === clubId
+  );
+
+  if (!membership) {
+    redirect("/dashboard");
+  }
+
+  const [runner, compareCandidates] = await Promise.all([
+    prisma.runner.findFirst({
+      where: {
+        id: runnerId,
+        clubId,
+        active: true,
+      },
+      include: {
+        user: {
+          select: {
+            image: true,
+          },
+        },
+        sessions: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    }),
+    prisma.runner.findMany({
+      where: {
+        clubId,
+        active: true,
+        id: {
+          not: runnerId,
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: {
+        name: "asc",
+      },
+    }),
+  ]);
+
+  if (!runner) {
+    redirect(`/clubs/${clubId}`);
+  }
+
+  const selectedCompareRunnerId =
+    typeof compareRunnerId === "string" && compareRunnerId.trim()
+      ? compareRunnerId.trim()
+      : null;
+
+  const validCompareRunnerId =
+    selectedCompareRunnerId &&
+    compareCandidates.some((item) => item.id === selectedCompareRunnerId)
+      ? selectedCompareRunnerId
+      : null;
+
+  const compareRunner = validCompareRunnerId
+    ? await prisma.runner.findFirst({
+      where: {
+        id: validCompareRunnerId,
+        clubId,
+        active: true,
+      },
+      include: {
+        sessions: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
+    })
+    : null;
+
+  const monthKeys = getLastMonthKeys(6);
+  const baseStats = computeRunnerStats(
+    runner.sessions as RunnerSessionItem[],
+    monthKeys
+  );
+  const compareStats = compareRunner
+    ? computeRunnerStats(compareRunner.sessions as RunnerSessionItem[], monthKeys)
+    : null;
+
+  const maxScoreDistCount = Math.max(
+    1,
+    ...baseStats.scoreDistribution.map((item) => item.count)
+  );
+  const maxDistanceDistCount = Math.max(
+    1,
+    ...baseStats.distanceDistribution.map((item) => item.count),
+    1
+  );
+  const maxWeekdayCount = Math.max(1, ...baseStats.weekdayCounts.map((item) => item.count), 1);
+  const maxMonthlyCount = Math.max(1, ...baseStats.monthlyStats.map((item) => item.count), 1);
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6">
       <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
@@ -313,45 +437,99 @@ export default async function RunnerStatsPage({ params }: Props) {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-2">
             <Link
               href={`/clubs/${clubId}/runners/${runnerId}`}
+              className="rounded-xl border px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
             >
-              <BrutalButton
-                type="button"
-                label={"Retour sessions"}
-              />
+              Retour sessions
             </Link>
             <Link
               href={`/clubs/${clubId}`}
+              className="rounded-xl border px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
             >
-              <BrutalButton
-                type="button"
-                label={"Retour club"}
-              />
+              Retour club
             </Link>
           </div>
         </div>
       </section>
 
+      <RunnerComparisonSelector
+        selectedRunnerId={validCompareRunnerId}
+        runners={compareCandidates}
+      />
+
+      {compareRunner && compareStats ? (
+        <section className="rounded-2xl border bg-[var(--card)] p-4">
+          <h2 className="text-lg font-semibold">Comparaison avec {compareRunner.name}</h2>
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            <div className="rounded-xl border p-3">
+              <p className="text-sm font-medium">{runner.name}</p>
+              <p className="mt-2 text-sm">Moy. score: <strong>{formatNumber(baseStats.avgTargets, 2)}/5</strong></p>
+              <p className="text-sm">Taux réussite: <strong>{baseStats.successRate === null ? "N/A" : toPercent(baseStats.successRate)}</strong></p>
+              <p className="text-sm">Fréquence: <strong>{formatNumber(baseStats.weekly.weeklyFrequency, 2)} / sem.</strong></p>
+              <p className="text-sm">Distance moy.: <strong>{baseStats.avgDistance === null ? "N/A" : `${formatNumber(baseStats.avgDistance, 1)}m`}</strong></p>
+              <p className="text-sm">Durée moy.: <strong>{formatDuration(baseStats.avgDuration === null ? null : Number(baseStats.avgDuration.toFixed(1)))}</strong></p>
+            </div>
+
+            <div className="rounded-xl border p-3">
+              <p className="text-sm font-medium">{compareRunner.name}</p>
+              <p className="mt-2 text-sm">Moy. score: <strong>{formatNumber(compareStats.avgTargets, 2)}/5</strong></p>
+              <p className="text-sm">Taux réussite: <strong>{compareStats.successRate === null ? "N/A" : toPercent(compareStats.successRate)}</strong></p>
+              <p className="text-sm">Fréquence: <strong>{formatNumber(compareStats.weekly.weeklyFrequency, 2)} / sem.</strong></p>
+              <p className="text-sm">Distance moy.: <strong>{compareStats.avgDistance === null ? "N/A" : `${formatNumber(compareStats.avgDistance, 1)}m`}</strong></p>
+              <p className="text-sm">Durée moy.: <strong>{formatDuration(compareStats.avgDuration === null ? null : Number(compareStats.avgDuration.toFixed(1)))}</strong></p>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-xl border p-3 text-sm">
+            <p>Écart score moyen (Y - X): <strong>{formatSigned(compareStats.avgTargets !== null && baseStats.avgTargets !== null ? compareStats.avgTargets - baseStats.avgTargets : null, 2, " /5")}</strong></p>
+            <p>Écart fréquence hebdo (Y - X): <strong>{formatSigned(compareStats.weekly.weeklyFrequency - baseStats.weekly.weeklyFrequency, 2, " /sem.")}</strong></p>
+            <p>Écart distance moyenne (Y - X): <strong>{formatSigned(compareStats.avgDistance !== null && baseStats.avgDistance !== null ? compareStats.avgDistance - baseStats.avgDistance : null, 1, "m")}</strong></p>
+            <p>Écart durée moyenne (Y - X): <strong>{formatSigned(compareStats.avgDuration !== null && baseStats.avgDuration !== null ? compareStats.avgDuration - baseStats.avgDuration : null, 1, "s")}</strong></p>
+          </div>
+
+          <div className="mt-4 rounded-xl border p-3">
+            <h3 className="text-sm font-medium">Tendance 6 mois (sessions / score moyen)</h3>
+            <div className="mt-2 space-y-2 text-sm">
+              {monthKeys.map((key) => {
+                const baseMonth = baseStats.monthlyStats.find((item) => item.key === key);
+                const compareMonth = compareStats.monthlyStats.find((item) => item.key === key);
+                return (
+                  <div key={key} className="grid grid-cols-3 gap-2 rounded-lg border px-2 py-1">
+                    <span className="capitalize">{baseMonth?.label ?? key}</span>
+                    <span>
+                      X: {baseMonth?.count ?? 0} / {formatNumber(baseMonth?.avgTargets ?? null, 1)}
+                    </span>
+                    <span>
+                      Y: {compareMonth?.count ?? 0} / {formatNumber(compareMonth?.avgTargets ?? null, 1)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <p className="text-sm text-[var(--muted-foreground)]">Sessions totales</p>
-          <p className="mt-1 text-2xl font-bold">{totalSessions}</p>
+          <p className="mt-1 text-2xl font-bold">{baseStats.totalSessions}</p>
         </div>
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <p className="text-sm text-[var(--muted-foreground)]">Moyenne score</p>
-          <p className="mt-1 text-2xl font-bold">{formatNumber(avgTargets, 2)} / 5</p>
+          <p className="mt-1 text-2xl font-bold">{formatNumber(baseStats.avgTargets, 2)} / 5</p>
         </div>
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <p className="text-sm text-[var(--muted-foreground)]">Taux de réussite</p>
           <p className="mt-1 text-2xl font-bold">
-            {successRate === null ? "N/A" : toPercent(successRate)}
+            {baseStats.successRate === null ? "N/A" : toPercent(baseStats.successRate)}
           </p>
         </div>
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <p className="text-sm text-[var(--muted-foreground)]">Dernière session</p>
-          <p className="mt-1 text-2xl font-bold">{formatDate(lastSessionDate)}</p>
+          <p className="mt-1 text-2xl font-bold">{formatDate(baseStats.lastSessionDate)}</p>
         </div>
       </section>
 
@@ -359,18 +537,18 @@ export default async function RunnerStatsPage({ params }: Props) {
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <h2 className="text-lg font-semibold">Records</h2>
           <div className="mt-3 space-y-2 text-sm">
-            <p>Meilleur score: <strong>{bestTargets ?? "N/A"} / 5</strong></p>
-            <p>Distance max: <strong>{bestDistance === null ? "N/A" : `${bestDistance}m`}</strong></p>
-            <p>Durée la plus rapide: <strong>{formatDuration(fastestDuration)}</strong></p>
+            <p>Meilleur score: <strong>{baseStats.bestTargets ?? "N/A"} / 5</strong></p>
+            <p>Distance max: <strong>{baseStats.bestDistance === null ? "N/A" : `${baseStats.bestDistance}m`}</strong></p>
+            <p>Durée la plus rapide: <strong>{formatDuration(baseStats.fastestDuration)}</strong></p>
           </div>
         </div>
 
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <h2 className="text-lg font-semibold">Moyennes</h2>
           <div className="mt-3 space-y-2 text-sm">
-            <p>Distance moyenne: <strong>{avgDistance === null ? "N/A" : `${formatNumber(avgDistance, 1)}m`}</strong></p>
-            <p>Durée moyenne: <strong>{formatDuration(avgDuration === null ? null : Number(avgDuration.toFixed(1)))}</strong></p>
-            <p>Sessions avec durée: <strong>{durationValues.length}</strong></p>
+            <p>Distance moyenne: <strong>{baseStats.avgDistance === null ? "N/A" : `${formatNumber(baseStats.avgDistance, 1)}m`}</strong></p>
+            <p>Durée moyenne: <strong>{formatDuration(baseStats.avgDuration === null ? null : Number(baseStats.avgDuration.toFixed(1)))}</strong></p>
+            <p>Sessions avec durée: <strong>{baseStats.durationSessionsCount}</strong></p>
           </div>
         </div>
 
@@ -379,25 +557,25 @@ export default async function RunnerStatsPage({ params }: Props) {
           <div className="mt-3 space-y-2 text-sm">
             <p>
               Semaines actives (12 sem.):{" "}
-              <strong>{activeWeeksCount}/12 ({toPercent(weeklyActiveRate, 0)})</strong>
+              <strong>{baseStats.weekly.activeWeeksCount}/12 ({toPercent(baseStats.weekly.weeklyActiveRate, 0)})</strong>
             </p>
             <p>
-              Fréquence moyenne: <strong>{formatNumber(weeklyFrequency, 2)} session/sem.</strong>
+              Fréquence moyenne: <strong>{formatNumber(baseStats.weekly.weeklyFrequency, 2)} session/sem.</strong>
             </p>
             <p>
-              Gap moyen entre sessions: <strong>{avgGapDays === null ? "N/A" : `${formatNumber(avgGapDays, 1)} jours`}</strong>
+              Gap moyen entre sessions: <strong>{baseStats.weekly.gapAverageDays === null ? "N/A" : `${formatNumber(baseStats.weekly.gapAverageDays, 1)} jours`}</strong>
             </p>
             <p>
-              Plus long gap: <strong>{maxGapDays === null ? "N/A" : `${maxGapDays} jours`}</strong>
+              Plus long gap: <strong>{baseStats.weekly.gapMaxDays === null ? "N/A" : `${baseStats.weekly.gapMaxDays} jours`}</strong>
             </p>
             <p>
-              Assiduité 4 sem.: <strong>{activeWeeksLast4}/{weeklyGoal4}</strong>
+              Assiduité 4 sem.: <strong>{baseStats.weekly.activeWeeksLast4}/4</strong>
             </p>
             <p>
               Jour le plus fréquent:{" "}
-              <strong>{favoriteWeekday?.count ? `${favoriteWeekday.label} (${favoriteWeekday.count} sessions)` : "N/A"}</strong>
+              <strong>{baseStats.favoriteWeekday?.count ? `${baseStats.favoriteWeekday.label} (${baseStats.favoriteWeekday.count} sessions)` : "N/A"}</strong>
             </p>
-            <p>Jours actifs (historique): <strong>{dayKeys.length}</strong></p>
+            <p>Jours actifs (historique): <strong>{baseStats.weekly.dayKeysCount}</strong></p>
           </div>
         </div>
       </section>
@@ -406,7 +584,7 @@ export default async function RunnerStatsPage({ params }: Props) {
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <h2 className="text-lg font-semibold">Répartition des scores</h2>
           <div className="mt-4 space-y-2">
-            {scoreDistribution.map((item) => (
+            {baseStats.scoreDistribution.map((item) => (
               <div key={item.score} className="flex items-center gap-3 text-sm">
                 <span className="w-12">{item.score}/5</span>
                 <div className="h-2 flex-1 rounded bg-[var(--muted)]">
@@ -424,10 +602,10 @@ export default async function RunnerStatsPage({ params }: Props) {
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <h2 className="text-lg font-semibold">Répartition des distances</h2>
           <div className="mt-4 space-y-2">
-            {distanceDistribution.length === 0 ? (
+            {baseStats.distanceDistribution.length === 0 ? (
               <p className="text-sm text-[var(--muted-foreground)]">Aucune distance renseignée.</p>
             ) : (
-              distanceDistribution.map((item) => (
+              baseStats.distanceDistribution.map((item) => (
                 <div key={item.label} className="flex items-center gap-3 text-sm">
                   <span className="w-12">{item.label}</span>
                   <div className="h-2 flex-1 rounded bg-[var(--muted)]">
@@ -448,7 +626,7 @@ export default async function RunnerStatsPage({ params }: Props) {
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <h2 className="text-lg font-semibold">Activité par jour</h2>
           <div className="mt-4 space-y-2">
-            {weekdayCounts.map((item) => (
+            {baseStats.weekdayCounts.map((item) => (
               <div key={item.label} className="flex items-center gap-3 text-sm">
                 <span className="w-10">{item.label}</span>
                 <div className="h-2 flex-1 rounded bg-[var(--muted)]">
@@ -466,8 +644,8 @@ export default async function RunnerStatsPage({ params }: Props) {
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <h2 className="text-lg font-semibold">Tendance 6 mois</h2>
           <div className="mt-4 space-y-2">
-            {monthlyStats.map((item) => (
-              <div key={item.label} className="flex items-center gap-3 text-sm">
+            {baseStats.monthlyStats.map((item) => (
+              <div key={item.key} className="flex items-center gap-3 text-sm">
                 <span className="w-12 capitalize">{item.label}</span>
                 <div className="h-2 flex-1 rounded bg-[var(--muted)]">
                   <div
@@ -487,14 +665,14 @@ export default async function RunnerStatsPage({ params }: Props) {
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <h2 className="text-lg font-semibold">Delta 30 jours</h2>
           <div className="mt-3 space-y-2 text-sm">
-            <p>Sessions (30j): <strong>{last30.length}</strong></p>
-            <p>Sessions (30j précédents): <strong>{prev30.length}</strong></p>
+            <p>Sessions (30j): <strong>{baseStats.delta30.last30Count}</strong></p>
+            <p>Sessions (30j précédents): <strong>{baseStats.delta30.prev30Count}</strong></p>
             <p>
               Évolution score moyen:{" "}
               <strong>
-                {scoreDelta === null
+                {baseStats.delta30.scoreDelta === null
                   ? "N/A"
-                  : `${scoreDelta >= 0 ? "+" : ""}${scoreDelta.toFixed(2)} / 5`}
+                  : `${baseStats.delta30.scoreDelta >= 0 ? "+" : ""}${baseStats.delta30.scoreDelta.toFixed(2)} / 5`}
               </strong>
             </p>
           </div>
@@ -503,12 +681,12 @@ export default async function RunnerStatsPage({ params }: Props) {
         <div className="rounded-2xl border bg-[var(--card)] p-4">
           <h2 className="text-lg font-semibold">Moyenne mobile (7 sessions)</h2>
           <div className="mt-4 space-y-2">
-            {rollingStats.length === 0 ? (
+            {baseStats.rollingStats.length === 0 ? (
               <p className="text-sm text-[var(--muted-foreground)]">
                 Pas assez de sessions pour calculer la moyenne mobile (minimum 7).
               </p>
             ) : (
-              rollingStats.slice(0, 10).map((item) => (
+              baseStats.rollingStats.slice(0, 10).map((item) => (
                 <div key={item.date.toISOString()} className="flex items-center gap-3 text-sm">
                   <span className="w-24">{formatDate(item.date)}</span>
                   <div className="h-2 flex-1 rounded bg-[var(--muted)]">
