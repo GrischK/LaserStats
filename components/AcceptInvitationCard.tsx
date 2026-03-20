@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { InvitationDetails } from "@/lib/types";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   token: string;
@@ -45,20 +46,25 @@ export default function AcceptInvitationCard({ token, invitation }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-lg rounded-2xl border p-6 shadow-sm">
-      <h1 className="text-xl font-semibold">Invitation à rejoindre un club</h1>
+    <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+      <div className="space-y-1">
+        <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+          Invitation
+        </p>
+        <h1 className="text-2xl font-bold tracking-tight">Rejoindre un club</h1>
+      </div>
 
-      <div className="mt-4 space-y-2 text-sm">
-        <p>
+      <div className="mt-5 space-y-3 text-sm">
+        <p className="rounded-xl border border-[var(--border)] bg-[var(--muted)] px-3 py-2">
           <span className="font-medium">Club :</span> {invitation.club.name}
         </p>
-        <p>
+        <p className="rounded-xl border border-[var(--border)] bg-[var(--muted)] px-3 py-2">
           <span className="font-medium">Rôle :</span> {roleLabel}
         </p>
-        <p>
+        <p className="rounded-xl border border-[var(--border)] bg-[var(--muted)] px-3 py-2">
           <span className="font-medium">Pour :</span> {invitation.email}
         </p>
-        <p>
+        <p className="rounded-xl border border-[var(--border)] bg-[var(--muted)] px-3 py-2">
           <span className="font-medium">Invité par :</span>{" "}
           {invitation.invitedBy.name || invitation.invitedBy.email}
         </p>
@@ -73,14 +79,13 @@ export default function AcceptInvitationCard({ token, invitation }: Props) {
       {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
 
       <div className="mt-6">
-        <button
-          onClick={handleAccept}
+        <BrutalButton
+          type="button"
+          onClickFn={handleAccept}
           disabled={loading || invitation.status !== "PENDING"}
-          className="rounded-xl bg-black px-4 py-2 text-white disabled:opacity-50"
-        >
-          {loading ? "Acceptation..." : "Accepter l'invite"}
-        </button>
+          label={loading ? "Acceptation..." : "Accepter l'invitation"}
+        />
       </div>
-    </div>
+    </section>
   );
 }

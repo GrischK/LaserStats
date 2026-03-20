@@ -39,6 +39,7 @@ export default async function ClubAssociationsPage({params}: Props) {
   const unlinkedRunners: UnlinkedRunner[] = await prisma.runner.findMany({
     where: {
       clubId,
+      active: true,
       userId: null,
     },
     orderBy: {
@@ -60,6 +61,7 @@ export default async function ClubAssociationsPage({params}: Props) {
   const linkedRunners: LinkedRunner[] = await prisma.runner.findMany({
     where: {
       clubId,
+      active: true,
       userId: {
         not: null,
       },

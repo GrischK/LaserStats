@@ -13,13 +13,31 @@ export default async function InvitePage({
   const { token } = await searchParams;
 
   if (!token) {
-    return <div>Invitation invalide</div>;
+    return (
+      <main className="mx-auto flex min-h-screen w-full max-w-2xl items-center justify-center px-4 py-8">
+        <section className="w-full rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+          <h1 className="text-xl font-semibold">Invitation invalide</h1>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Le lien d’invitation est manquant ou incorrect.
+          </p>
+        </section>
+      </main>
+    );
   }
 
   const invitation = await getInvitationByToken(token);
 
   if (!invitation) {
-    return <div>Invitation introuvable</div>;
+    return (
+      <main className="mx-auto flex w-full max-w-2xl items-center justify-center px-4 py-8">
+        <section className="w-full rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+          <h1 className="text-xl font-semibold">Invitation introuvable</h1>
+          <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+            Cette invitation n’existe pas ou a déjà été traitée.
+          </p>
+        </section>
+      </main>
+    );
   }
 
   const session = await getServerSession(authOptions);
@@ -33,13 +51,19 @@ export default async function InvitePage({
 
   if (sessionEmail !== invitationEmail) {
     return (
-      <WrongInvitationAccountCard
-        token={token}
-        sessionEmail={session.user.email ?? ""}
-        invitationEmail={invitation.email}
-      />
+      <main className="mx-auto flex w-full max-w-2xl items-center justify-center px-4 py-8">
+        <WrongInvitationAccountCard
+          token={token}
+          sessionEmail={session.user.email ?? ""}
+          invitationEmail={invitation.email}
+        />
+      </main>
     );
   }
 
-  return <AcceptInvitationCard token={token} invitation={invitation} />;
+  return (
+    <main className="mx-auto flex w-full max-w-2xl items-center justify-center px-4 py-8">
+      <AcceptInvitationCard token={token} invitation={invitation} />
+    </main>
+  );
 }
