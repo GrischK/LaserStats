@@ -2,9 +2,33 @@ import "./globals.css";
 import Providers from "./providers";
 import AppShell from "@/components/AppShell";
 import {Geist} from "next/font/google";
+import type {Metadata, Viewport} from "next";
 import {cn} from "@/lib/utils";
 
 const geist = Geist({subsets: ["latin"], variable: "--font-sans"});
+
+export const metadata: Metadata = {
+  title: "Laser-stats",
+  description: "Suivi des tirs Laser Run",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      {url: "/favicon.ico"},
+      {url: "/icon-192.png", sizes: "192x192", type: "image/png"},
+      {url: "/icon-512.png", sizes: "512x512", type: "image/png"},
+    ],
+    apple: [{url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png"}],
+  },
+  appleWebApp: {
+    capable: true,
+    title: "Laser-stats",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#111111",
+};
 
 const themeScript = `
 (function() {
