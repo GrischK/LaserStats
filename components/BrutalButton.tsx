@@ -17,7 +17,7 @@ export default function BrutalButton({
                                      }: Props) {
 
   const base =
-    "px-8 py-0.5 border-2 uppercase transition duration-200 text-sm hover:cursor-pointer shadow-[1px_1px_rgba(0,0,0),2px_2px_rgba(0,0,0),3px_3px_rgba(0,0,0),4px_4px_rgba(0,0,0),5px_5px_0px_0px_rgba(0,0,0)]";
+    "px-8 py-0.5 border-2 uppercase transition duration-200 text-sm hover:cursor-pointer shadow-[1px_1px_rgba(0,0,0),2px_2px_rgba(0,0,0),3px_3px_rgba(0,0,0),4px_4px_rgba(0,0,0),5px_5px_0px_0px_rgba(0,0,0)] disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variants = {
     default:
