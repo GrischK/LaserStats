@@ -138,7 +138,7 @@ export default function AppShell({children}: Props) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6">
+      <main className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6 bg-[var(--card)]">
         {children}
       </main>
     </div>

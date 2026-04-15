@@ -134,7 +134,7 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="-mx-4 border-y border-[var(--border)] bg-[var(--card)] px-4 py-5 sm:mx-0 sm:rounded-2xl sm:border sm:p-6 sm:shadow-[var(--shadow)]"
+      className="-mx-4 border-y border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:py-4 sm:mx-0 sm:rounded-2xl sm:border sm:p-6 sm:shadow-[var(--shadow)]"
     >
       <div className="mb-6">
         <h2 className="text-2xl font-bold tracking-tight">Nouvelle session</h2>

@@ -151,8 +151,8 @@ export default async function RunnerPage({ params }: Props) {
   );
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-5">
-      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 pb-4 pt-2 sm:mx-0 sm:rounded-2xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col sm:gap-5">
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:py-4 sm:mx-0 sm:rounded-2xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">

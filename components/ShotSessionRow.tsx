@@ -1,9 +1,10 @@
 "use client";
 
-import {FC, useState} from "react";
+import {type Dispatch, FC, type SetStateAction, useState} from "react";
 import {Pencil, Trash2} from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import BrutalButton from "@/components/BrutalButton";
+import {Modal, ModalBody, ModalContent, useModal} from "@/components/ui/animated-modal";
 
 type Props = {
   sessionId: string;
@@ -26,6 +27,138 @@ type Props = {
 
 const hitOptions = [0, 1, 2, 3, 4, 5];
 
+function EditSessionButton() {
+  const {setOpen} = useModal();
+
+  return (
+    <button
+      type="button"
+      aria-label="Modifier la session"
+      title="Modifier"
+      onClick={() => setOpen(true)}
+      className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--card)] text-[var(--muted-foreground)] ring-1 ring-inset ring-[var(--border)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] active:translate-y-px"
+    >
+      <Pencil size={19} aria-hidden="true"/>
+    </button>
+  );
+}
+
+type EditSessionModalContentProps = {
+  distanceValue: string;
+  setDistanceValue: Dispatch<SetStateAction<string>>;
+  targetsHitValue: number;
+  setTargetsHitValue: Dispatch<SetStateAction<number>>;
+  durationSecondsValue: string;
+  setDurationSecondsValue: Dispatch<SetStateAction<string>>;
+  loading: boolean;
+  onSave: (onSaved?: () => void) => Promise<void>;
+};
+
+function EditSessionModalContent({
+                                   distanceValue,
+                                   setDistanceValue,
+                                   targetsHitValue,
+                                   setTargetsHitValue,
+                                   durationSecondsValue,
+                                   setDurationSecondsValue,
+                                   loading,
+                                   onSave,
+                                 }: EditSessionModalContentProps) {
+  const {setOpen} = useModal();
+
+  return (
+    <ModalContent className="gap-4 p-5 sm:p-6">
+      <div className="pr-8">
+        <h3 className="text-xl font-extrabold tracking-tight">
+          Modifier la session
+        </h3>
+        <p className="mt-1 text-sm font-medium text-[var(--muted-foreground)]">
+          Ajuste uniquement les valeurs nécessaires.
+        </p>
+      </div>
+
+      <div className="grid gap-4">
+        <label className="grid gap-1.5">
+          <span className="text-sm font-semibold text-[var(--fg)]">
+            Distance
+          </span>
+          <input
+            type="number"
+            step="0.1"
+            min="0"
+            value={distanceValue}
+            onChange={(e) => setDistanceValue(e.target.value)}
+            placeholder="Ex: 200 m"
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-3 outline-none focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
+          />
+        </label>
+
+        <div className="grid gap-1.5">
+          <span className="text-sm font-semibold text-[var(--fg)]">
+            Cibles touchées
+          </span>
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+            {hitOptions.map((value) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setTargetsHitValue(value)}
+                className={`min-h-11 rounded-lg px-3 py-2 text-base font-bold transition active:translate-y-px ${
+                  targetsHitValue === value
+                    ? "bg-[image:var(--selected-bg)] text-[var(--selected-foreground)]"
+                    : "bg-[var(--surface-strong)]"
+                }`}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <label className="grid gap-1.5">
+          <span className="text-sm font-semibold text-[var(--fg)]">
+            Temps
+          </span>
+          <input
+            type="number"
+            min="0"
+            max="50"
+            step="1"
+            value={durationSecondsValue}
+            onChange={(e) => setDurationSecondsValue(e.target.value)}
+            placeholder="Secondes"
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-3 outline-none focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
+          />
+        </label>
+
+        <p className="text-sm font-medium text-[var(--muted-foreground)]">
+          Laisser vide si non renseigné. Maximum 50 secondes.
+        </p>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2">
+        <button
+          className="min-h-12 rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm font-semibold text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] sm:col-span-1"
+          type="button"
+          onClick={() => setOpen(false)}
+          disabled={loading}
+          label="Annuler"
+        >
+          Annuler
+        </button>
+        <BrutalButton
+          type="button"
+          onClickFn={() => void onSave(() => setOpen(false))}
+          disabled={loading}
+          variant="primary"
+          label={loading ? "Enregistrement..." : "Enregistrer"}
+          fullWidth
+        />
+      </div>
+    </ModalContent>
+  );
+}
+
 const ShotSessionRow: FC<Props> = ({
                                      sessionId,
                                      distance,
@@ -36,7 +169,6 @@ const ShotSessionRow: FC<Props> = ({
                                      onUpdated,
                                      onDeleted,
                                    }) => {
-  const [isEditing, setIsEditing] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [distanceValue, setDistanceValue] = useState(
     distance != null ? String(distance) : ""
@@ -47,7 +179,7 @@ const ShotSessionRow: FC<Props> = ({
   );
   const [loading, setLoading] = useState(false);
 
-  async function handleSave() {
+  async function handleSave(onSaved?: () => void) {
     const parsedDistance =
       distanceValue === "" ? null : Number(distanceValue);
 
@@ -101,7 +233,7 @@ const ShotSessionRow: FC<Props> = ({
         createdAt: updatedSession.createdAt,
       });
 
-      setIsEditing(false);
+      onSaved?.();
     } catch (error) {
       console.error(error);
       alert("Impossible de modifier la session");
@@ -132,87 +264,19 @@ const ShotSessionRow: FC<Props> = ({
     }
   }
 
-  if (isEditing) {
-    return (
-      <>
-        <div className="border-y border-[var(--border)] bg-[var(--card)] px-3 py-3 sm:rounded-xl sm:border sm:px-4">
-          <div className="grid gap-3">
-            <input
-              type="number"
-              step="0.1"
-              min="0"
-              value={distanceValue}
-              onChange={(e) => setDistanceValue(e.target.value)}
-              placeholder="Distance"
-              className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-3 outline-none focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
-            />
-
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-              {hitOptions.map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setTargetsHitValue(value)}
-                  className={`min-h-11 rounded-lg px-3 py-2 text-base font-bold transition active:translate-y-px ${
-                    targetsHitValue === value
-                      ? "bg-[image:var(--selected-bg)] text-[var(--selected-foreground)]"
-                      : "bg-[var(--surface-strong)]"
-                  }`}
-                >
-                  {value}
-                </button>
-              ))}
-            </div>
-
-            <input
-              type="number"
-              min="0"
-              max="50"
-              step="1"
-              value={durationSecondsValue}
-              onChange={(e) => setDurationSecondsValue(e.target.value)}
-              placeholder="Temps en secondes"
-              className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-3 outline-none focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
-            />
-
-            <div className="text-xs text-[var(--muted-foreground)]">
-              Laisser vide si non renseigné. Maximum 50 secondes.
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <BrutalButton
-                type="button"
-                onClickFn={handleSave}
-                disabled={loading}
-                variant="primary"
-                label="Enregistrer"
-              />
-              <BrutalButton
-                type="button"
-                onClickFn={() => setIsEditing(false)}
-                disabled={loading}
-                variant="ghost"
-                label="Annuler"
-              />
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  }
-
   return (
     <>
-      <div className="bg-transparent px-3 py-3 sm:rounded-xl sm:border sm:border-[var(--border)] sm:bg-[var(--card)] sm:px-4">
+      <div
+        className="bg-transparent px-3 py-3 sm:rounded-xl sm:border sm:border-[var(--border)] sm:bg-[var(--card)] sm:px-4">
         <div className="flex items-center justify-between gap-3">
           <div className="text-sm font-semibold text-[var(--muted-foreground)]">
             Session
           </div>
           <div className="text-sm font-semibold text-[var(--muted-foreground)]">
-          {new Date(createdAt).toLocaleTimeString("fr-FR", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
+            {new Date(createdAt).toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
           </div>
         </div>
 
@@ -233,15 +297,22 @@ const ShotSessionRow: FC<Props> = ({
 
         {canManage && (
           <div className="mt-3 flex justify-end gap-2">
-            <button
-              type="button"
-              aria-label="Modifier la session"
-              title="Modifier"
-              onClick={() => setIsEditing(true)}
-              className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--card)] text-[var(--muted-foreground)] ring-1 ring-inset ring-[var(--border)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] active:translate-y-px"
-            >
-              <Pencil size={19} aria-hidden="true" />
-            </button>
+            <Modal>
+              <EditSessionButton/>
+              <ModalBody
+                className="mx-4 min-h-0 max-h-[90dvh] flex-none rounded-2xl border-[var(--border)] sm:max-w-md md:max-w-md">
+                <EditSessionModalContent
+                  distanceValue={distanceValue}
+                  setDistanceValue={setDistanceValue}
+                  targetsHitValue={targetsHitValue}
+                  setTargetsHitValue={setTargetsHitValue}
+                  durationSecondsValue={durationSecondsValue}
+                  setDurationSecondsValue={setDurationSecondsValue}
+                  loading={loading}
+                  onSave={handleSave}
+                />
+              </ModalBody>
+            </Modal>
 
             <button
               type="button"
@@ -250,7 +321,7 @@ const ShotSessionRow: FC<Props> = ({
               onClick={() => setIsDeleteModalOpen(true)}
               className="flex h-11 w-11 items-center justify-center rounded-lg bg-[image:var(--danger-gradient)] text-white transition hover:brightness-95 active:translate-y-px"
             >
-              <Trash2 size={19} aria-hidden="true" />
+              <Trash2 size={19} aria-hidden="true"/>
             </button>
           </div>
         )}
