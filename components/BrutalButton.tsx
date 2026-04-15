@@ -1,13 +1,14 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+import {cn} from "@/lib/utils";
 
-type Props = {
-  label: string;
+type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
+  label?: string;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   onClickFn?: () => void;
-  variant?: "default" | "primary" | "accent" | "secondary" | "ghost" | "danger";
+  variant?: "default" | "primary" | "accent" | "secondary" | "soft" | "ghost" | "danger";
   className?: string;
   fullWidth?: boolean;
   children?: ReactNode;
@@ -21,6 +22,8 @@ export default function BrutalButton({
                                        variant = "default",
                                        className = "",
                                        fullWidth = false,
+                                       children,
+                                       ...buttonProps
                                      }: Props) {
 
   const base =
@@ -35,6 +38,8 @@ export default function BrutalButton({
       "border border-transparent bg-[image:var(--accent-gradient)] text-[var(--accent-sport-foreground)] hover:brightness-95",
     secondary:
       "border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--fg)] hover:border-[var(--accent-sport)] hover:brightness-95",
+    soft:
+      "button-soft-gradient border-2 border-transparent text-[var(--muted-foreground)] hover:text-[var(--fg)] hover:brightness-95",
     ghost:
       "border border-transparent bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--fg)]",
     danger:
@@ -43,12 +48,14 @@ export default function BrutalButton({
 
   return (
     <button
+      {...buttonProps}
       disabled={disabled}
       type={type}
       onClick={onClickFn}
-      className={`${base} ${variants[variant]} ${fullWidth ? "w-full" : ""} ${className}`}
+      className={cn(`${base} ${variants[variant]} ${fullWidth ? "w-full" : ""} ${className}`)}
     >
       {label}
+      {children}
     </button>
   );
 }

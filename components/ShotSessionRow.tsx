@@ -31,15 +31,16 @@ function EditSessionButton() {
   const {setOpen} = useModal();
 
   return (
-    <button
+    <BrutalButton
       type="button"
       aria-label="Modifier la session"
       title="Modifier"
-      onClick={() => setOpen(true)}
-      className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--card)] text-[var(--muted-foreground)] ring-1 ring-inset ring-[var(--border)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] active:translate-y-px"
+      onClickFn={() => setOpen(true)}
+      variant="soft"
+      className="h-11 min-h-11 w-11 p-0 sm:col-span-1"
     >
       <Pencil size={19} aria-hidden="true"/>
-    </button>
+    </BrutalButton>
   );
 }
 
@@ -137,15 +138,15 @@ function EditSessionModalContent({
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2">
-        <button
-          className="min-h-12 rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm font-semibold text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] sm:col-span-1"
+        <BrutalButton
           type="button"
-          onClick={() => setOpen(false)}
-          disabled={loading}
+          onClickFn={() => setOpen(false)}
           label="Annuler"
-        >
-          Annuler
-        </button>
+          variant="soft"
+          className="sm:col-span-1"
+          disabled={loading}
+          fullWidth
+        />
         <BrutalButton
           type="button"
           onClickFn={() => void onSave(() => setOpen(false))}

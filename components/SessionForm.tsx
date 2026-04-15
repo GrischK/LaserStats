@@ -179,13 +179,14 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
               );
             })}
 
-            <button
+            <BrutalButton
               type="button"
-              onClick={() => setDistance("")}
-              className="min-h-12 rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm font-semibold text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] sm:col-span-1"
-            >
-              Effacer
-            </button>
+              onClickFn={() => setDistance("")}
+              label="Effacer"
+              variant="soft"
+              className="sm:col-span-1"
+              fullWidth
+            />
           </div>
         </div>
 

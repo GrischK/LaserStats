@@ -25,6 +25,9 @@
   --selected-border: #6db7c7;
   --selected-foreground: #ffffff;
   --surface-strong: #d7dee2;
+  --surface-gradient: linear-gradient(135deg, #ffffff 0%, #dfe7eb 52%, #bcc9d0 100%);
+  --soft-action-gradient: linear-gradient(135deg, #f5f9fa 0%, #d7e7ec 52%, #b8d4dc 100%);
+  --soft-action-foreground: #305160;
   --history-day: #d3dbe0;
   --history-day-hover: #c8d2d8;
   --history-stat: #f6f8f9;
@@ -88,6 +91,9 @@ html[data-theme="dark"] {
   --selected-border: #8be4ef;
   --selected-foreground: #ffffff;
   --surface-strong: #2a4036;
+  --surface-gradient: linear-gradient(135deg, #3d554c 0%, #2a4036 52%, #17231e 100%);
+  --soft-action-gradient: linear-gradient(135deg, #2d4b58 0%, #243a45 52%, #172832 100%);
+  --soft-action-foreground: #d6edf3;
   --history-day: #2b4036;
   --history-day-hover: #354f42;
   --history-stat: #17231e;
@@ -221,6 +227,12 @@ a {
   html {
     @apply font-sans;
   }
+}
+
+.button-soft-gradient {
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    var(--primary-gradient) border-box;
 }
 
 .hero-bg {

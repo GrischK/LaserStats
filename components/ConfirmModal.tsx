@@ -4,7 +4,6 @@ import {useEffect, useRef} from "react";
 import {AnimatePresence, motion} from "motion/react";
 import BrutalButton from "@/components/BrutalButton";
 import {useOutsideClick} from "@/lib/use-outside-click";
-import {Pencil, Trash2} from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -27,7 +26,7 @@ export default function ConfirmModal({
                                        cancelLabel = "Annuler",
                                        loading = false,
                                        onCancel,
-                                     onConfirm,
+                                       onConfirm,
                                      }: Props) {
   const modalRef = useRef<HTMLDivElement | null>(null);
 
@@ -78,21 +77,21 @@ export default function ConfirmModal({
             ) : null}
 
             <div className="mt-6 grid gap-2 sm:grid-cols-2">
-              <button
-                className="min-h-12 rounded-lg border border-[var(--border)] bg-[var(--card)] px-4 py-3 text-sm font-semibold text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] sm:col-span-1"
+              <BrutalButton
                 type="button"
-                onClick={onCancel}
-                disabled={loading}
+                onClickFn={onCancel}
                 label={cancelLabel}
-              >
-                Annuler
-              </button>
+                variant="soft"
+                className="sm:col-span-1"
+                fullWidth
+              />
 
               <button
+                disabled={loading}
+                aria-label={loading ? label : confirmLabel}
                 type="button"
-                aria-label="Supprimer la session"
-                title="Supprimer"
-                onClick={() => setIsDeleteModalOpen(true)}
+                title={confirmLabel}
+                onClick={onConfirm}
                 className="flex min-h-12 items-center justify-center rounded-lg bg-[image:var(--danger-gradient)] text-white transition hover:brightness-95 active:translate-y-px"
               >
                 Supprimer
