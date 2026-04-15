@@ -109,9 +109,13 @@ export default function RunnerHistoryAccordion({
             >
               <div className="min-h-0 overflow-hidden">
                 <div className="border-t border-[var(--border)] bg-[var(--muted)]/35">
-                  <div className="divide-y divide-[var(--border)]">
-                  {month.days.map((day) => {
+                  <div>
+                  {month.days.map((day, dayIndex) => {
                     const isDayOpen = !!openDays[day.dayKey];
+                    const accentIndex = (dayIndex % 4) + 1;
+                    const nextAccentIndex = accentIndex === 4 ? 4 : accentIndex + 1;
+                    const accentVar = `var(--history-accent-${accentIndex})`;
+                    const nextAccentVar = `var(--history-accent-${nextAccentIndex})`;
 
                     const averageTargets =
                       day.sessions.reduce((sum, item) => sum + item.targetsHit, 0) /
@@ -132,16 +136,23 @@ export default function RunnerHistoryAccordion({
                     return (
                       <div
                         key={day.dayKey}
-                        className="relative overflow-hidden bg-[var(--history-day)]"
+                        className={`relative overflow-hidden border-l-[6px] bg-[var(--history-day)] ${
+                          dayIndex > 0
+                            ? "before:absolute before:left-0 before:right-0 before:top-0 before:h-px before:bg-[var(--history-separator)] before:content-['']"
+                            : ""
+                        }`}
+                        style={{
+                          borderLeftColor: accentVar,
+                          borderImageSlice: 1,
+                          borderImageSource: `linear-gradient(180deg, ${accentVar}, ${nextAccentVar})`,
+                        }}
                       >
-                        <div className="absolute inset-y-0 left-0 w-1.5 bg-[var(--accent-sport)]" />
-
                         <button
                           type="button"
                           onClick={() => toggleDay(day.dayKey)}
-                          className="flex w-full items-stretch gap-3 text-left transition hover:bg-[var(--history-day-hover)]"
+                          className="w-full min-w-0 text-left transition hover:bg-[var(--history-day-hover)]"
                         >
-                          <div className="flex min-w-0 flex-1 items-center justify-between gap-4 py-4 pl-5 pr-4">
+                          <div className="flex min-w-0 items-center justify-between gap-4 py-4 pl-4 pr-4">
                             <div className="min-w-0">
                             <div className="font-bold capitalize">{day.dayLabel}</div>
                             <div className="mt-1 text-sm text-[var(--muted-foreground)]">
@@ -170,7 +181,7 @@ export default function RunnerHistoryAccordion({
                           }`}
                         >
                           <div className="min-h-0 overflow-hidden">
-                            <div className="bg-[var(--history-day)] pb-2 pl-1.5 sm:pb-3">
+                            <div className="bg-[var(--history-day)] pb-2 sm:pb-3">
                               <div className="divide-y divide-[var(--history-separator)]">
                               {day.sessions.map((item) => (
                                 <ShotSessionRow

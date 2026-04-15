@@ -29,6 +29,10 @@
   --history-day-hover: #c8d2d8;
   --history-stat: #f6f8f9;
   --history-separator: #aab7be;
+  --history-accent-1: #12304a;
+  --history-accent-2: #1c5f80;
+  --history-accent-3: #338eae;
+  --history-accent-4: #9ccbd8;
   --danger-soft: #ead7d7;
   --danger-soft-hover: #dfc2c2;
   --danger-soft-foreground: #8f1d1d;
@@ -88,6 +92,10 @@ html[data-theme="dark"] {
   --history-day-hover: #354f42;
   --history-stat: #17231e;
   --history-separator: #486356;
+  --history-accent-1: #4cc9de;
+  --history-accent-2: #32a5c5;
+  --history-accent-3: #2a7895;
+  --history-accent-4: #8aa6b0;
   --danger-soft: #3a2223;
   --danger-soft-hover: #4a2a2b;
   --danger-soft-foreground: #f0b6b6;
