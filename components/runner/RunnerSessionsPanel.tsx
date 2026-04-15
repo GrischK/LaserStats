@@ -157,7 +157,7 @@ export default function RunnerSessionsPanel({
         />
       )}
 
-      <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)] sm:p-6">
+      <section className="-mx-4 border-y border-[var(--border)] bg-[var(--card)] px-4 py-5 sm:mx-0 sm:rounded-2xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
         <h2 className="mb-4 text-2xl font-bold tracking-tight">Historique</h2>
         <RunnerHistoryAccordion
           groupedSessions={history}

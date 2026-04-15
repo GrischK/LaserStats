@@ -23,7 +23,7 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       aria-label={`Passer en mode ${label.toLowerCase()}`}
-      className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
+      className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-semibold transition hover:bg-[var(--muted)]"
     >
       <span aria-hidden="true">{icon}</span>
       <span className="hidden sm:inline">{label}</span>

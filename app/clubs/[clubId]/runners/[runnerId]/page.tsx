@@ -151,8 +151,8 @@ export default async function RunnerPage({ params }: Props) {
   );
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6">
-      <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-5">
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 pb-4 pt-2 sm:mx-0 sm:rounded-2xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
@@ -166,7 +166,7 @@ export default async function RunnerPage({ params }: Props) {
                   className="h-10 w-10 rounded-full border object-cover"
                 />
               ) : null}
-              <h1 className="text-3xl font-bold tracking-tight">{runner.name}</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight">{runner.name}</h1>
             </div>
           </div>
 
@@ -178,10 +178,13 @@ export default async function RunnerPage({ params }: Props) {
             {/*</div>*/}
             <Link
               href={`/clubs/${clubId}/runners/${runner.id}/stats`}
+              className="w-full sm:w-auto"
             >
               <BrutalButton
                 type="button"
                 label={"Voir les stats"}
+                variant="accent"
+                fullWidth
               />
             </Link>
           </div>

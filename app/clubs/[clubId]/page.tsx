@@ -53,23 +53,23 @@ export default async function ClubPage({params}: Props) {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold">{club.name}</h1>
-          <p className="text-sm text-gray-600">Rôle : {membership.role}</p>
+          <h1 className="text-3xl font-extrabold tracking-tight">{club.name}</h1>
+          <p className="text-sm font-medium text-[var(--muted-foreground)]">Rôle : {membership.role}</p>
         </div>
         {(membership.role === "ADMIN" || membership.role === "COACH") && (
-          <div className="flex justify-center">
+          <div className="w-full md:w-auto">
             <ClubActionsDropdown clubId={clubId}/>
           </div>
         )}
       </div>
 
-      <section className="rounded-2xl border p-4">
+      <section className="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-[var(--shadow)]">
         <h2 className="mb-3 text-xl font-semibold">Coureurs</h2>
 
         {club.runners.length === 0 ? (
-          <p className="text-sm text-gray-600">Aucun coureur pour le moment.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">Aucun coureur pour le moment.</p>
         ) : (
           <div className="grid gap-2">
             {club.runners.map((runner) => (
@@ -84,10 +84,10 @@ export default async function ClubPage({params}: Props) {
         )}
       </section>
 
-      <div className="flex w-full items-center justify-center">
+      <div className="mt-4 flex w-full items-center justify-center">
         {(membership.role === "ADMIN" || membership.role === "COACH") && (
-          <Link href={`/clubs/${clubId}/add-runner`}>
-            <BrutalButton label="Ajouter un coureur"/>
+          <Link href={`/clubs/${clubId}/add-runner`} className="w-full sm:w-auto">
+            <BrutalButton label="Ajouter un coureur" variant="primary" fullWidth/>
           </Link>
         )}
       </div>

@@ -30,7 +30,7 @@ export default function ConfirmModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
       <div
-        className="w-full max-w-md rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+        className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
         <h3 className="text-xl font-bold">{title}</h3>
 
         {description ? (
@@ -39,12 +39,14 @@ export default function ConfirmModal({
           </p>
         ) : null}
 
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <div className="mt-6 grid gap-2 sm:grid-cols-2">
           <BrutalButton
             type="button"
             onClickFn={onCancel}
             disabled={loading}
             label={cancelLabel}
+            variant="ghost"
+            fullWidth
           />
 
           <BrutalButton
@@ -53,6 +55,7 @@ export default function ConfirmModal({
             disabled={loading}
             label={loading ? label : confirmLabel}
             variant="danger"
+            fullWidth
           />
         </div>
       </div>

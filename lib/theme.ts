@@ -5,11 +5,11 @@ const THEME_EVENT = "theme-change";
 
 export function getInitialTheme(): Theme {
   if (typeof window === "undefined") {
-    return "dark";
+    return "light";
   }
 
   const savedTheme = window.localStorage.getItem(THEME_KEY);
-  return savedTheme === "light" ? "light" : "dark";
+  return savedTheme === "dark" ? "dark" : "light";
 }
 
 export function applyTheme(theme: Theme) {
@@ -34,5 +34,5 @@ export function getThemeSnapshot(): Theme {
 }
 
 export function getThemeServerSnapshot(): Theme {
-  return "dark";
+  return "light";
 }

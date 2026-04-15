@@ -1,11 +1,16 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 type Props = {
   label: string;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   onClickFn?: () => void;
-  variant?: "default" | "danger";
+  variant?: "default" | "primary" | "accent" | "secondary" | "ghost" | "danger";
+  className?: string;
+  fullWidth?: boolean;
+  children?: ReactNode;
 };
 
 export default function BrutalButton({
@@ -14,17 +19,26 @@ export default function BrutalButton({
                                        disabled,
                                        onClickFn,
                                        variant = "default",
+                                       className = "",
+                                       fullWidth = false,
                                      }: Props) {
 
   const base =
-    "px-8 py-0.5 border-2 uppercase transition duration-200 text-sm hover:cursor-pointer shadow-[1px_1px_rgba(0,0,0),2px_2px_rgba(0,0,0),3px_3px_rgba(0,0,0),4px_4px_rgba(0,0,0),5px_5px_0px_0px_rgba(0,0,0)] disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex min-h-12 items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold transition duration-150 hover:cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-sport)] active:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55";
 
   const variants = {
     default:
-      "border-black bg-white text-black dark:border-white dark:bg-gray-700 dark:text-white dark:shadow-[1px_1px_rgba(255,255,255),2px_2px_rgba(255,255,255),3px_3px_rgba(255,255,255),4px_4px_rgba(255,255,255),5px_5px_0px_0px_rgba(255,255,255)]",
-
+      "border border-[var(--border)] bg-[var(--card)] text-[var(--fg)] hover:border-[var(--accent-sport)] hover:bg-[var(--muted)]",
+    primary:
+      "border border-transparent bg-[image:var(--primary-gradient)] text-[var(--primary-foreground)] hover:brightness-95",
+    accent:
+      "border border-transparent bg-[image:var(--accent-gradient)] text-[var(--accent-sport-foreground)] hover:brightness-95",
+    secondary:
+      "border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--fg)] hover:border-[var(--accent-sport)] hover:brightness-95",
+    ghost:
+      "border border-transparent bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--fg)]",
     danger:
-      "border-red-600 bg-white text-red-600 shadow-[1px_1px_rgba(220,38,38),2px_2px_rgba(220,38,38),3px_3px_rgba(220,38,38),4px_4px_rgba(220,38,38),5px_5px_0px_0px_rgba(220,38,38)] hover:bg-red-700 hover:text-white",
+      "border border-[var(--danger)] bg-[var(--danger)] text-white shadow-sm hover:bg-red-700",
   };
 
   return (
@@ -32,7 +46,7 @@ export default function BrutalButton({
       disabled={disabled}
       type={type}
       onClick={onClickFn}
-      className={`${base} ${variants[variant]}`}
+      className={`${base} ${variants[variant]} ${fullWidth ? "w-full" : ""} ${className}`}
     >
       {label}
     </button>

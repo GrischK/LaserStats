@@ -27,19 +27,19 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#111111",
+  themeColor: "#f4f7f5",
 };
 
 const themeScript = `
 (function() {
   try {
     const savedTheme = localStorage.getItem("theme");
-    const theme = savedTheme === "light" || savedTheme === "dark" ? savedTheme : "dark";
+    const theme = savedTheme === "light" || savedTheme === "dark" ? savedTheme : "light";
     document.documentElement.setAttribute("data-theme", theme);
     document.documentElement.classList.toggle("dark", theme === "dark");
   } catch (e) {
-    document.documentElement.setAttribute("data-theme", "dark");
-    document.documentElement.classList.add("dark");
+    document.documentElement.setAttribute("data-theme", "light");
+    document.documentElement.classList.remove("dark");
   }
 })();
 `;

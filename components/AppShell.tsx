@@ -40,22 +40,22 @@ export default function AppShell({children}: Props) {
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)] transition-colors">
       <header
         ref={headerRef}
-        className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--header-bg)]/90 backdrop-blur"
+        className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--header-bg)]/95 backdrop-blur"
       >
-        <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:h-16 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard"
-              className="flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+              className="flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <div className="w-20">
+              <div className="w-16 sm:w-20">
                 <img src={logo} alt="logo" className="w-full"/>
               </div>
             </Link>
 
             <div>
-              <div className="text-lg font-bold tracking-tight">Laser-stats</div>
+              <div className="text-base font-extrabold tracking-tight sm:text-lg">Laser-stats</div>
               <div className="hidden text-xs text-[var(--muted-foreground)] sm:block">
                 Suivi des tirs Laser Run
               </div>
@@ -65,7 +65,7 @@ export default function AppShell({children}: Props) {
           <div className="hidden items-center gap-2 md:flex">
             <Link
               href="/account"
-              className="rounded-full px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
             >
               Compte
             </Link>
@@ -78,7 +78,7 @@ export default function AppShell({children}: Props) {
             aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={mobileMenuOpen}
             onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="inline-flex items-center justify-center rounded-lg border border-[var(--border)] p-2 text-[var(--fg)] transition hover:bg-[var(--muted)] md:hidden"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--card)] p-2 text-[var(--fg)] transition hover:bg-[var(--muted)] md:hidden"
           >
             <span className="sr-only">
               {mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
@@ -114,7 +114,7 @@ export default function AppShell({children}: Props) {
             <Link
               href="/dashboard"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+              className="rounded-lg px-3 py-3 text-sm font-semibold text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
             >
               Accueil
             </Link>
@@ -122,7 +122,7 @@ export default function AppShell({children}: Props) {
             <Link
               href="/account"
               onClick={() => setMobileMenuOpen(false)}
-              className="rounded-xl px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+              className="rounded-lg px-3 py-3 text-sm font-semibold text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
             >
               Compte
             </Link>
@@ -138,7 +138,7 @@ export default function AppShell({children}: Props) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6">
         {children}
       </main>
     </div>

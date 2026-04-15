@@ -5,19 +5,37 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --bg: #f6f7fb;
+  --bg: #eef1f2;
   --fg: #111827;
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --border: oklch(0.922 0 0);
+  --card: #fbfdfb;
+  --card-foreground: #111827;
+  --muted: #e1e6e8;
+  --muted-foreground: #56636a;
+  --border: #c5cdd1;
   --header-bg: rgba(255, 255, 255, 0.85);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --success: #16a34a;
+  --primary: #174f3d;
+  --primary-hover: #113d31;
+  --primary-foreground: #ffffff;
+  --primary-gradient: linear-gradient(135deg, #174f3d 0%, #1f7a5a 52%, #24a276 100%);
+  --accent-sport: #1f5f7a;
+  --accent-sport-hover: #16485f;
+  --accent-sport-foreground: #ffffff;
+  --accent-gradient: linear-gradient(135deg, #17324a 0%, #1f5f7a 54%, #2f9bb3 100%);
+  --selected-bg: linear-gradient(135deg, #132d3d 0%, #1f5f7a 55%, #287f91 100%);
+  --selected-border: #6db7c7;
+  --selected-foreground: #ffffff;
+  --surface-strong: #d7dee2;
+  --history-day: #d3dbe0;
+  --history-day-hover: #c8d2d8;
+  --history-stat: #f6f8f9;
+  --history-separator: #aab7be;
+  --danger-soft: #ead7d7;
+  --danger-soft-hover: #dfc2c2;
+  --danger-soft-foreground: #8f1d1d;
+  --danger-gradient: linear-gradient(135deg, #4f2931 0%, #8a3a42 56%, #b45d58 100%);
+  --success: #128a3d;
   --danger: #dc2626;
-  --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  --shadow: 0 10px 28px rgba(17, 24, 39, 0.08);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -46,16 +64,34 @@
 }
 
 html[data-theme="dark"] {
-  --bg: #0b1220;
+  --bg: #0d1512;
   --fg: #f8fafc;
-  --card: #121a2b;
+  --card: #121d19;
   --card-foreground: #f8fafc;
-  --muted: #1a2438;
-  --muted-foreground: #94a3b8;
-  --border: #243044;
-  --header-bg: rgba(11, 18, 32, 0.8);
-  --primary: #3b82f6;
+  --muted: #22322b;
+  --muted-foreground: #a7b8b0;
+  --border: #2c3b34;
+  --header-bg: rgba(11, 20, 17, 0.84);
+  --primary: #2ddf8a;
+  --primary-hover: #22c55e;
   --primary-foreground: #ffffff;
+  --primary-gradient: linear-gradient(135deg, #176548 0%, #22c55e 58%, #5ee6a7 100%);
+  --accent-sport: #4cc9de;
+  --accent-sport-hover: #22a9c0;
+  --accent-sport-foreground: #061c23;
+  --accent-gradient: linear-gradient(135deg, #163146 0%, #2286a2 55%, #4cc9de 100%);
+  --selected-bg: linear-gradient(135deg, #163146 0%, #2286a2 55%, #4cc9de 100%);
+  --selected-border: #8be4ef;
+  --selected-foreground: #ffffff;
+  --surface-strong: #2a4036;
+  --history-day: #2b4036;
+  --history-day-hover: #354f42;
+  --history-stat: #17231e;
+  --history-separator: #486356;
+  --danger-soft: #3a2223;
+  --danger-soft-hover: #4a2a2b;
+  --danger-soft-foreground: #f0b6b6;
+  --danger-gradient: linear-gradient(135deg, #4a252d 0%, #8a3a42 56%, #c46660 100%);
   --success: #22c55e;
   --danger: #ef4444;
   --shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
@@ -74,6 +110,9 @@ body {
 body {
   margin: 0;
   color: var(--fg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 180px),
+    var(--bg);
 }
 
 button,
