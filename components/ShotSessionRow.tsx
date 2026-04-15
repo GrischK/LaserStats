@@ -300,7 +300,7 @@ const ShotSessionRow: FC<Props> = ({
             <Modal>
               <EditSessionButton/>
               <ModalBody
-                className="mx-4 min-h-0 max-h-[90dvh] flex-none rounded-2xl border-[var(--border)] sm:max-w-md md:max-w-md">
+                className="w-[90%] sm:w-full mx-4 min-h-0 max-h-[90dvh] flex-none rounded-2xl border-[var(--border)] sm:max-w-md md:max-w-md">
                 <EditSessionModalContent
                   distanceValue={distanceValue}
                   setDistanceValue={setDistanceValue}
