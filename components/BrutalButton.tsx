@@ -43,7 +43,7 @@ export default function BrutalButton({
     ghost:
       "border border-transparent bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--fg)]",
     danger:
-      "border border-[var(--danger)] bg-[var(--danger)] text-white shadow-sm hover:bg-red-700",
+      "border border-transparent bg-[image:var(--danger-gradient)] text-white shadow-sm hover:brightness-95",
   };
 
   return (

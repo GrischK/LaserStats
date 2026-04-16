@@ -316,15 +316,16 @@ const ShotSessionRow: FC<Props> = ({
               </ModalBody>
             </Modal>
 
-            <button
+            <BrutalButton
               type="button"
               aria-label="Supprimer la session"
               title="Supprimer"
-              onClick={() => setIsDeleteModalOpen(true)}
-              className="flex h-11 w-11 items-center justify-center rounded-lg bg-[image:var(--danger-gradient)] text-white transition hover:brightness-95 active:translate-y-px"
+              onClickFn={() => setIsDeleteModalOpen(true)}
+              variant="danger"
+              className="h-11 min-h-11 w-11 p-0"
             >
               <Trash2 size={19} aria-hidden="true"/>
-            </button>
+            </BrutalButton>
           </div>
         )}
       </div>

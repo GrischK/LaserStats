@@ -28,8 +28,8 @@ export default async function AccountPage() {
   }
 
   return (
-    <main className="mx-auto max-w-3xl space-y-6">
-      <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+    <main className="mx-auto max-w-3xl sm:space-y-6">
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 pb-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
         <h1 className="text-3xl font-bold tracking-tight">Compte</h1>
         <p className="mt-2 text-[var(--muted-foreground)]">
           Gérez votre profil, votre mot de passe et votre compte.
