@@ -247,13 +247,13 @@ export default function ProfileForm({
                 alt="Avatar"
                 className="h-20 w-20 rounded-full object-cover border"
               />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="text-sm underline"
-              >
-                Supprimer la photo
-              </button>
+
+              <BrutalButton
+                label="Supprimer la photo"
+                onClickFn={handleRemoveImage}
+                variant="danger"
+                className="mt-2"
+              />
             </div>
           ) : null}
 

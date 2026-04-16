@@ -2,6 +2,7 @@
 import {cn} from "@/lib/utils";
 import {AnimatePresence, motion} from "motion/react";
 import React, {createContext, ReactNode, useContext, useEffect, useRef, useState,} from "react";
+import {createPortal} from "react-dom";
 
 interface ModalContextType {
   open: boolean;
@@ -86,21 +87,25 @@ export const ModalBody = ({
   const modalRef = useRef<HTMLDivElement | null>(null);
   useOutsideClick(modalRef, () => setOpen(false));
 
-  return (
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
           initial={{opacity: 0}}
           animate={{opacity: 1, backdropFilter: "blur(10px)"}}
           exit={{opacity: 0, backdropFilter: "blur(0px)"}}
-          className="fixed inset-0 z-50 flex h-full w-full items-center justify-center [perspective:800px] [transform-style:preserve-3d]"
+          className="fixed inset-0 z-[100] flex h-full w-full items-center justify-center [perspective:800px] [transform-style:preserve-3d]"
         >
           <Overlay/>
 
           <motion.div
             ref={modalRef}
             className={cn(
-              "relative z-50 flex min-h-[50%] max-h-[90%] flex-1 flex-col overflow-hidden border border-transparent bg-[var(--card)] md:max-w-[40%] md:rounded-2xl dark:border-neutral-800",
+              "relative z-[101] flex min-h-[50%] max-h-[90%] flex-1 flex-col overflow-hidden border border-transparent bg-[var(--card)] md:max-w-[40%] md:rounded-2xl dark:border-neutral-800",
               className
             )}
             initial={{
@@ -131,7 +136,8 @@ export const ModalBody = ({
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 };
 
