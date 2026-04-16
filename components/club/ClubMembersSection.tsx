@@ -71,12 +71,12 @@ export default function ClubMembersSection({
   }
 
   return (
-    <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
-      <h2 className="text-base font-semibold">Membres du club</h2>
+    <section className="-mx-4 md:border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+      <h2 className="text-xl font-semibold">Membres du club</h2>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 sm:space-y-3">
         {members.length === 0 ? (
-          <p className="text-sm text-neutral-500">Aucun membre.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">Aucun membre.</p>
         ) : (
           members.map((member) => {
             const isCurrentUser = member.userId === currentUserId;
@@ -86,7 +86,7 @@ export default function ClubMembersSection({
             return (
               <div
                 key={member.userId}
-                className="flex items-start justify-between gap-3 rounded-xl border p-3"
+                className="flex flex-col gap-3 border-b border-[var(--border)] py-4 last:border-b-0 sm:flex-row sm:items-start sm:justify-between sm:rounded-xl sm:border sm:p-3"
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export default function ClubMembersSection({
                       <img
                         src={member.user.image}
                         alt={`Avatar de ${member.user.name ?? member.user.email}`}
-                        className="h-8 w-8 rounded-full border object-cover"
+                        className="h-9 w-9 rounded-full border border-[var(--border)] object-cover"
                       />
                     ) : null}
                     <p className="truncate font-medium">
@@ -102,8 +102,8 @@ export default function ClubMembersSection({
                       {isCurrentUser ? " (vous)" : ""}
                     </p>
                   </div>
-                  <p className="text-sm text-neutral-600">{member.user.email}</p>
-                  <p className="text-sm text-neutral-500">
+                  <p className="text-sm text-[var(--muted-foreground)]">{member.user.email}</p>
+                  <p className="text-sm text-[var(--muted-foreground)]">
                     Rôle : {roleLabel(member.role)}
                   </p>
                 </div>
@@ -117,6 +117,7 @@ export default function ClubMembersSection({
                       loadingUserId === member.userId ? "Retrait..." : "Retirer"
                     }
                     variant="danger"
+                    className="w-full sm:w-auto"
                   />
                 ) : null}
               </div>
@@ -125,7 +126,7 @@ export default function ClubMembersSection({
         )}
       </div>
 
-      {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
 
       <ConfirmModal
         open={Boolean(pendingMember)}
@@ -141,6 +142,6 @@ export default function ClubMembersSection({
         onCancel={closeConfirm}
         onConfirm={confirmRemove}
       />
-    </div>
+    </section>
   );
 }

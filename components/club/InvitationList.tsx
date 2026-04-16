@@ -13,12 +13,12 @@ export default function InvitationList({
                                          onCancelled,
                                        }: Props) {
   return (
-    <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
-      <h2 className="text-base font-semibold">Invitations en attente</h2>
+    <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+      <h2 className="text-xl font-semibold">Invitations en attente</h2>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 sm:space-y-3">
         {invitations.length === 0 ? (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-[var(--muted-foreground)]">
             Aucune invitation en attente.
           </p>
         ) : (
@@ -31,6 +31,6 @@ export default function InvitationList({
           ))
         )}
       </div>
-    </div>
+    </section>
   );
 }

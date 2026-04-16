@@ -53,12 +53,12 @@ export default function InvitationRow({invitation, onCancelled}: Props) {
   }
 
   return (
-    <div className="rounded-xl border p-3">
-      <div className="flex items-start justify-between gap-4">
+    <div className="border-b border-[var(--border)] py-4 last:border-b-0 sm:rounded-xl sm:border sm:p-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div className="min-w-0">
           <p className="truncate font-medium">{invitation.email}</p>
-          <p className="text-sm text-neutral-600">Rôle : {roleLabel}</p>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-[var(--muted-foreground)]">Rôle : {roleLabel}</p>
+          <p className="text-sm text-[var(--muted-foreground)]">
             Expire le {new Date(invitation.expiresAt).toLocaleDateString("fr-FR")}
           </p>
         </div>
@@ -69,29 +69,32 @@ export default function InvitationRow({invitation, onCancelled}: Props) {
           disabled={loading}
           label={loading ? "Suppression..." : "Supprimer"}
           variant="danger"
+          className="w-full sm:w-auto"
         />
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-3 grid gap-2 sm:flex sm:flex-wrap">
         <BrutalButton
           type="button"
           onClickFn={() => setShowLink((prev) => !prev)}
           label={showLink ? "Masquer le lien" : "Afficher le lien"}
+          variant="soft"
         />
         <BrutalButton
           type="button"
           onClickFn={handleCopy}
           label={copied ? "Copié" : "Copier le lien"}
+          variant="soft"
         />
       </div>
 
       {showLink ? (
-        <div className="mt-3 rounded-lg bg-[var(--card)] p-2">
-          <p className="break-all text-xs text-neutral-200">{inviteUrl}</p>
+        <div className="mt-3 rounded-lg bg-[var(--muted)] px-3 py-2">
+          <p className="break-all text-xs text-[var(--muted-foreground)]">{inviteUrl}</p>
         </div>
       ) : null}
 
-      {error ? <p className="mt-2 text-sm text-red-600">{error}</p> : null}
+      {error ? <p className="mt-2 text-sm text-[var(--danger)]">{error}</p> : null}
     </div>
   );
 }
