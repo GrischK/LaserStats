@@ -70,7 +70,7 @@ export default async function ClubSettingsPage({params}: Props) {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Gestion du club</h1>
+      <h1>Inviter un membre</h1>
 
       {availableRoles.length > 0 ? (
         <ClubInvitationsSection

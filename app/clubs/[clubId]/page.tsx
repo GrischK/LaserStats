@@ -54,7 +54,7 @@ export default async function ClubPage({params}: Props) {
     <>
       <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">{club.name}</h1>
+          <p className="text-3xl font-extrabold tracking-tight">{club.name}</p>
           <p className="text-sm font-medium text-[var(--muted-foreground)]">Rôle : {membership.role}</p>
         </div>
         {(membership.role === "ADMIN" || membership.role === "COACH") && (
@@ -65,7 +65,7 @@ export default async function ClubPage({params}: Props) {
       </div>
 
       <section className="-mx-4 mt-5 border-y border-[var(--border)] bg-[var(--card)] px-4 py-6 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
-        <h2 className="mb-3 text-xl font-semibold">Coureurs</h2>
+        <h1 className={"mb-3"}>Coureurs</h1>
 
         {club.runners.length === 0 ? (
           <p className="text-sm text-[var(--muted-foreground)]">Aucun coureur pour le moment.</p>

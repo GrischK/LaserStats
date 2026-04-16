@@ -1,8 +1,8 @@
-import {redirect} from "next/navigation";
-import {prisma} from "@/lib/prisma";
-import {getAuthSession} from "@/lib/session";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { getAuthSession } from "@/lib/session";
 import RunnerUserLinkSection from "@/components/club/RunnerUserLinkSection";
-import type {AvailableMember, LinkedRunner, Membership, UnlinkedRunner} from "@/lib/types";
+import type { AvailableMember, LinkedRunner, Membership, UnlinkedRunner } from "@/lib/types";
 
 type Props = {
   params: Promise<{
@@ -10,14 +10,14 @@ type Props = {
   }>;
 };
 
-export default async function ClubAssociationsPage({params}: Props) {
+export default async function ClubAssociationsPage({ params }: Props) {
   const session = await getAuthSession();
 
   if (!session?.user?.id) {
     redirect("/login");
   }
 
-  const {clubId} = await params;
+  const { clubId } = await params;
 
   const membership: Membership | null = await prisma.membership.findUnique({
     where: {
@@ -126,40 +126,43 @@ export default async function ClubAssociationsPage({params}: Props) {
   }));
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="md:space-y-6 md:p-6">
       <div>
-        <h1 className="text-2xl font-semibold">Associations coureurs / comptes</h1>
+        <h1>Associations coureurs / comptes</h1>
+
+      </div>
+      <section className="py-10">
         <p className="mt-1 text-sm text-neutral-600">
           Associez un compte utilisateur à un coureur existant pour lui rattacher
           ses anciennes sessions, ou dissociez-le en cas d’erreur.
         </p>
-      </div>
+        <RunnerUserLinkSection
+          clubId={clubId}
+          runners={unlinkedRunners.map((runner) => ({
+            id: runner.id,
+            name: runner.name,
+            active: runner.active,
+            createdAt: runner.createdAt,
+            sessionsCount: runner._count.sessions,
+          }))}
+          members={members}
+          linkedRunners={linkedRunners.map((runner) => ({
+            id: runner.id,
+            name: runner.name,
+            active: runner.active,
+            createdAt: runner.createdAt,
+            sessionsCount: runner._count.sessions,
+            user: runner.user
+              ? {
+                id: runner.user.id,
+                name: runner.user.name,
+                email: runner.user.email,
+              }
+              : null,
+          }))}
+        />
+      </section>
 
-      <RunnerUserLinkSection
-        clubId={clubId}
-        runners={unlinkedRunners.map((runner) => ({
-          id: runner.id,
-          name: runner.name,
-          active: runner.active,
-          createdAt: runner.createdAt,
-          sessionsCount: runner._count.sessions,
-        }))}
-        members={members}
-        linkedRunners={linkedRunners.map((runner) => ({
-          id: runner.id,
-          name: runner.name,
-          active: runner.active,
-          createdAt: runner.createdAt,
-          sessionsCount: runner._count.sessions,
-          user: runner.user
-            ? {
-              id: runner.user.id,
-              name: runner.user.name,
-              email: runner.user.email,
-            }
-            : null,
-        }))}
-      />
     </div>
   );
 }

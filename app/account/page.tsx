@@ -29,10 +29,10 @@ export default async function AccountPage() {
 
   return (
     <main className="mx-auto max-w-3xl sm:space-y-6">
+      <h1>
+        Compte
+      </h1>
       <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
-        <p className="text-sm font-extrabold uppercase tracking-wide text-[var(--accent-sport)]">
-          Compte
-        </p>
         <div className="mt-2 flex items-center gap-3">
           {user?.image ? (
             <img
@@ -41,7 +41,7 @@ export default async function AccountPage() {
               className="h-12 w-12 rounded-full border border-[var(--border)] object-cover"
             />
           ) : null}
-          <h1 className="min-w-0 break-words text-4xl font-black leading-tight tracking-tight">{user.name}</h1>
+          <p className="min-w-0 break-words text-4xl font-black leading-tight tracking-tight">{user.name}</p>
         </div>
         <p className="mt-2 text-[var(--muted-foreground)]">
           Gérez votre profil, votre mot de passe et votre compte.

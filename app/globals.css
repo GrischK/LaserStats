@@ -280,6 +280,9 @@ a {
   html {
     @apply font-sans;
   }
+  h1 {
+    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--accent-sport)];
+  }
 }
 
 .button-soft-gradient {

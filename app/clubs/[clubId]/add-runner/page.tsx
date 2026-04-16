@@ -54,14 +54,14 @@ export default function AddRunnerPage({ params }: Props) {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col pt-6 sm:justify-center sm:px-6 sm:py-6">
+    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col sm:justify-center sm:px-6 sm:py-6">
+      <h1>Ajouter un coureur</h1>
       <form
         onSubmit={handleSubmit}
         className="px-0 py-0 sm:rounded-2xl sm:border sm:border-[var(--border)] sm:bg-[var(--card)] sm:p-6 sm:shadow-[var(--shadow)]"
       >
         <div className="mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">Ajouter un coureur</h1>
-          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+          <p className="mt-10 text-sm text-[var(--muted-foreground)]">
             Créez un profil coureur pour enregistrer ses sessions.
           </p>
         </div>

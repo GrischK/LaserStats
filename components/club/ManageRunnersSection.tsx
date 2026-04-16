@@ -138,8 +138,6 @@ export default function ManageRunnersSection({ clubId, initialRunners }: Props) 
 
   return (
     <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
-      <h2 className="text-xl font-semibold">Gérer les coureurs</h2>
-
       <div className="mt-4 space-y-3">
         {runners.length === 0 ? (
           <p className="text-sm text-neutral-600">Aucun coureur actif.</p>
