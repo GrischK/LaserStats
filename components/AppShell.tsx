@@ -1,18 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import {usePathname} from "next/navigation";
-import {useRef, useState, useSyncExternalStore} from "react";
+import { usePathname } from "next/navigation";
+import { useRef, useState, useSyncExternalStore } from "react";
 import ThemeToggle from "@/components/ThemeToggle";
 import LogoutButton from "@/components/LogoutButton";
-import {getThemeServerSnapshot, getThemeSnapshot, subscribeTheme,} from "@/lib/theme";
-import {useOutsideClick} from "@/lib/use-outside-click";
+import { getThemeServerSnapshot, getThemeSnapshot, subscribeTheme, } from "@/lib/theme";
+import { useOutsideClick } from "@/lib/use-outside-click";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   children: React.ReactNode;
 };
 
-export default function AppShell({children}: Props) {
+export default function AppShell({ children }: Props) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
@@ -50,7 +51,7 @@ export default function AppShell({children}: Props) {
               onClick={() => setMobileMenuOpen(false)}
             >
               <div className="w-16 sm:w-20">
-                <img src={logo} alt="logo" className="w-full"/>
+                <img src={logo} alt="logo" className="w-full" />
               </div>
             </Link>
 
@@ -69,8 +70,8 @@ export default function AppShell({children}: Props) {
             >
               Compte
             </Link>
-            <LogoutButton/>
-            <ThemeToggle/>
+            <LogoutButton />
+            <ThemeToggle />
           </div>
 
           <button
@@ -111,28 +112,38 @@ export default function AppShell({children}: Props) {
           } overflow-hidden`}
         >
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-4 py-4 sm:px-6">
-            <Link
-              href="/dashboard"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-3 text-sm font-semibold text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
-            >
-              Accueil
-            </Link>
+            <div className="flex gap-4">
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="rounded-lg px-3 py-3 text-sm font-semibold flex-1 text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+              >
+                <BrutalButton
+                  type="button"
+                  label="Accueil"
+                  variant="soft"
+                  className="sm:col-span-1"
+                  fullWidth
+                />
+              </Link>
 
-            <Link
-              href="/account"
-              onClick={() => setMobileMenuOpen(false)}
-              className="rounded-lg px-3 py-3 text-sm font-semibold text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
-            >
-              Compte
-            </Link>
-
-            <div className="flex items-center justify-between rounded-xl px-3 py-2">
-              <ThemeToggle/>
+              <Link
+                href="/account"
+                onClick={() => setMobileMenuOpen(false)}
+                className="rounded-lg px-3 py-3 text-sm font-semibold flex-1 text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
+              >
+                <BrutalButton
+                  type="button"
+                  label="Compte"
+                  variant="soft"
+                  className="sm:col-span-1"
+                  fullWidth
+                />
+              </Link>
             </div>
-
-            <div className="px-3 py-2">
-              <LogoutButton/>
+            <div className="px-3 py-2 flex justify-between">
+              <LogoutButton />
+              <ThemeToggle />
             </div>
           </div>
         </div>

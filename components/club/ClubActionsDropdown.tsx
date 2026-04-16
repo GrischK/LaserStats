@@ -21,7 +21,7 @@ export default function ClubActionsDropdown({ clubId }: Props) {
         type="button"
         label={open ? "Fermer" : "Gérer le club"}
         onClickFn={() => setOpen((prev) => !prev)}
-        variant="secondary"
+        variant="soft"
         fullWidth
       />
 
