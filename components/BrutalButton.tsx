@@ -1,11 +1,19 @@
 "use client";
 
-type Props = {
-  label: string;
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+import {cn} from "@/lib/utils";
+import Link from "next/link";
+
+type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
+  label?: string;
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   onClickFn?: () => void;
-  variant?: "default" | "danger";
+  variant?: "default" | "primary" | "accent" | "secondary" | "soft" | "ghost" | "danger";
+  className?: string;
+  fullWidth?: boolean;
+  children?: ReactNode;
+  href?: string;
 };
 
 export default function BrutalButton({
@@ -14,27 +22,54 @@ export default function BrutalButton({
                                        disabled,
                                        onClickFn,
                                        variant = "default",
+                                       className = "",
+                                       fullWidth = false,
+                                       children,
+                                       href,
+                                       ...buttonProps
                                      }: Props) {
 
   const base =
-    "px-8 py-0.5 border-2 uppercase transition duration-200 text-sm hover:cursor-pointer shadow-[1px_1px_rgba(0,0,0),2px_2px_rgba(0,0,0),3px_3px_rgba(0,0,0),4px_4px_rgba(0,0,0),5px_5px_0px_0px_rgba(0,0,0)] disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex min-h-12 items-center justify-center rounded-lg px-5 py-3 !text-base !leading-6 font-semibold transition duration-150 hover:cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-sport)] active:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55";
 
   const variants = {
     default:
-      "border-black bg-white text-black dark:border-white dark:bg-gray-700 dark:text-white dark:shadow-[1px_1px_rgba(255,255,255),2px_2px_rgba(255,255,255),3px_3px_rgba(255,255,255),4px_4px_rgba(255,255,255),5px_5px_0px_0px_rgba(255,255,255)]",
-
+      "border border-[var(--border)] bg-[var(--card)] text-[color:var(--fg)] hover:border-[var(--accent-sport)] hover:bg-[var(--muted)]",
+    primary:
+      "border border-transparent bg-[image:var(--primary-gradient)] text-[color:var(--primary-foreground)] hover:brightness-95",
+    accent:
+      "border border-transparent bg-[image:var(--accent-gradient)] text-[color:var(--accent-sport-foreground)] hover:brightness-95",
+    secondary:
+      "border border-[var(--border)] bg-[var(--surface-strong)] text-[color:var(--fg)] hover:border-[var(--accent-sport)] hover:brightness-95",
+    soft:
+      "button-soft-gradient border-2 border-transparent text-[color:var(--muted-foreground)] hover:text-[color:var(--fg)] hover:brightness-95",
+    ghost:
+      "border border-transparent bg-transparent text-[color:var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[color:var(--fg)]",
     danger:
-      "border-red-600 bg-white text-red-600 shadow-[1px_1px_rgba(220,38,38),2px_2px_rgba(220,38,38),3px_3px_rgba(220,38,38),4px_4px_rgba(220,38,38),5px_5px_0px_0px_rgba(220,38,38)] hover:bg-red-700 hover:text-white",
+      "border border-transparent bg-[image:var(--danger-gradient)] text-white shadow-sm hover:brightness-95",
   };
+
+  const classes = cn(`${base} ${variants[variant]} ${fullWidth ? "w-full" : ""} ${className}`);
+
+  if (href) {
+    return (
+      <Link href={href} className={classes}>
+        {label}
+        {children}
+      </Link>
+    );
+  }
 
   return (
     <button
+      {...buttonProps}
       disabled={disabled}
       type={type}
       onClick={onClickFn}
-      className={`${base} ${variants[variant]}`}
+      className={classes}
     >
       {label}
+      {children}
     </button>
   );
 }

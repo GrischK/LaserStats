@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
@@ -27,6 +27,7 @@ export default function ProfileForm({
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     return () => {
@@ -213,7 +214,7 @@ export default function ProfileForm({
   }
 
   return (
-    <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+    <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
       <h2 className="text-xl font-semibold">Profil</h2>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4">
@@ -247,19 +248,34 @@ export default function ProfileForm({
                 alt="Avatar"
                 className="h-20 w-20 rounded-full object-cover border"
               />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="text-sm underline"
-              >
-                Supprimer la photo
-              </button>
+
+              <BrutalButton
+                label="Supprimer la photo"
+                onClickFn={handleRemoveImage}
+                variant="danger"
+                className="mt-2"
+              />
             </div>
           ) : null}
 
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <BrutalButton
+              type="button"
+              variant="accent"
+              label="Choisir une photo"
+              onClickFn={() => fileInputRef.current?.click()}
+              className="w-fit"
+            />
+            <span className="text-sm font-medium text-[var(--muted-foreground)]">
+              {file?.name ?? "Aucun fichier sélectionné"}
+            </span>
+          </div>
           <input
+            id="profile-avatar"
+            ref={fileInputRef}
             type="file"
             accept="image/png,image/jpeg,image/webp"
+            className="sr-only"
             onChange={(e) => {
               const selectedFile = e.currentTarget.files?.[0] ?? null;
               void handleFileChange(selectedFile);
@@ -277,6 +293,7 @@ export default function ProfileForm({
           type="submit"
           disabled={loading || uploading}
           label={loading || uploading ? "Enregistrement..." : "Enregistrer"}
+          variant="accent"
         />
       </form>
     </section>

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Play, RotateCcw, Square } from "lucide-react";
 import BrutalButton from "@/components/BrutalButton";
+import {getScoreButtonClass} from "@/lib/score-colors";
 
 type Props = {
   clubId: string;
@@ -24,9 +26,9 @@ function formatChrono(totalSeconds: number) {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
-export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
+export default function SessionForm({ runnerId, onCreated }: Props) {
   const [distance, setDistance] = useState("");
-  const [targetsHit, setTargetsHit] = useState(0);
+  const [targetsHit, setTargetsHit] = useState<number | null>(null);
   const [durationSeconds, setDurationSeconds] = useState("");
   const [timerRunning, setTimerRunning] = useState(false);
   const [timerElapsedSeconds, setTimerElapsedSeconds] = useState(0);
@@ -79,6 +81,11 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
     const duration =
       durationSeconds === "" ? null : Number(durationSeconds);
 
+    if (targetsHit === null) {
+      setError("Sélectionnez le nombre de cibles touchées");
+      return;
+    }
+
     if (
       duration !== null &&
       (!Number.isInteger(duration) || duration < 0 || duration > 50)
@@ -118,7 +125,7 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
       });
 
       setDistance("");
-      setTargetsHit(0);
+      setTargetsHit(null);
       setDurationSeconds("");
       handleResetTimer();
       setError("");
@@ -133,7 +140,7 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)] sm:p-6"
+      className="-mx-4 border-y border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:py-4 sm:mx-0 sm:rounded-2xl sm:border sm:p-6 sm:shadow-[var(--shadow)]"
     >
       <div className="mb-6">
         <h2 className="text-2xl font-bold tracking-tight">Nouvelle session</h2>
@@ -155,10 +162,10 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
             value={distance}
             onChange={(e) => setDistance(e.target.value)}
             placeholder="Ex: 200 m"
-            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] px-4 py-3 outline-none transition focus:border-[var(--primary)]"
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
           />
 
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5">
             {distanceOptions.map((value) => {
               const active = distance === String(value);
 
@@ -167,10 +174,10 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
                   key={value}
                   type="button"
                   onClick={() => setDistance(String(value))}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  className={`min-h-12 rounded-lg px-4 py-3 text-sm font-semibold transition active:translate-y-px ${
                     active
-                      ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
-                      : "border border-[var(--border)] bg-[var(--muted)] text-[var(--fg)] hover:bg-[var(--card)]"
+                      ? "bg-[image:var(--selected-bg)] text-[var(--selected-foreground)]"
+                      : "bg-[var(--surface-strong)] text-[var(--fg)] hover:brightness-95"
                   }`}
                 >
                   {value} m
@@ -178,13 +185,14 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
               );
             })}
 
-            <button
+            <BrutalButton
               type="button"
-              onClick={() => setDistance("")}
-              className="rounded-full border border-[var(--border)] bg-transparent px-4 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)]"
-            >
-              Effacer
-            </button>
+              onClickFn={() => setDistance("")}
+              label="Effacer"
+              variant="soft"
+              className="sm:col-span-1"
+              fullWidth
+            />
           </div>
         </div>
 
@@ -192,8 +200,11 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
           <label className="mb-2 block text-sm font-semibold">
             Cibles touchées
           </label>
+          <p className="mb-2 text-sm text-[var(--muted-foreground)]">
+            Obligatoire
+          </p>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
             {hitOptions.map((value) => {
               const active = targetsHit === value;
 
@@ -202,10 +213,10 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
                   key={value}
                   type="button"
                   onClick={() => setTargetsHit(value)}
-                  className={`h-12 min-w-12 rounded-2xl px-4 text-base font-semibold transition ${
+                  className={`h-14 rounded-lg px-4 text-lg font-bold transition active:translate-y-px ${
                     active
-                      ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
-                      : "border border-[var(--border)] bg-[var(--muted)] text-[var(--fg)] hover:bg-[var(--card)]"
+                      ? getScoreButtonClass(value)
+                      : "bg-[var(--surface-strong)] text-[var(--fg)] hover:brightness-95"
                   }`}
                 >
                   {value}
@@ -226,34 +237,43 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
             <p className="text-xs uppercase tracking-wide text-[var(--muted-foreground)]">
               Chrono
             </p>
-            <p className="mt-1 text-3xl font-bold tabular-nums">
+            <p className="mt-1 text-4xl font-black tabular-nums tracking-tight">
               {formatChrono(timerElapsedSeconds)}
             </p>
 
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
               <button
                 type="button"
-                disabled={timerRunning || loading}
-                onClick={handleStartTimer}
-                className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)] disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label={
+                  timerRunning
+                    ? "Arrêter le chrono et remplir le temps"
+                    : "Démarrer le chrono"
+                }
+                title={timerRunning ? "Arrêter et remplir" : "Démarrer"}
+                disabled={loading}
+                onClick={timerRunning ? handleStopTimer : handleStartTimer}
+                className={`flex min-h-14 w-full items-center justify-center rounded-lg px-3 py-3 transition hover:brightness-95 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 ${
+                  timerRunning
+                    ? "bg-[image:var(--accent-gradient)] text-[var(--accent-sport-foreground)]"
+                    : "bg-[image:var(--primary-gradient)] text-[var(--primary-foreground)]"
+                }`}
               >
-                Démarrer
+                {timerRunning ? (
+                  <Square size={22} fill="currentColor" aria-hidden="true" />
+                ) : (
+                  <Play size={23} fill="currentColor" aria-hidden="true" />
+                )}
               </button>
+
               <button
                 type="button"
-                disabled={!timerRunning || loading}
-                onClick={handleStopTimer}
-                className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Arrêter et remplir
-              </button>
-              <button
-                type="button"
+                aria-label="Réinitialiser le chrono"
+                title="Reset"
                 disabled={loading}
                 onClick={handleResetTimer}
-                className="rounded-xl border border-[var(--border)] bg-transparent px-3 py-2 text-sm font-medium text-[var(--muted-foreground)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex min-h-14 w-14 items-center justify-center rounded-lg bg-[var(--card)] text-[var(--muted-foreground)] ring-1 ring-inset ring-[var(--border)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Reset
+                <RotateCcw size={21} aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -266,7 +286,7 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
             value={durationSeconds}
             onChange={(e) => setDurationSeconds(e.target.value)}
             placeholder="Ex: 35 secondes"
-            className="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] mt-4 px-4 py-3 outline-none transition focus:border-[var(--primary)]"
+            className="mt-4 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
           />
         </div>
 
@@ -279,7 +299,9 @@ export default function SessionForm({ clubId, runnerId, onCreated }: Props) {
         <div className="flex items-center justify-center">
           <BrutalButton
             type="submit"
-            disabled={loading}
+            disabled={loading || targetsHit === null}
+            variant="primary"
+            fullWidth
             label={loading ? "Enregistrement..." : "Enregistrer"}
           />
         </div>

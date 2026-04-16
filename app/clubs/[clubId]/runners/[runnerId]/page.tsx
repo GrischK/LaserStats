@@ -151,22 +151,22 @@ export default async function RunnerPage({ params }: Props) {
   );
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6">
-      <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+    <main className="mx-auto flex min-h-screen w-full max-w-6xl flex-col sm:gap-5">
+      <h1>
+        Coureur
+      </h1>
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:py-4 sm:mx-0 sm:rounded-2xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
-              Coureur
-            </p>
-            <div className="mt-1 flex items-center gap-3">
+            <div className="mt-2 flex items-center gap-3">
               {runner.user?.image ? (
                 <img
                   src={runner.user.image}
                   alt={`Avatar de ${runner.name}`}
-                  className="h-10 w-10 rounded-full border object-cover"
+                  className="h-12 w-12 rounded-full border border-[var(--border)] object-cover"
                 />
               ) : null}
-              <h1 className="text-3xl font-bold tracking-tight">{runner.name}</h1>
+              <p className="min-w-0 break-words text-4xl font-black leading-tight tracking-tight">{runner.name}</p>
             </div>
           </div>
 
@@ -178,10 +178,13 @@ export default async function RunnerPage({ params }: Props) {
             {/*</div>*/}
             <Link
               href={`/clubs/${clubId}/runners/${runner.id}/stats`}
+              className="w-full sm:w-auto"
             >
               <BrutalButton
                 type="button"
                 label={"Voir les stats"}
+                variant="accent"
+                fullWidth
               />
             </Link>
           </div>

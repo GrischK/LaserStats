@@ -114,6 +114,7 @@ export default function RegisterForm({callbackUrl}: Props) {
           label={loading ? "Création..." : "Créer mon compte"}
           type="submit"
           disabled={loading}
+          variant="accent"
         />
       </form>
     </div>

@@ -21,10 +21,12 @@ export default function ClubActionsDropdown({ clubId }: Props) {
         type="button"
         label={open ? "Fermer" : "Gérer le club"}
         onClickFn={() => setOpen((prev) => !prev)}
+        variant="soft"
+        fullWidth
       />
 
       <div
-        className={`absolute left-1/2 z-30 mt-3 flex w-72 -translate-x-1/2 origin-top flex-col items-center justify-center gap-4 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-[var(--shadow)] transition-all duration-200 ${
+        className={`absolute left-1/2 z-30 mt-3 flex w-72 -translate-x-1/2 origin-top flex-col gap-2 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-3 shadow-[var(--shadow)] transition-all duration-200 ${
           open
             ? "translate-y-0 scale-100 opacity-100"
             : "pointer-events-none -translate-y-2 scale-95 opacity-0"
@@ -33,32 +35,25 @@ export default function ClubActionsDropdown({ clubId }: Props) {
         <Link
           href={`/clubs/${clubId}/settings`}
           onClick={() => setOpen(false)}
-          className="rounded-xl border px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
+          className="rounded-lg px-3 py-3 text-sm font-semibold transition hover:bg-[var(--muted)]"
         >
-          <BrutalButton
-            type="button"
-            label={"Inviter un membre"}
-          />
+          Inviter un membre
         </Link>
 
         <Link
           href={`/clubs/${clubId}/associations`}
           onClick={() => setOpen(false)}
+          className="rounded-lg px-3 py-3 text-sm font-semibold transition hover:bg-[var(--muted)]"
         >
-          <BrutalButton
-            type="button"
-            label={"Gérer les associations"}
-          />
+          Gérer les associations
         </Link>
 
         <Link
           href={`/clubs/${clubId}/manage-runners`}
           onClick={() => setOpen(false)}
+          className="rounded-lg px-3 py-3 text-sm font-semibold transition hover:bg-[var(--muted)]"
         >
-          <BrutalButton
-            type="button"
-            label={"Gérer les coureurs"}
-          />
+          Gérer les coureurs
         </Link>
       </div>
     </div>

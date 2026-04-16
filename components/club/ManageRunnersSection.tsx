@@ -31,11 +31,24 @@ export default function ManageRunnersSection({ clubId, initialRunners }: Props) 
   const [loadingRunnerId, setLoadingRunnerId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [nameFilter, setNameFilter] = useState("");
 
   const pendingDeleteRunner = useMemo(
     () => runners.find((runner) => runner.id === pendingDeleteRunnerId) ?? null,
     [pendingDeleteRunnerId, runners]
   );
+
+  const filteredRunners = useMemo(() => {
+    const query = nameFilter.trim().toLocaleLowerCase("fr-FR");
+
+    if (!query) {
+      return runners;
+    }
+
+    return runners.filter((runner) =>
+      runner.name.toLocaleLowerCase("fr-FR").includes(query)
+    );
+  }, [nameFilter, runners]);
 
   function startEdit(runner: RunnerItem) {
     setEditingRunnerId(runner.id);
@@ -137,57 +150,81 @@ export default function ManageRunnersSection({ clubId, initialRunners }: Props) 
   }
 
   return (
-    <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
-      <h2 className="text-xl font-semibold">Gérer les coureurs</h2>
+    <section className="-mx-4 md:border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+      <h2 className="text-2xl font-bold tracking-tight">Liste des coureurs</h2>
 
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 space-y-2">
+        <label htmlFor="runner-name-filter" className="block text-sm font-semibold">
+          Filtrer par nom
+        </label>
+        <input
+          id="runner-name-filter"
+          type="search"
+          value={nameFilter}
+          onChange={(e) => setNameFilter(e.target.value)}
+          placeholder="Rechercher un coureur"
+          className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
+        />
+        <p className="text-sm text-[var(--muted-foreground)]">
+          {filteredRunners.length} coureur{filteredRunners.length > 1 ? "s" : ""} affiché{filteredRunners.length > 1 ? "s" : ""}
+        </p>
+      </div>
+
+      <div className="mt-4 sm:space-y-3">
         {runners.length === 0 ? (
-          <p className="text-sm text-neutral-600">Aucun coureur actif.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">Aucun coureur actif.</p>
+        ) : filteredRunners.length === 0 ? (
+          <p className="text-sm text-[var(--muted-foreground)]">
+            Aucun coureur ne correspond à cette recherche.
+          </p>
         ) : (
-          runners.map((runner) => {
+          filteredRunners.map((runner) => {
             const isEditing = editingRunnerId === runner.id;
             const isLoading = loadingRunnerId === runner.id;
 
             return (
-              <div key={runner.id} className="rounded-xl border p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
+              <div
+                key={runner.id}
+                className="runner-link-row relative py-4 sm:rounded-xl sm:border sm:border-[var(--border)] sm:p-4"
+              >
+                <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
                   <div className="min-w-0 flex-1">
                     {isEditing ? (
                       <input
                         type="text"
-                        className="w-full rounded-xl border px-3 py-2"
+                        className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
                         value={nameDraft}
                         onChange={(e) => setNameDraft(e.target.value)}
                         disabled={isLoading}
                       />
                     ) : (
-                      <p className="font-medium">{runner.name}</p>
+                      <p className="font-semibold">{runner.name}</p>
                     )}
 
-                    <p className="text-sm text-neutral-600">
+                    <p className="text-sm text-[var(--muted-foreground)]">
                       {runner._count.sessions} session
                       {runner._count.sessions > 1 ? "s" : ""}
                     </p>
 
                     {runner.user ? (
-                      <div className="mt-2 flex items-center gap-2 text-sm text-neutral-600">
+                      <div className="mt-2 flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
                         {runner.user.image ? (
                           <img
                             src={runner.user.image}
                             alt={`Avatar de ${runner.user.name ?? runner.user.email}`}
-                            className="h-6 w-6 rounded-full border object-cover"
+                            className="h-8 w-8 rounded-full border border-[var(--border)] object-cover"
                           />
                         ) : null}
-                        <span>
+                        <span className="min-w-0 break-words">
                           Compte lié: {runner.user.name ?? runner.user.email}
                         </span>
                       </div>
                     ) : (
-                      <p className="mt-2 text-sm text-neutral-500">Aucun compte lié</p>
+                      <p className="mt-2 text-sm text-[var(--muted-foreground)]">Aucun compte lié</p>
                     )}
                   </div>
 
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid w-full gap-2 sm:flex sm:w-auto sm:flex-wrap">
                     {isEditing ? (
                       <>
                         <BrutalButton
@@ -195,12 +232,16 @@ export default function ManageRunnersSection({ clubId, initialRunners }: Props) 
                           onClickFn={() => saveName(runner.id)}
                           disabled={isLoading}
                           label={isLoading ? "Enregistrement..." : "Enregistrer"}
+                          variant="primary"
+                          fullWidth
                         />
                         <BrutalButton
                           type="button"
                           onClickFn={cancelEdit}
                           disabled={isLoading}
                           label="Annuler"
+                          variant="soft"
+                          fullWidth
                         />
                       </>
                     ) : (
@@ -210,6 +251,8 @@ export default function ManageRunnersSection({ clubId, initialRunners }: Props) 
                           onClickFn={() => startEdit(runner)}
                           disabled={Boolean(loadingRunnerId)}
                           label="Modifier le nom"
+                          variant="soft"
+                          fullWidth
                         />
                         <BrutalButton
                           type="button"
@@ -217,6 +260,7 @@ export default function ManageRunnersSection({ clubId, initialRunners }: Props) 
                           disabled={Boolean(loadingRunnerId)}
                           label="Supprimer"
                           variant="danger"
+                          fullWidth
                         />
                       </>
                     )}
@@ -228,8 +272,8 @@ export default function ManageRunnersSection({ clubId, initialRunners }: Props) 
         )}
       </div>
 
-      {error ? <p className="mt-4 text-sm text-red-600">{error}</p> : null}
-      {success ? <p className="mt-4 text-sm text-green-600">{success}</p> : null}
+      {error ? <p className="mt-4 text-sm text-[var(--danger)]">{error}</p> : null}
+      {success ? <p className="mt-4 text-sm text-[var(--success)]">{success}</p> : null}
 
       <ConfirmModal
         open={Boolean(pendingDeleteRunner)}

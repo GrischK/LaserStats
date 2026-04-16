@@ -10,8 +10,9 @@ type Props = {
 export default function LogoutButton({callbackUrl = "/"}: Props) {
   return (
     <BrutalButton
-      label={"Logout"}
+      label={"Déconnexion"}
       type="button"
+      variant="accent"
       onClickFn={() => signOut({callbackUrl})}
     />
   );

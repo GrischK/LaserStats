@@ -56,7 +56,7 @@ export default function PasswordForm({hasPassword}: Props) {
   }
 
   return (
-    <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+    <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
       <h2 className="text-xl font-semibold">Mot de passe</h2>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-4">
@@ -141,6 +141,7 @@ export default function PasswordForm({hasPassword}: Props) {
           type="submit"
           disabled={loading}
           label={loading ? "Mise à jour..." : "Mettre à jour le mot de passe"}
+          variant="accent"
         />
       </form>
     </section>

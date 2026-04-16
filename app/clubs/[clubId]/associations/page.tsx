@@ -1,8 +1,8 @@
-import {redirect} from "next/navigation";
-import {prisma} from "@/lib/prisma";
-import {getAuthSession} from "@/lib/session";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
+import { getAuthSession } from "@/lib/session";
 import RunnerUserLinkSection from "@/components/club/RunnerUserLinkSection";
-import type {AvailableMember, LinkedRunner, Membership, UnlinkedRunner} from "@/lib/types";
+import type { AvailableMember, LinkedRunner, Membership, UnlinkedRunner } from "@/lib/types";
 
 type Props = {
   params: Promise<{
@@ -10,14 +10,14 @@ type Props = {
   }>;
 };
 
-export default async function ClubAssociationsPage({params}: Props) {
+export default async function ClubAssociationsPage({ params }: Props) {
   const session = await getAuthSession();
 
   if (!session?.user?.id) {
     redirect("/login");
   }
 
-  const {clubId} = await params;
+  const { clubId } = await params;
 
   const membership: Membership | null = await prisma.membership.findUnique({
     where: {
@@ -126,14 +126,13 @@ export default async function ClubAssociationsPage({params}: Props) {
   }));
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Associations coureurs / comptes</h1>
-        <p className="mt-1 text-sm text-neutral-600">
-          Associez un compte utilisateur à un coureur existant pour lui rattacher
-          ses anciennes sessions, ou dissociez-le en cas d’erreur.
+    <main className="mx-auto flex w-full max-w-3xl flex-col sm:gap-6">
+      <h1>Associations coureurs / comptes</h1>
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
+        <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+          Associez un compte utilisateur à un coureur existant, ou dissociez-le en cas d’erreur.
         </p>
-      </div>
+      </section>
 
       <RunnerUserLinkSection
         clubId={clubId}
@@ -160,6 +159,6 @@ export default async function ClubAssociationsPage({params}: Props) {
             : null,
         }))}
       />
-    </div>
+    </main>
   );
 }

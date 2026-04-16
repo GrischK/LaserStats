@@ -1,11 +1,11 @@
 "use client";
 
-import {signIn} from "next-auth/react";
-import {useState} from "react";
-import {useRouter} from "next/navigation";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import BrutalButton from "@/components/BrutalButton";
 import RegisterForm from "@/components/RegisterForm";
-import {Eye, EyeOff} from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 type Props = {
   callbackUrl?: string;
@@ -81,7 +81,7 @@ export default function LoginPageContent({
               onClick={() => setShowPassword((prev) => !prev)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500"
             >
-              {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
 
@@ -91,6 +91,7 @@ export default function LoginPageContent({
             label={loading ? "Connexion..." : "Se connecter"}
             type="submit"
             disabled={loading}
+            variant="accent"
           />
 
           <p className="mt-10 text-sm text-gray-600">
@@ -102,20 +103,27 @@ export default function LoginPageContent({
             onClick={() => setMode("register")}
             className="w-fit"
           >
-            <BrutalButton label="Créer un compte"/>
+            <BrutalButton
+              label="Créer un compte"
+              variant="accent"
+            />
           </button>
         </form>
       ) : (
         <div className="w-full">
-          <RegisterForm callbackUrl={callbackUrl}/>
+          <RegisterForm callbackUrl={callbackUrl} />
 
-          <button
-            type="button"
-            onClick={() => setMode("login")}
-            className="mt-6 text-sm font-medium underline"
-          >
-            Déjà un compte ? Se connecter
-          </button>
+          <div className="flex flex-col gap-4">
+            <p className="mt-10 text-sm text-gray-600">
+              Déjà un compte ?
+            </p>
+            <BrutalButton
+              label="Se connecter"
+              onClickFn={() => setMode("login")}
+              variant="soft"
+              className="w-fit"
+            />
+          </div>
         </div>
       )}
     </div>

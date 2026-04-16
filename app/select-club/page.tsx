@@ -38,10 +38,10 @@ export default async function SelectClubPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-6 p-6">
+    <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-6 p-4 sm:p-6">
       <div>
-        <h1 className="text-3xl font-bold">Choisir un club</h1>
-        <p className="text-sm text-gray-600">
+        <h1 className="text-3xl font-extrabold tracking-tight">Choisir un club</h1>
+        <p className="text-sm font-medium text-[var(--muted-foreground)]">
           Tu fais partie de plusieurs clubs.
         </p>
       </div>
@@ -52,10 +52,10 @@ export default async function SelectClubPage() {
             <Link
               key={membership.id}
               href={`/clubs/${membership.clubId}`}
-              className="rounded-2xl border p-4 transition hover:bg-gray-50"
+              className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm transition hover:border-[var(--accent-sport)] hover:bg-[var(--muted)] active:translate-y-px"
             >
               <div className="text-lg font-semibold">{membership.club.name}</div>
-              <div className="text-sm text-gray-500">{membership.role}</div>
+              <div className="text-sm text-[var(--muted-foreground)]">{membership.role}</div>
             </Link>
           )
         )}

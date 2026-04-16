@@ -1,7 +1,8 @@
 "use client";
 
-import {useSyncExternalStore} from "react";
-import {applyTheme, getThemeServerSnapshot, getThemeSnapshot, subscribeTheme, Theme,} from "@/lib/theme";
+import { useSyncExternalStore } from "react";
+import { applyTheme, getThemeServerSnapshot, getThemeSnapshot, subscribeTheme, Theme, } from "@/lib/theme";
+import BrutalButton from "@/components/BrutalButton";
 
 export default function ThemeToggle() {
   const theme = useSyncExternalStore(
@@ -19,14 +20,16 @@ export default function ThemeToggle() {
   const label = theme === "dark" ? "Clair" : "Sombre";
 
   return (
-    <button
+    <BrutalButton
       type="button"
-      onClick={toggleTheme}
       aria-label={`Passer en mode ${label.toLowerCase()}`}
-      className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
+      title="Modifier"
+      onClickFn={toggleTheme}
+      variant="soft"
+      className="h-11 min-h-11 w-11 p-0 sm:col-span-1"
     >
       <span aria-hidden="true">{icon}</span>
-      <span className="hidden sm:inline">{label}</span>
-    </button>
+      {/*<span className="hidden sm:inline">{label}</span>*/}
+    </BrutalButton>
   );
 }

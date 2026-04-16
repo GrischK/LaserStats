@@ -28,7 +28,7 @@ export default function ClubInvitationsSection({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="sm:space-y-6">
       <InviteMemberForm
         clubId={clubId}
         availableRoles={availableRoles}

@@ -69,8 +69,13 @@ export default async function ClubSettingsPage({params}: Props) {
     : [];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold">Gestion du club</h1>
+    <main className="mx-auto flex w-full max-w-3xl flex-col sm:gap-6">
+      <h1>Inviter un membre</h1>
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
+        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+          Invitez des membres et gérez les accès du club.
+        </p>
+      </section>
 
       {availableRoles.length > 0 ? (
         <ClubInvitationsSection
@@ -79,11 +84,11 @@ export default async function ClubSettingsPage({params}: Props) {
           initialInvitations={initialInvitations}
         />
       ) : (
-        <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
-          <p className="text-sm text-neutral-600">
+        <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+          <p className="text-sm text-[var(--muted-foreground)]">
             Vous n’avez pas les droits pour gérer les invitations.
           </p>
-        </div>
+        </section>
       )}
 
       {canManageMembers ? (
@@ -94,6 +99,6 @@ export default async function ClubSettingsPage({params}: Props) {
           initialMembers={initialMembers}
         />
       ) : null}
-    </div>
+    </main>
   );
 }

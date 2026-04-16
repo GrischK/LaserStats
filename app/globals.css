@@ -5,19 +5,62 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --bg: #f6f7fb;
+  --bg: #eef1f2;
   --fg: #111827;
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --border: oklch(0.922 0 0);
+  --card: #fbfdfb;
+  --card-foreground: #111827;
+  --muted: #e1e6e8;
+  --muted-foreground: #56636a;
+  --border: #c5cdd1;
   --header-bg: rgba(255, 255, 255, 0.85);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --success: #16a34a;
+  --primary: #174f3d;
+  --primary-hover: #113d31;
+  --primary-foreground: #ffffff;
+  --primary-gradient: linear-gradient(135deg, #174f3d 0%, #1f7a5a 52%, #24a276 100%);
+  --accent-sport: #1f5f7a;
+  --accent-sport-hover: #16485f;
+  --accent-sport-foreground: #ffffff;
+  --accent-gradient: linear-gradient(135deg, #17324a 0%, #1f5f7a 54%, #2f9bb3 100%);
+  --selected-bg: linear-gradient(135deg, #132d3d 0%, #1f5f7a 55%, #287f91 100%);
+  --selected-border: #6db7c7;
+  --selected-foreground: #ffffff;
+  --surface-strong: #d7dee2;
+  --surface-gradient: linear-gradient(135deg, #ffffff 0%, #dfe7eb 52%, #bcc9d0 100%);
+  --soft-action-gradient: linear-gradient(135deg, #f5f9fa 0%, #d7e7ec 52%, #b8d4dc 100%);
+  --soft-action-foreground: #305160;
+  --history-day: #d3dbe0;
+  --history-day-hover: #c8d2d8;
+  --history-stat: #f6f8f9;
+  --history-separator: #aab7be;
+  --history-accent-1: #12304a;
+  --history-accent-2: #1c5f80;
+  --history-accent-3: #338eae;
+  --history-accent-4: #9ccbd8;
+  --score-0: #dc2626;
+  --score-0-gradient: linear-gradient(135deg, #7f1d1d 0%, #dc2626 58%, #f87171 100%);
+  --score-0-foreground: #ffffff;
+  --score-1: #ea580c;
+  --score-1-gradient: linear-gradient(135deg, #9a3412 0%, #ea580c 58%, #fb923c 100%);
+  --score-1-foreground: #ffffff;
+  --score-2: #f59e0b;
+  --score-2-gradient: linear-gradient(135deg, #92400e 0%, #f59e0b 58%, #fbbf24 100%);
+  --score-2-foreground: #1f1308;
+  --score-3: #eab308;
+  --score-3-gradient: linear-gradient(135deg, #854d0e 0%, #eab308 58%, #fde047 100%);
+  --score-3-foreground: #1f1308;
+  --score-4: #65a30d;
+  --score-4-gradient: linear-gradient(135deg, #3f6212 0%, #65a30d 58%, #a3e635 100%);
+  --score-4-foreground: #ffffff;
+  --score-5: #128a3d;
+  --score-5-gradient: linear-gradient(135deg, #14532d 0%, #128a3d 58%, #4ade80 100%);
+  --score-5-foreground: #ffffff;
+  --danger-soft: #ead7d7;
+  --danger-soft-hover: #dfc2c2;
+  --danger-soft-foreground: #8f1d1d;
+  --danger-gradient: linear-gradient(135deg, #4f2931 0%, #8a3a42 56%, #b45d58 100%);
+  --success: #128a3d;
   --danger: #dc2626;
-  --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  --shadow: 0 10px 28px rgba(17, 24, 39, 0.08);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
@@ -46,16 +89,59 @@
 }
 
 html[data-theme="dark"] {
-  --bg: #0b1220;
+  --bg: #0d1512;
   --fg: #f8fafc;
-  --card: #121a2b;
+  --card: #121d19;
   --card-foreground: #f8fafc;
-  --muted: #1a2438;
-  --muted-foreground: #94a3b8;
-  --border: #243044;
-  --header-bg: rgba(11, 18, 32, 0.8);
-  --primary: #3b82f6;
+  --muted: #22322b;
+  --muted-foreground: #a7b8b0;
+  --border: #2c3b34;
+  --header-bg: rgba(11, 20, 17, 0.84);
+  --primary: #2ddf8a;
+  --primary-hover: #22c55e;
   --primary-foreground: #ffffff;
+  --primary-gradient: linear-gradient(135deg, #176548 0%, #22c55e 58%, #5ee6a7 100%);
+  --accent-sport: #f59e0b;
+  --accent-sport-hover: #d97706;
+  --accent-sport-foreground: #1f1308;
+  --accent-gradient: linear-gradient(135deg, #f59e0b 0%, #fb923c 55%, #f97316 100%);
+  --selected-bg: linear-gradient(135deg, #f59e0b 0%, #fb923c 55%, #f97316 100%);
+  --selected-border: #fdba74;
+  --selected-foreground: #1f1308;
+  --surface-strong: #2a4036;
+  --surface-gradient: linear-gradient(135deg, #3d554c 0%, #2a4036 52%, #17231e 100%);
+  --soft-action-gradient: linear-gradient(135deg, #34453d 0%, #26382f 52%, #17231e 100%);
+  --soft-action-foreground: #d7e2da;
+  --history-day: #2b4036;
+  --history-day-hover: #354f42;
+  --history-stat: #17231e;
+  --history-separator: #486356;
+  --history-accent-1: #7c2d12;
+  --history-accent-2: #b45309;
+  --history-accent-3: #f97316;
+  --history-accent-4: #fdba74;
+  --score-0: #ef4444;
+  --score-0-gradient: linear-gradient(135deg, #7f1d1d 0%, #dc2626 58%, #f87171 100%);
+  --score-0-foreground: #ffffff;
+  --score-1: #f97316;
+  --score-1-gradient: linear-gradient(135deg, #7c2d12 0%, #f97316 58%, #fdba74 100%);
+  --score-1-foreground: #1f1308;
+  --score-2: #f59e0b;
+  --score-2-gradient: linear-gradient(135deg, #78350f 0%, #f59e0b 58%, #fcd34d 100%);
+  --score-2-foreground: #1f1308;
+  --score-3: #eab308;
+  --score-3-gradient: linear-gradient(135deg, #713f12 0%, #eab308 58%, #fde047 100%);
+  --score-3-foreground: #1f1308;
+  --score-4: #84cc16;
+  --score-4-gradient: linear-gradient(135deg, #365314 0%, #84cc16 58%, #bef264 100%);
+  --score-4-foreground: #10200a;
+  --score-5: #22c55e;
+  --score-5-gradient: linear-gradient(135deg, #14532d 0%, #22c55e 58%, #86efac 100%);
+  --score-5-foreground: #062312;
+  --danger-soft: #3a2223;
+  --danger-soft-hover: #4a2a2b;
+  --danger-soft-foreground: #f0b6b6;
+  --danger-gradient: linear-gradient(135deg, #4a252d 0%, #8a3a42 56%, #c46660 100%);
   --success: #22c55e;
   --danger: #ef4444;
   --shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
@@ -74,18 +160,74 @@ body {
 body {
   margin: 0;
   color: var(--fg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0) 180px),
+    var(--bg);
 }
 
 button,
 input,
 select,
 textarea {
-  font: inherit;
+  font-family: inherit;
 }
 
 a {
-  color: inherit;
+  /*color: inherit;*/
   text-decoration: none;
+}
+
+h1 {
+  position: relative;
+  display: block;
+  width: fit-content;
+}
+
+h1::before, h1::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+h1::before {
+  right: 0.05rem;
+  bottom: 0.14rem;
+  width: 2.25rem;
+  background: var(--accent-gradient);
+  opacity: 0.85;
+}
+
+h1::after {
+  right: -0.55rem;
+  bottom: 0;
+  width: 1.55rem;
+  background: var(--primary-gradient);
+  opacity: 0.65;
+}
+
+@media (min-width: 640px) {
+   h1{
+    font-size: 2.5rem;
+  }
+}
+
+.runner-link-row:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  background: var(--accent-gradient);
+  opacity: 0.55;
+}
+
+@media (min-width: 640px) {
+  .runner-link-row::after {
+    display: none;
+  }
 }
 
 .dark {
@@ -174,6 +316,15 @@ a {
   html {
     @apply font-sans;
   }
+  h1 {
+    @apply text-sm font-extrabold uppercase tracking-wide text-[var(--accent-sport)];
+  }
+}
+
+.button-soft-gradient {
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    var(--primary-gradient) border-box;
 }
 
 .hero-bg {

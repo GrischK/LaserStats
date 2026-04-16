@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
@@ -53,23 +52,23 @@ export default async function ClubPage({params}: Props) {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+      <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold">{club.name}</h1>
-          <p className="text-sm text-gray-600">Rôle : {membership.role}</p>
+          <p className="text-3xl font-extrabold tracking-tight">{club.name}</p>
+          <p className="text-sm font-medium text-[var(--muted-foreground)]">Rôle : {membership.role}</p>
         </div>
         {(membership.role === "ADMIN" || membership.role === "COACH") && (
-          <div className="flex justify-center">
+          <div className="w-full md:w-auto">
             <ClubActionsDropdown clubId={clubId}/>
           </div>
         )}
       </div>
 
-      <section className="rounded-2xl border p-4">
-        <h2 className="mb-3 text-xl font-semibold">Coureurs</h2>
+      <section className="-mx-4 mt-5 md:border-y md:border-[var(--border)] bg-[var(--card)] px-4 py-6 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+        <h1 className={"mb-3"}>Coureurs</h1>
 
         {club.runners.length === 0 ? (
-          <p className="text-sm text-gray-600">Aucun coureur pour le moment.</p>
+          <p className="text-sm text-[var(--muted-foreground)]">Aucun coureur pour le moment.</p>
         ) : (
           <div className="grid gap-2">
             {club.runners.map((runner) => (
@@ -84,11 +83,14 @@ export default async function ClubPage({params}: Props) {
         )}
       </section>
 
-      <div className="flex w-full items-center justify-center">
+      <div className="mt-4 flex w-full items-center justify-center">
         {(membership.role === "ADMIN" || membership.role === "COACH") && (
-          <Link href={`/clubs/${clubId}/add-runner`}>
-            <BrutalButton label="Ajouter un coureur"/>
-          </Link>
+          <BrutalButton
+            href={`/clubs/${clubId}/add-runner`}
+            label="Ajouter un coureur"
+            variant="primary"
+            fullWidth
+          />
         )}
       </div>
     </>

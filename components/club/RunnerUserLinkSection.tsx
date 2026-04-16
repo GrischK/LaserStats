@@ -1,6 +1,7 @@
 "use client";
 
 import {useMemo, useState} from "react";
+import {ChevronDown} from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import BrutalButton from "@/components/BrutalButton";
 
@@ -51,9 +52,11 @@ export default function RunnerUserLinkSection({
 
   const [confirmLinkOpen, setConfirmLinkOpen] = useState(false);
   const [pendingRunnerId, setPendingRunnerId] = useState<string | null>(null);
+  const [unlinkedOpen, setUnlinkedOpen] = useState(false);
 
   const [confirmUnlinkOpen, setConfirmUnlinkOpen] = useState(false);
   const [pendingUnlinkRunnerId, setPendingUnlinkRunnerId] = useState<string | null>(null);
+  const [linkedOpen, setLinkedOpen] = useState(false);
 
   const pendingRunner = useMemo(() => {
     if (!pendingRunnerId) return null;
@@ -235,96 +238,159 @@ export default function RunnerUserLinkSection({
 
   return (
     <>
-      <div className="space-y-6">
-        <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
-          <h2 className="text-lg font-semibold">Runners non liés</h2>
-
-          <div className="mt-4 space-y-4">
-            {runnerList.length === 0 ? (
-              <p className="text-sm text-neutral-500">
-                Tous les runners sont déjà associés.
+      <div className="sm:space-y-6">
+        <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+          <button
+            type="button"
+            onClick={() => setUnlinkedOpen((prev) => !prev)}
+            className="flex w-full items-center justify-between gap-4 text-left"
+          >
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">Coureurs non liés</h2>
+              <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                {runnerList.length} coureur{runnerList.length > 1 ? "s" : ""} à associer
               </p>
-            ) : (
-              runnerList.map((runner) => (
-                <div key={runner.id} className="rounded-xl border p-4">
-                  <div className="mb-3">
-                    <p className="font-medium">{runner.name}</p>
-                    <p className="text-sm text-neutral-600">
-                      {runner.sessionsCount} session
-                      {runner.sessionsCount > 1 ? "s" : ""}
-                    </p>
-                  </div>
+            </div>
 
-                  <div className="flex flex-col gap-3 md:flex-row md:items-center">
-                    <select
-                      value={selectedUsers[runner.id] ?? ""}
-                      onChange={(e) =>
-                        setSelectedUsers((prev) => ({
-                          ...prev,
-                          [runner.id]: e.target.value,
-                        }))
-                      }
-                      className="rounded-xl border px-3 py-2 bg-[var(--card)]"
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--muted)] text-[var(--fg)]">
+              <ChevronDown
+                size={22}
+                aria-hidden="true"
+                className={`transition-transform duration-200 ${unlinkedOpen ? "rotate-180" : ""}`}
+              />
+            </div>
+          </button>
+
+          <div
+            className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+              unlinkedOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+            }`}
+          >
+            <div className="min-h-0 overflow-hidden">
+              <div className="mt-4 sm:space-y-3">
+                {runnerList.length === 0 ? (
+                  <p className="text-sm text-[var(--muted-foreground)]">
+                    Tous les coureurs sont déjà associés.
+                  </p>
+                ) : (
+                  runnerList.map((runner) => (
+                    <div
+                      key={runner.id}
+                      className="border-b border-[var(--border)] py-4 last:border-b-0 sm:rounded-xl sm:border sm:p-4"
                     >
-                      <option value="">Choisir un membre</option>
-                      {memberList.map((member) => (
-                        <option key={member.id} value={member.id}>
-                          {member.name || member.email} - {member.email} ({member.role})
-                        </option>
-                      ))}
-                    </select>
+                      <div className="mb-3">
+                        <p className="font-medium">{runner.name}</p>
+                        <p className="text-sm text-[var(--muted-foreground)]">
+                          {runner.sessionsCount} session
+                          {runner.sessionsCount > 1 ? "s" : ""}
+                        </p>
+                      </div>
 
-                    <BrutalButton
-                      type="button"
-                      onClickFn={() => openConfirmLink(runner.id)}
-                      disabled={loadingRunnerId === runner.id}
-                      label={loadingRunnerId === runner.id ? "Association..." : "Associer"}
-                    >
-                    </BrutalButton>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+                      <div className="flex flex-col gap-3 md:flex-row md:items-center">
+                        <select
+                          value={selectedUsers[runner.id] ?? ""}
+                          onChange={(e) =>
+                            setSelectedUsers((prev) => ({
+                              ...prev,
+                              [runner.id]: e.target.value,
+                            }))
+                          }
+                          className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20 md:flex-1"
+                        >
+                          <option value="">Choisir un membre</option>
+                          {memberList.map((member) => (
+                            <option key={member.id} value={member.id}>
+                              {member.name || member.email} - {member.email} ({member.role})
+                            </option>
+                          ))}
+                        </select>
 
-        <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
-          <h2 className="text-lg font-semibold">Associations existantes</h2>
-
-          <div className="mt-4 space-y-4">
-            {linkedRunnerList.length === 0 ? (
-              <p className="text-sm text-neutral-500">
-                Aucune association existante.
-              </p>
-            ) : (
-              linkedRunnerList.map((runner) => (
-                <div key={runner.id} className="rounded-xl border p-4">
-                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                    <div>
-                      <p className="font-medium">{runner.name}</p>
-                      <p className="text-sm text-neutral-600">
-                        {runner.user?.name || runner.user?.email} - {runner.user?.email}
-                      </p>
-                      <p className="text-sm text-neutral-500">
-                        {runner.sessionsCount} session
-                        {runner.sessionsCount > 1 ? "s" : ""}
-                      </p>
+                        <BrutalButton
+                          type="button"
+                          onClickFn={() => openConfirmLink(runner.id)}
+                          disabled={loadingRunnerId === runner.id}
+                          label={loadingRunnerId === runner.id ? "Association..." : "Associer"}
+                          variant="primary"
+                          className="w-full md:w-auto"
+                        />
+                      </div>
                     </div>
-
-                    <BrutalButton
-                      type="button"
-                      onClickFn={() => openConfirmUnlink(runner.id)}
-                      disabled={loadingRunnerId === runner.id}
-                      label={loadingRunnerId === runner.id ? "Dissociation..." : "Dissocier"}
-                    />
-                  </div>
-                </div>
-              ))
-            )}
+                  ))
+                )}
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
+        <section className="-mx-4 md:border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+          <button
+            type="button"
+            onClick={() => setLinkedOpen((prev) => !prev)}
+            className="flex w-full items-center justify-between gap-4 text-left"
+          >
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">Associations existantes</h2>
+              <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+                {linkedRunnerList.length} association{linkedRunnerList.length > 1 ? "s" : ""}
+              </p>
+            </div>
+
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--muted)] text-[var(--fg)]">
+              <ChevronDown
+                size={22}
+                aria-hidden="true"
+                className={`transition-transform duration-200 ${linkedOpen ? "rotate-180" : ""}`}
+              />
+            </div>
+          </button>
+
+          <div
+            className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+              linkedOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+            }`}
+          >
+            <div className="min-h-0 overflow-hidden">
+              <div className="mt-4 sm:space-y-3">
+                {linkedRunnerList.length === 0 ? (
+                  <p className="text-sm text-[var(--muted-foreground)]">
+                    Aucune association existante.
+                  </p>
+                ) : (
+                  linkedRunnerList.map((runner) => (
+                    <div
+                      key={runner.id}
+                      className="border-b border-[var(--border)] py-4 last:border-b-0 sm:rounded-xl sm:border sm:p-4"
+                    >
+                      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
+                        <div className="min-w-0">
+                          <p className="font-medium">{runner.name}</p>
+                          <p className="break-words text-sm text-[var(--muted-foreground)]">
+                            {runner.user?.name || runner.user?.email} - {runner.user?.email}
+                          </p>
+                          <p className="text-sm text-[var(--muted-foreground)]">
+                            {runner.sessionsCount} session
+                            {runner.sessionsCount > 1 ? "s" : ""}
+                          </p>
+                        </div>
+
+                        <BrutalButton
+                          type="button"
+                          onClickFn={() => openConfirmUnlink(runner.id)}
+                          disabled={loadingRunnerId === runner.id}
+                          label={loadingRunnerId === runner.id ? "Dissociation..." : "Dissocier"}
+                          variant="danger"
+                          className="w-full sm:w-auto"
+                        />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {error ? <p className="px-4 py-3 text-sm text-[var(--danger)] sm:px-0">{error}</p> : null}
       </div>
 
       <ConfirmModal

@@ -68,15 +68,15 @@ export default function InviteMemberForm({
   }
 
   return (
-    <div className="rounded-2xl border bg-[var(--card)] p-4 shadow-sm">
-      <h2 className="text-base font-semibold">Inviter un membre</h2>
+    <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+      <h2 className="text-2xl font-bold tracking-tight">Inviter un membre</h2>
 
       <form onSubmit={onSubmit} className="mt-4 space-y-4">
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Email</label>
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Email</label>
           <input
             type="email"
-            className="w-full rounded-xl border px-3 py-2"
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="email@exemple.com"
@@ -84,10 +84,10 @@ export default function InviteMemberForm({
           />
         </div>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Rôle</label>
+        <div className="space-y-2">
+          <label className="text-sm font-semibold">Rôle</label>
           <select
-            className="w-full rounded-xl border px-3 py-2 bg-[var(--card)]"
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
             value={role}
             onChange={(e) => setRole(e.target.value as ClubRole)}
           >
@@ -103,15 +103,21 @@ export default function InviteMemberForm({
           </select>
         </div>
 
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        {success ? <p className="text-sm text-green-600">{success}</p> : null}
+        {error ? (
+          <p className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-[var(--danger)]">
+            {error}
+          </p>
+        ) : null}
+        {success ? <p className="text-sm text-[var(--success)]">{success}</p> : null}
 
         <BrutalButton
           type="submit"
           disabled={loading}
           label={loading ? "Envoi..." : "Envoyer l'invite"}
+          variant="primary"
+          fullWidth
         />
       </form>
-    </div>
+    </section>
   );
 }
