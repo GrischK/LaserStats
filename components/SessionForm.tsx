@@ -28,7 +28,7 @@ function formatChrono(totalSeconds: number) {
 
 export default function SessionForm({ runnerId, onCreated }: Props) {
   const [distance, setDistance] = useState("");
-  const [targetsHit, setTargetsHit] = useState(0);
+  const [targetsHit, setTargetsHit] = useState<number | null>(null);
   const [durationSeconds, setDurationSeconds] = useState("");
   const [timerRunning, setTimerRunning] = useState(false);
   const [timerElapsedSeconds, setTimerElapsedSeconds] = useState(0);
@@ -81,6 +81,11 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
     const duration =
       durationSeconds === "" ? null : Number(durationSeconds);
 
+    if (targetsHit === null) {
+      setError("Sélectionnez le nombre de cibles touchées");
+      return;
+    }
+
     if (
       duration !== null &&
       (!Number.isInteger(duration) || duration < 0 || duration > 50)
@@ -120,7 +125,7 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
       });
 
       setDistance("");
-      setTargetsHit(0);
+      setTargetsHit(null);
       setDurationSeconds("");
       handleResetTimer();
       setError("");
@@ -195,6 +200,9 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
           <label className="mb-2 block text-sm font-semibold">
             Cibles touchées
           </label>
+          <p className="mb-2 text-sm text-[var(--muted-foreground)]">
+            Obligatoire
+          </p>
 
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
             {hitOptions.map((value) => {
@@ -291,7 +299,7 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
         <div className="flex items-center justify-center">
           <BrutalButton
             type="submit"
-            disabled={loading}
+            disabled={loading || targetsHit === null}
             variant="primary"
             fullWidth
             label={loading ? "Enregistrement..." : "Enregistrer"}
