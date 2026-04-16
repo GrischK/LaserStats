@@ -66,7 +66,7 @@ export default function HeroSectionOne() {
           <div className="absolute mx-auto h-px w-full bg-neutral-400/50  " />
         </div>
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4 py-16 md:py-20">
-          <h1
+          <p
             className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-neutral-800 md:text-4xl lg:text-7xl dark:text-slate-300"
           >
             {"Suivez chaque tir, Analysez chaque progression."
@@ -86,7 +86,7 @@ export default function HeroSectionOne() {
                   {word}
                 </motion.span>
               ))}
-          </h1>
+          </p>
           <motion.p
             initial={{
               opacity: 0,
