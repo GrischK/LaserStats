@@ -5,6 +5,7 @@ import {Pencil, Trash2} from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import BrutalButton from "@/components/BrutalButton";
 import {Modal, ModalBody, ModalContent, useModal} from "@/components/ui/animated-modal";
+import {getScoreButtonClass, getScoreTextClass} from "@/lib/score-colors";
 
 type Props = {
   sessionId: string;
@@ -106,8 +107,8 @@ function EditSessionModalContent({
                 onClick={() => setTargetsHitValue(value)}
                 className={`min-h-11 rounded-lg px-3 py-2 text-base font-bold transition active:translate-y-px ${
                   targetsHitValue === value
-                    ? "bg-[image:var(--selected-bg)] text-[var(--selected-foreground)]"
-                    : "bg-[var(--surface-strong)]"
+                    ? getScoreButtonClass(value)
+                    : "bg-[var(--surface-strong)] text-[var(--fg)] hover:brightness-95"
                 }`}
               >
                 {value}
@@ -288,7 +289,7 @@ const ShotSessionRow: FC<Props> = ({
           </div>
           <div className="rounded-lg bg-[var(--history-stat)] px-3 py-2 ring-1 ring-inset ring-[var(--border)]">
             <div className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Cibles</div>
-            <div className="mt-1 text-base font-bold text-[var(--accent-sport)]">{targetsHit}/5</div>
+            <div className={`mt-1 text-base font-bold ${getScoreTextClass(targetsHit)}`}>{targetsHit}/5</div>
           </div>
           <div className="rounded-lg bg-[var(--history-stat)] px-3 py-2 ring-1 ring-inset ring-[var(--border)]">
             <div className="text-xs font-semibold uppercase tracking-wide text-[var(--muted-foreground)]">Temps</div>

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Play, RotateCcw, Square } from "lucide-react";
 import BrutalButton from "@/components/BrutalButton";
+import {getScoreButtonClass} from "@/lib/score-colors";
 
 type Props = {
   clubId: string;
@@ -206,7 +207,7 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
                   onClick={() => setTargetsHit(value)}
                   className={`h-14 rounded-lg px-4 text-lg font-bold transition active:translate-y-px ${
                     active
-                      ? "bg-[image:var(--selected-bg)] text-[var(--selected-foreground)]"
+                      ? getScoreButtonClass(value)
                       : "bg-[var(--surface-strong)] text-[var(--fg)] hover:brightness-95"
                   }`}
                 >
