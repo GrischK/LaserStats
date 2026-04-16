@@ -126,43 +126,39 @@ export default async function ClubAssociationsPage({ params }: Props) {
   }));
 
   return (
-    <div className="md:space-y-6 md:p-6">
-      <div>
-        <h1>Associations coureurs / comptes</h1>
-
-      </div>
-      <section className="py-10">
-        <p className="mt-1 text-sm text-neutral-600">
-          Associez un compte utilisateur à un coureur existant pour lui rattacher
-          ses anciennes sessions, ou dissociez-le en cas d’erreur.
+    <main className="mx-auto flex w-full max-w-3xl flex-col sm:gap-6">
+      <h1>Associations coureurs / comptes</h1>
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
+        <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+          Associez un compte utilisateur à un coureur existant, ou dissociez-le en cas d’erreur.
         </p>
-        <RunnerUserLinkSection
-          clubId={clubId}
-          runners={unlinkedRunners.map((runner) => ({
-            id: runner.id,
-            name: runner.name,
-            active: runner.active,
-            createdAt: runner.createdAt,
-            sessionsCount: runner._count.sessions,
-          }))}
-          members={members}
-          linkedRunners={linkedRunners.map((runner) => ({
-            id: runner.id,
-            name: runner.name,
-            active: runner.active,
-            createdAt: runner.createdAt,
-            sessionsCount: runner._count.sessions,
-            user: runner.user
-              ? {
-                id: runner.user.id,
-                name: runner.user.name,
-                email: runner.user.email,
-              }
-              : null,
-          }))}
-        />
       </section>
 
-    </div>
+      <RunnerUserLinkSection
+        clubId={clubId}
+        runners={unlinkedRunners.map((runner) => ({
+          id: runner.id,
+          name: runner.name,
+          active: runner.active,
+          createdAt: runner.createdAt,
+          sessionsCount: runner._count.sessions,
+        }))}
+        members={members}
+        linkedRunners={linkedRunners.map((runner) => ({
+          id: runner.id,
+          name: runner.name,
+          active: runner.active,
+          createdAt: runner.createdAt,
+          sessionsCount: runner._count.sessions,
+          user: runner.user
+            ? {
+              id: runner.user.id,
+              name: runner.user.name,
+              email: runner.user.email,
+            }
+            : null,
+        }))}
+      />
+    </main>
   );
 }
