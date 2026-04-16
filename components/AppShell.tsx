@@ -8,6 +8,7 @@ import LogoutButton from "@/components/LogoutButton";
 import { getThemeServerSnapshot, getThemeSnapshot, subscribeTheme, } from "@/lib/theme";
 import { useOutsideClick } from "@/lib/use-outside-click";
 import BrutalButton from "@/components/BrutalButton";
+import NavigationFeedback from "@/components/NavigationFeedback";
 
 type Props = {
   children: React.ReactNode;
@@ -39,6 +40,7 @@ export default function AppShell({ children }: Props) {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--fg)] transition-colors">
+      <NavigationFeedback/>
       <header
         ref={headerRef}
         className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--header-bg)]/95 backdrop-blur"
