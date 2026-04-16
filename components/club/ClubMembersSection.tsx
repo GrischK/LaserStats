@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import {ChevronDown} from "lucide-react";
 import ConfirmModal from "@/components/ConfirmModal";
 import BrutalButton from "@/components/BrutalButton";
 import type { ClubMemberItem } from "@/lib/types";
@@ -28,6 +29,7 @@ export default function ClubMembersSection({
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
   const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   const pendingMember = useMemo(
     () => members.find((item) => item.userId === pendingUserId) ?? null,
@@ -71,59 +73,86 @@ export default function ClubMembersSection({
   }
 
   return (
-    <section className="-mx-4 md:border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
-      <h2 className="text-xl font-semibold">Membres du club</h2>
+    <section className="-mx-4 sm:border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between gap-4 text-left"
+      >
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Membres du club</h2>
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            {members.length} membre{members.length > 1 ? "s" : ""}
+          </p>
+        </div>
 
-      <div className="mt-4 sm:space-y-3">
-        {members.length === 0 ? (
-          <p className="text-sm text-[var(--muted-foreground)]">Aucun membre.</p>
-        ) : (
-          members.map((member) => {
-            const isCurrentUser = member.userId === currentUserId;
-            const canRemove =
-              canManageMembers && !isCurrentUser && loadingUserId === null;
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--muted)] text-[var(--fg)]">
+          <ChevronDown
+            size={22}
+            aria-hidden="true"
+            className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          />
+        </div>
+      </button>
 
-            return (
-              <div
-                key={member.userId}
-                className="flex flex-col gap-3 border-b border-[var(--border)] py-4 last:border-b-0 sm:flex-row sm:items-start sm:justify-between sm:rounded-xl sm:border sm:p-3"
-              >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    {member.user.image ? (
-                      <img
-                        src={member.user.image}
-                        alt={`Avatar de ${member.user.name ?? member.user.email}`}
-                        className="h-9 w-9 rounded-full border border-[var(--border)] object-cover"
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className="mt-4 sm:space-y-3">
+            {members.length === 0 ? (
+              <p className="text-sm text-[var(--muted-foreground)]">Aucun membre.</p>
+            ) : (
+              members.map((member) => {
+                const isCurrentUser = member.userId === currentUserId;
+                const canRemove =
+                  canManageMembers && !isCurrentUser && loadingUserId === null;
+
+                return (
+                  <div
+                    key={member.userId}
+                    className="flex flex-col gap-3 border-b border-[var(--border)] py-4 last:border-b-0 sm:flex-row sm:items-start sm:justify-between sm:rounded-xl sm:border sm:p-3"
+                  >
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        {member.user.image ? (
+                          <img
+                            src={member.user.image}
+                            alt={`Avatar de ${member.user.name ?? member.user.email}`}
+                            className="h-9 w-9 rounded-full border border-[var(--border)] object-cover"
+                          />
+                        ) : null}
+                        <p className="truncate font-medium">
+                          {member.user.name ?? member.user.email}
+                          {isCurrentUser ? " (vous)" : ""}
+                        </p>
+                      </div>
+                      <p className="text-sm text-[var(--muted-foreground)]">{member.user.email}</p>
+                      <p className="text-sm text-[var(--muted-foreground)]">
+                        Rôle : {roleLabel(member.role)}
+                      </p>
+                    </div>
+
+                    {canManageMembers && !isCurrentUser ? (
+                      <BrutalButton
+                        type="button"
+                        onClickFn={() => openConfirm(member.userId)}
+                        disabled={!canRemove}
+                        label={
+                          loadingUserId === member.userId ? "Retrait..." : "Retirer"
+                        }
+                        variant="danger"
+                        className="w-full sm:w-auto"
                       />
                     ) : null}
-                    <p className="truncate font-medium">
-                      {member.user.name ?? member.user.email}
-                      {isCurrentUser ? " (vous)" : ""}
-                    </p>
                   </div>
-                  <p className="text-sm text-[var(--muted-foreground)]">{member.user.email}</p>
-                  <p className="text-sm text-[var(--muted-foreground)]">
-                    Rôle : {roleLabel(member.role)}
-                  </p>
-                </div>
-
-                {canManageMembers && !isCurrentUser ? (
-                  <BrutalButton
-                    type="button"
-                    onClickFn={() => openConfirm(member.userId)}
-                    disabled={!canRemove}
-                    label={
-                      loadingUserId === member.userId ? "Retrait..." : "Retirer"
-                    }
-                    variant="danger"
-                    className="w-full sm:w-auto"
-                  />
-                ) : null}
-              </div>
-            );
-          })
-        )}
+                );
+              })
+            )}
+          </div>
+        </div>
       </div>
 
       {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}

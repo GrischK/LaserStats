@@ -69,7 +69,7 @@ export default function InviteMemberForm({
 
   return (
     <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
-      <h2 className="text-xl font-semibold">Inviter un membre</h2>
+      <h2 className="text-2xl font-bold tracking-tight">Inviter un membre</h2>
 
       <form onSubmit={onSubmit} className="mt-4 space-y-4">
         <div className="space-y-2">
