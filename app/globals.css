@@ -177,6 +177,42 @@ a {
   text-decoration: none;
 }
 
+h1 {
+  position: relative;
+  display: block;
+  width: fit-content;
+}
+
+h1::before, h1::after {
+  content: "";
+  position: absolute;
+  height: 1px;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+h1::before {
+  right: 0.05rem;
+  bottom: 0.14rem;
+  width: 2.25rem;
+  background: var(--accent-gradient);
+  opacity: 0.85;
+}
+
+h1::after {
+  right: -0.55rem;
+  bottom: 0;
+  width: 1.55rem;
+  background: var(--primary-gradient);
+  opacity: 0.65;
+}
+
+@media (min-width: 640px) {
+   h1{
+    font-size: 2.5rem;
+  }
+}
+
 .runner-link-row:not(:last-child)::after {
   content: "";
   position: absolute;
