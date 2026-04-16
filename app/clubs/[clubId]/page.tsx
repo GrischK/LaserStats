@@ -64,7 +64,7 @@ export default async function ClubPage({params}: Props) {
         )}
       </div>
 
-      <section className="-mx-4 mt-5 border-y border-[var(--border)] bg-[var(--card)] px-4 py-6 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+      <section className="-mx-4 mt-5 md:border-y md:border-[var(--border)] bg-[var(--card)] px-4 py-6 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
         <h1 className={"mb-3"}>Coureurs</h1>
 
         {club.runners.length === 0 ? (
