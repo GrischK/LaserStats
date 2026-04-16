@@ -2,6 +2,7 @@
 
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import {cn} from "@/lib/utils";
+import Link from "next/link";
 
 type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
   label?: string;
@@ -12,6 +13,7 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "onClick"> & {
   className?: string;
   fullWidth?: boolean;
   children?: ReactNode;
+  href?: string;
 };
 
 export default function BrutalButton({
@@ -23,6 +25,7 @@ export default function BrutalButton({
                                        className = "",
                                        fullWidth = false,
                                        children,
+                                       href,
                                        ...buttonProps
                                      }: Props) {
 
@@ -46,13 +49,24 @@ export default function BrutalButton({
       "border border-transparent bg-[image:var(--danger-gradient)] text-white shadow-sm hover:brightness-95",
   };
 
+  const classes = cn(`${base} ${variants[variant]} ${fullWidth ? "w-full" : ""} ${className}`);
+
+  if (href) {
+    return (
+      <Link href={href} className={classes}>
+        {label}
+        {children}
+      </Link>
+    );
+  }
+
   return (
     <button
       {...buttonProps}
       disabled={disabled}
       type={type}
       onClick={onClickFn}
-      className={cn(`${base} ${variants[variant]} ${fullWidth ? "w-full" : ""} ${className}`)}
+      className={classes}
     >
       {label}
       {children}

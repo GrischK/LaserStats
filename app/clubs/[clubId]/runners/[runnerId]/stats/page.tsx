@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getAuthSession } from "@/lib/session";
 import RunnerComparisonSelector from "@/components/runner/RunnerComparisonSelector";
 import type { Membership, UserWithMemberships } from "@/lib/types";
+import BrutalButton from "@/components/BrutalButton";
 
 type Props = {
   params: Promise<{ clubId: string; runnerId: string }>;
@@ -92,6 +92,17 @@ function formatSigned(value: number | null, digits = 2, suffix = "") {
   const sign = value > 0 ? "+" : "";
   return `${sign}${value.toFixed(digits)}${suffix}`;
 }
+
+const sectionCard =
+  "-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-6 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]";
+
+const statPanel =
+  "-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-5 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]";
+
+const nestedPanel =
+  "border-l-4 border-[var(--accent-sport)] bg-[var(--muted)]/45 px-3 py-3 sm:rounded-xl sm:border sm:border-[var(--border)] sm:bg-transparent";
+
+const barFill = "h-2 rounded bg-[image:var(--accent-gradient)]";
 
 function getSessionDayKey(date: Date) {
   const year = date.getFullYear();
@@ -418,8 +429,8 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
   const maxMonthlyCount = Math.max(1, ...baseStats.monthlyStats.map((item) => item.count), 1);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6">
-      <section className="rounded-3xl border border-[var(--border)] bg-[var(--card)] p-6 shadow-[var(--shadow)]">
+    <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col sm:gap-6">
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-8 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
@@ -438,18 +449,18 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Link
+            <BrutalButton
               href={`/clubs/${clubId}/runners/${runnerId}`}
-              className="rounded-xl border px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
-            >
-              Retour sessions
-            </Link>
-            <Link
+              label="Retour sessions"
+              variant="soft"
+              className="min-h-11 px-4 py-2"
+            />
+            <BrutalButton
               href={`/clubs/${clubId}`}
-              className="rounded-xl border px-3 py-2 text-sm font-medium transition hover:bg-[var(--muted)]"
-            >
-              Retour club
-            </Link>
+              label="Retour club"
+              variant="soft"
+              className="min-h-11 px-4 py-2"
+            />
           </div>
         </div>
       </section>
@@ -460,10 +471,10 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
       />
 
       {compareRunner && compareStats ? (
-        <section className="rounded-2xl border bg-[var(--card)] p-4">
+        <section className={sectionCard}>
           <h2 className="text-lg font-semibold">Comparaison avec {compareRunner.name}</h2>
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <div className="rounded-xl border p-3">
+            <div className={nestedPanel}>
               <p className="text-sm font-medium">{runner.name}</p>
               <p className="mt-2 text-sm">Moy. score: <strong>{formatNumber(baseStats.avgTargets, 2)}/5</strong></p>
               <p className="text-sm">Taux réussite: <strong>{baseStats.successRate === null ? "N/A" : toPercent(baseStats.successRate)}</strong></p>
@@ -472,7 +483,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
               <p className="text-sm">Durée moy.: <strong>{formatDuration(baseStats.avgDuration === null ? null : Number(baseStats.avgDuration.toFixed(1)))}</strong></p>
             </div>
 
-            <div className="rounded-xl border p-3">
+            <div className={nestedPanel}>
               <p className="text-sm font-medium">{compareRunner.name}</p>
               <p className="mt-2 text-sm">Moy. score: <strong>{formatNumber(compareStats.avgTargets, 2)}/5</strong></p>
               <p className="text-sm">Taux réussite: <strong>{compareStats.successRate === null ? "N/A" : toPercent(compareStats.successRate)}</strong></p>
@@ -482,21 +493,21 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
             </div>
           </div>
 
-          <div className="mt-4 rounded-xl border p-3 text-sm">
+          <div className={`${nestedPanel} mt-4 text-sm`}>
             <p>Écart score moyen (Y - X): <strong>{formatSigned(compareStats.avgTargets !== null && baseStats.avgTargets !== null ? compareStats.avgTargets - baseStats.avgTargets : null, 2, " /5")}</strong></p>
             <p>Écart fréquence hebdo (Y - X): <strong>{formatSigned(compareStats.weekly.weeklyFrequency - baseStats.weekly.weeklyFrequency, 2, " /sem.")}</strong></p>
             <p>Écart distance moyenne (Y - X): <strong>{formatSigned(compareStats.avgDistance !== null && baseStats.avgDistance !== null ? compareStats.avgDistance - baseStats.avgDistance : null, 1, "m")}</strong></p>
             <p>Écart durée moyenne (Y - X): <strong>{formatSigned(compareStats.avgDuration !== null && baseStats.avgDuration !== null ? compareStats.avgDuration - baseStats.avgDuration : null, 1, "s")}</strong></p>
           </div>
 
-          <div className="mt-4 rounded-xl border p-3">
+          <div className={`${nestedPanel} mt-4`}>
             <h3 className="text-sm font-medium">Tendance 6 mois (sessions / score moyen)</h3>
             <div className="mt-2 space-y-2 text-sm">
               {monthKeys.map((key) => {
                 const baseMonth = baseStats.monthlyStats.find((item) => item.key === key);
                 const compareMonth = compareStats.monthlyStats.find((item) => item.key === key);
                 return (
-                  <div key={key} className="grid grid-cols-3 gap-2 rounded-lg border px-2 py-1">
+                  <div key={key} className="grid grid-cols-3 gap-2 border-b border-[var(--border)] px-0 py-2 last:border-b-0 sm:rounded-lg sm:border sm:px-2 sm:py-1">
                     <span className="capitalize">{baseMonth?.label ?? key}</span>
                     <span>
                       X: {baseMonth?.count ?? 0} / {formatNumber(baseMonth?.avgTargets ?? null, 1)}
@@ -512,29 +523,29 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
         </section>
       ) : null}
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+      <section className="grid gap-0 sm:gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className={statPanel}>
           <p className="text-sm text-[var(--muted-foreground)]">Sessions totales</p>
           <p className="mt-1 text-2xl font-bold">{baseStats.totalSessions}</p>
         </div>
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+        <div className={statPanel}>
           <p className="text-sm text-[var(--muted-foreground)]">Moyenne score</p>
           <p className="mt-1 text-2xl font-bold">{formatNumber(baseStats.avgTargets, 2)} / 5</p>
         </div>
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+        <div className={statPanel}>
           <p className="text-sm text-[var(--muted-foreground)]">Taux de réussite</p>
           <p className="mt-1 text-2xl font-bold">
             {baseStats.successRate === null ? "N/A" : toPercent(baseStats.successRate)}
           </p>
         </div>
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+        <div className={statPanel}>
           <p className="text-sm text-[var(--muted-foreground)]">Dernière session</p>
           <p className="mt-1 text-2xl font-bold">{formatDate(baseStats.lastSessionDate)}</p>
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+      <section className="grid gap-0 sm:gap-4 lg:grid-cols-3">
+        <div className={statPanel}>
           <h2 className="text-lg font-semibold">Records</h2>
           <div className="mt-3 space-y-2 text-sm">
             <p>Meilleur score: <strong>{baseStats.bestTargets ?? "N/A"} / 5</strong></p>
@@ -543,7 +554,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+        <div className={statPanel}>
           <h2 className="text-lg font-semibold">Moyennes</h2>
           <div className="mt-3 space-y-2 text-sm">
             <p>Distance moyenne: <strong>{baseStats.avgDistance === null ? "N/A" : `${formatNumber(baseStats.avgDistance, 1)}m`}</strong></p>
@@ -552,7 +563,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+        <div className={statPanel}>
           <h2 className="text-lg font-semibold">Régularité</h2>
           <div className="mt-3 space-y-2 text-sm">
             <p>
@@ -580,8 +591,8 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+      <section className="grid gap-0 sm:gap-4 lg:grid-cols-2">
+        <div className={statPanel}>
           <h2 className="text-lg font-semibold">Répartition des scores</h2>
           <div className="mt-4 space-y-2">
             {baseStats.scoreDistribution.map((item) => (
@@ -589,7 +600,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
                 <span className="w-12">{item.score}/5</span>
                 <div className="h-2 flex-1 rounded bg-[var(--muted)]">
                   <div
-                    className="h-2 rounded bg-black dark:bg-white"
+                    className={barFill}
                     style={{ width: `${(item.count / maxScoreDistCount) * 100}%` }}
                   />
                 </div>
@@ -599,7 +610,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+        <div className={statPanel}>
           <h2 className="text-lg font-semibold">Répartition des distances</h2>
           <div className="mt-4 space-y-2">
             {baseStats.distanceDistribution.length === 0 ? (
@@ -610,7 +621,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
                   <span className="w-12">{item.label}</span>
                   <div className="h-2 flex-1 rounded bg-[var(--muted)]">
                     <div
-                      className="h-2 rounded bg-black dark:bg-white"
+                      className={barFill}
                       style={{ width: `${(item.count / maxDistanceDistCount) * 100}%` }}
                     />
                   </div>
@@ -622,8 +633,8 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+      <section className="grid gap-0 sm:gap-4 lg:grid-cols-2">
+        <div className={statPanel}>
           <h2 className="text-lg font-semibold">Activité par jour</h2>
           <div className="mt-4 space-y-2">
             {baseStats.weekdayCounts.map((item) => (
@@ -631,7 +642,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
                 <span className="w-10">{item.label}</span>
                 <div className="h-2 flex-1 rounded bg-[var(--muted)]">
                   <div
-                    className="h-2 rounded bg-black dark:bg-white"
+                    className={barFill}
                     style={{ width: `${(item.count / maxWeekdayCount) * 100}%` }}
                   />
                 </div>
@@ -641,7 +652,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+        <div className={statPanel}>
           <h2 className="text-lg font-semibold">Tendance 6 mois</h2>
           <div className="mt-4 space-y-2">
             {baseStats.monthlyStats.map((item) => (
@@ -649,7 +660,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
                 <span className="w-12 capitalize">{item.label}</span>
                 <div className="h-2 flex-1 rounded bg-[var(--muted)]">
                   <div
-                    className="h-2 rounded bg-black dark:bg-white"
+                    className={barFill}
                     style={{ width: `${(item.count / maxMonthlyCount) * 100}%` }}
                   />
                 </div>
@@ -661,8 +672,8 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+      <section className="grid gap-0 sm:gap-4 lg:grid-cols-2">
+        <div className={statPanel}>
           <h2 className="text-lg font-semibold">Delta 30 jours</h2>
           <div className="mt-3 space-y-2 text-sm">
             <p>Sessions (30j): <strong>{baseStats.delta30.last30Count}</strong></p>
@@ -678,7 +689,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-[var(--card)] p-4">
+        <div className={statPanel}>
           <h2 className="text-lg font-semibold">Moyenne mobile (7 sessions)</h2>
           <div className="mt-4 space-y-2">
             {baseStats.rollingStats.length === 0 ? (
@@ -691,7 +702,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
                   <span className="w-24">{formatDate(item.date)}</span>
                   <div className="h-2 flex-1 rounded bg-[var(--muted)]">
                     <div
-                      className="h-2 rounded bg-black dark:bg-white"
+                      className={barFill}
                       style={{ width: `${(item.avgTargets / 5) * 100}%` }}
                     />
                   </div>
