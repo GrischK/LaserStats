@@ -129,7 +129,9 @@ const Navbar = () => {
         <div className="w-20">
           <img src={logo} alt="logo" className="w-full" />
         </div>
-        <h1 className="text-base font-bold md:text-2xl">Laser-stats</h1>
+        <h1 className="text-lg font-black tracking-wide text-white drop-shadow-sm md:text-2xl">
+          Laser<span className="text-[var(--accent-sport)]">Stats</span>
+        </h1>
       </div>
     </nav>
   );

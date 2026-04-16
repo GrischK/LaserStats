@@ -56,7 +56,9 @@ export default function AppShell({ children }: Props) {
             </Link>
 
             <div>
-              <div className="text-base font-extrabold tracking-tight sm:text-lg">Laser-stats</div>
+              <div className="text-lg font-black tracking-wide text-[var(--fg)] drop-shadow-sm sm:text-2xl">
+                Laser<span className="text-[var(--accent-sport)]">Stats</span>
+              </div>
               <div className="hidden text-xs text-[var(--muted-foreground)] sm:block">
                 Suivi des tirs Laser Run
               </div>
