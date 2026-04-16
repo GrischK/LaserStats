@@ -26,7 +26,7 @@ export default function RunnerLink({href, name, avatarUrl}: Props) {
   return (
     <Link
       href={href}
-      className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-sm transition hover:border-[var(--accent-sport)] hover:bg-[var(--muted)] active:translate-y-px"
+      className="runner-link-row relative block py-3 transition hover:bg-[var(--muted)] active:translate-y-px sm:rounded-xl sm:border sm:border-[var(--border)] sm:bg-[var(--card)] sm:p-4 sm:shadow-sm sm:hover:border-[var(--accent-sport)]"
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">

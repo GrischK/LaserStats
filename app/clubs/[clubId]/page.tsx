@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {redirect} from "next/navigation";
 import {prisma} from "@/lib/prisma";
 import {getAuthSession} from "@/lib/session";
@@ -65,7 +64,7 @@ export default async function ClubPage({params}: Props) {
         )}
       </div>
 
-      <section className="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-[var(--shadow)]">
+      <section className="-mx-4 mt-5 border-y border-[var(--border)] bg-[var(--card)] px-4 py-6 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
         <h2 className="mb-3 text-xl font-semibold">Coureurs</h2>
 
         {club.runners.length === 0 ? (
@@ -86,9 +85,12 @@ export default async function ClubPage({params}: Props) {
 
       <div className="mt-4 flex w-full items-center justify-center">
         {(membership.role === "ADMIN" || membership.role === "COACH") && (
-          <Link href={`/clubs/${clubId}/add-runner`} className="w-full sm:w-auto">
-            <BrutalButton label="Ajouter un coureur" variant="primary" fullWidth/>
-          </Link>
+          <BrutalButton
+            href={`/clubs/${clubId}/add-runner`}
+            label="Ajouter un coureur"
+            variant="primary"
+            fullWidth
+          />
         )}
       </div>
     </>

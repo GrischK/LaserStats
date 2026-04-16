@@ -54,25 +54,52 @@ export default function AddRunnerPage({ params }: Props) {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-md items-center p-6">
-      <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4 rounded-2xl border p-6">
-        <h1 className="text-2xl font-bold">Ajouter un coureur</h1>
+    <main className="mx-auto flex min-h-screen w-full max-w-md flex-col pt-6 sm:justify-center sm:px-6 sm:py-6">
+      <form
+        onSubmit={handleSubmit}
+        className="px-0 py-0 sm:rounded-2xl sm:border sm:border-[var(--border)] sm:bg-[var(--card)] sm:p-6 sm:shadow-[var(--shadow)]"
+      >
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight">Ajouter un coureur</h1>
+          <p className="mt-1 text-sm text-[var(--muted-foreground)]">
+            Créez un profil coureur pour enregistrer ses sessions.
+          </p>
+        </div>
 
-        <input
-          type="text"
-          placeholder="Nom du coureur"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="rounded-xl border px-3 py-2"
-        />
+        <div className="space-y-6">
+          <label className="grid gap-2">
+            <span className="text-sm font-semibold">Nom du coureur</span>
+            <input
+              type="text"
+              placeholder="Ex: Léa Martin"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
+            />
+          </label>
 
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          {error ? (
+            <p className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-[var(--danger)]">
+              {error}
+            </p>
+          ) : null}
 
-        <BrutalButton
-          type="submit"
-          disabled={loading || !clubId}
-          label={loading ? "Ajout..." : "Ajouter"}
-        />
+          <div className="grid gap-2 sm:grid-cols-2">
+            <BrutalButton
+              href={clubId ? `/clubs/${clubId}` : "#"}
+              label="Retour"
+              variant="soft"
+              fullWidth
+            />
+            <BrutalButton
+              type="submit"
+              disabled={loading || !clubId || !name.trim()}
+              label={loading ? "Ajout..." : "Ajouter"}
+              variant="primary"
+              fullWidth
+            />
+          </div>
+        </div>
       </form>
     </main>
   );

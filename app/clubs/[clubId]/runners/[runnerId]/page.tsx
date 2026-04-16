@@ -155,18 +155,18 @@ export default async function RunnerPage({ params }: Props) {
       <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:py-4 sm:mx-0 sm:rounded-2xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+            <p className="text-sm font-extrabold uppercase tracking-wide text-[var(--accent-sport)]">
               Coureur
             </p>
-            <div className="mt-1 flex items-center gap-3">
+            <div className="mt-2 flex items-center gap-3">
               {runner.user?.image ? (
                 <img
                   src={runner.user.image}
                   alt={`Avatar de ${runner.name}`}
-                  className="h-10 w-10 rounded-full border object-cover"
+                  className="h-12 w-12 rounded-full border border-[var(--border)] object-cover"
                 />
               ) : null}
-              <h1 className="text-3xl font-extrabold tracking-tight">{runner.name}</h1>
+              <h1 className="min-w-0 break-words text-4xl font-black leading-tight tracking-tight">{runner.name}</h1>
             </div>
           </div>
 

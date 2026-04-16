@@ -30,21 +30,21 @@ export default function BrutalButton({
                                      }: Props) {
 
   const base =
-    "inline-flex min-h-12 items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold transition duration-150 hover:cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-sport)] active:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55";
+    "inline-flex min-h-12 items-center justify-center rounded-lg px-5 py-3 !text-base !leading-6 font-semibold transition duration-150 hover:cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent-sport)] active:translate-y-px disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-55";
 
   const variants = {
     default:
-      "border border-[var(--border)] bg-[var(--card)] text-[var(--fg)] hover:border-[var(--accent-sport)] hover:bg-[var(--muted)]",
+      "border border-[var(--border)] bg-[var(--card)] text-[color:var(--fg)] hover:border-[var(--accent-sport)] hover:bg-[var(--muted)]",
     primary:
-      "border border-transparent bg-[image:var(--primary-gradient)] text-[var(--primary-foreground)] hover:brightness-95",
+      "border border-transparent bg-[image:var(--primary-gradient)] text-[color:var(--primary-foreground)] hover:brightness-95",
     accent:
-      "border border-transparent bg-[image:var(--accent-gradient)] text-[var(--accent-sport-foreground)] hover:brightness-95",
+      "border border-transparent bg-[image:var(--accent-gradient)] text-[color:var(--accent-sport-foreground)] hover:brightness-95",
     secondary:
-      "border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--fg)] hover:border-[var(--accent-sport)] hover:brightness-95",
+      "border border-[var(--border)] bg-[var(--surface-strong)] text-[color:var(--fg)] hover:border-[var(--accent-sport)] hover:brightness-95",
     soft:
-      "button-soft-gradient border-2 border-transparent text-[var(--muted-foreground)] hover:text-[var(--fg)] hover:brightness-95",
+      "button-soft-gradient border-2 border-transparent text-[color:var(--muted-foreground)] hover:text-[color:var(--fg)] hover:brightness-95",
     ghost:
-      "border border-transparent bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[var(--fg)]",
+      "border border-transparent bg-transparent text-[color:var(--muted-foreground)] hover:bg-[var(--muted)] hover:text-[color:var(--fg)]",
     danger:
       "border border-transparent bg-[image:var(--danger-gradient)] text-white shadow-sm hover:brightness-95",
   };
