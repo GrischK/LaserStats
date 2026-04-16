@@ -29,8 +29,20 @@ export default async function AccountPage() {
 
   return (
     <main className="mx-auto max-w-3xl sm:space-y-6">
-      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 pb-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
-        <h1 className="text-3xl font-bold tracking-tight">Compte</h1>
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
+        <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+          Statistiques
+        </p>
+        <div className="mt-1 flex items-center gap-3">
+          {user?.image ? (
+            <img
+              src={user.image}
+              alt={`Avatar de ${user.name}`}
+              className="h-10 w-10 rounded-full border object-cover"
+            />
+          ) : null}
+          <h1 className="text-3xl font-bold tracking-tight">{user.name}</h1>
+        </div>
         <p className="mt-2 text-[var(--muted-foreground)]">
           Gérez votre profil, votre mot de passe et votre compte.
         </p>

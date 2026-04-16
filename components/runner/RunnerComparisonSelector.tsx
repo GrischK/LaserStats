@@ -34,7 +34,7 @@ export default function RunnerComparisonSelector({
   }
 
   return (
-    <div className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-6 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
+    <div className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-2xl sm:border sm:p-4 sm:shadow-[var(--shadow)]">
       <label htmlFor="compare-runner" className="text-sm font-medium">
         Comparer avec un autre coureur
       </label>

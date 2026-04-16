@@ -4,6 +4,7 @@ import { getAuthSession } from "@/lib/session";
 import RunnerComparisonSelector from "@/components/runner/RunnerComparisonSelector";
 import type { Membership, UserWithMemberships } from "@/lib/types";
 import BrutalButton from "@/components/BrutalButton";
+import {cn} from "@/lib/utils";
 
 type Props = {
   params: Promise<{ clubId: string; runnerId: string }>;
@@ -430,7 +431,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col sm:gap-6">
-      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-8 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
+      <section className="-mx-4 border-b border-[var(--border)] bg-[var(--card)] px-4 py-10 sm:mx-0 sm:rounded-3xl sm:border sm:p-6 sm:shadow-[var(--shadow)]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
@@ -689,7 +690,7 @@ export default async function RunnerStatsPage({ params, searchParams }: Props) {
           </div>
         </div>
 
-        <div className={statPanel}>
+        <div className={cn(statPanel, "border-b-0 sm:border-b")}>
           <h2 className="text-lg font-semibold">Moyenne mobile (7 sessions)</h2>
           <div className="mt-4 space-y-2">
             {baseStats.rollingStats.length === 0 ? (
