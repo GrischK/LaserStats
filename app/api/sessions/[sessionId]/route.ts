@@ -67,10 +67,11 @@ export async function PATCH(request: Request, {params}: Props) {
     return NextResponse.json({error: "Invalid distance"}, {status: 400});
   }
 
-  const durationSeconds =
+  const parsedDurationSeconds =
     durationSecondsRaw === "" || durationSecondsRaw == null
       ? null
       : Number(durationSecondsRaw);
+  const durationSeconds = targetsHit < 5 ? 50 : parsedDurationSeconds;
 
   if (
     durationSeconds !== null &&

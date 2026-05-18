@@ -66,10 +66,11 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid distance" }, { status: 400 });
   }
 
-  const durationSeconds =
-    body?.durationSeconds === null || body?.durationSeconds === ""
+  const parsedDurationSeconds =
+    body?.durationSeconds == null || body?.durationSeconds === ""
       ? null
       : Number(body?.durationSeconds);
+  const durationSeconds = targetsHit < 5 ? 50 : parsedDurationSeconds;
 
   if (
     durationSeconds !== null &&

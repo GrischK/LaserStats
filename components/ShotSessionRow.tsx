@@ -67,6 +67,20 @@ function EditSessionModalContent({
                                    onSave,
                                  }: EditSessionModalContentProps) {
   const {setOpen} = useModal();
+  const isIncompleteScore = targetsHitValue < 5;
+
+  function handleTargetsHitChange(value: number) {
+    setTargetsHitValue(value);
+
+    if (value < 5) {
+      setDurationSecondsValue("50");
+      return;
+    }
+
+    if (targetsHitValue !== 5 && durationSecondsValue === "50") {
+      setDurationSecondsValue("");
+    }
+  }
 
   return (
     <ModalContent className="gap-4 p-5 sm:p-6">
@@ -104,7 +118,7 @@ function EditSessionModalContent({
               <button
                 key={value}
                 type="button"
-                onClick={() => setTargetsHitValue(value)}
+                onClick={() => handleTargetsHitChange(value)}
                 className={`min-h-11 rounded-lg px-3 py-2 text-base font-bold transition active:translate-y-px ${
                   targetsHitValue === value
                     ? getScoreButtonClass(value)
@@ -129,12 +143,15 @@ function EditSessionModalContent({
             value={durationSecondsValue}
             onChange={(e) => setDurationSecondsValue(e.target.value)}
             placeholder="Secondes"
-            className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-3 outline-none focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
+            disabled={isIncompleteScore}
+            className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-3 outline-none transition disabled:cursor-not-allowed disabled:opacity-70 focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
           />
         </label>
 
         <p className="text-sm font-medium text-[var(--muted-foreground)]">
-          Laisser vide si non renseigné. Maximum 50 secondes.
+          {isIncompleteScore
+            ? "Temps fixé automatiquement à 50 secondes si moins de 5 cibles sont touchées."
+            : "Laisser vide si non renseigné. Maximum 50 secondes."}
         </p>
       </div>
 
@@ -185,9 +202,6 @@ const ShotSessionRow: FC<Props> = ({
     const parsedDistance =
       distanceValue === "" ? null : Number(distanceValue);
 
-    const parsedDuration =
-      durationSecondsValue === "" ? null : Number(durationSecondsValue);
-
     if (
       parsedDistance !== null &&
       (!Number.isFinite(parsedDistance) || parsedDistance < 0)
@@ -195,6 +209,13 @@ const ShotSessionRow: FC<Props> = ({
       alert("Distance invalide");
       return;
     }
+
+    const parsedDuration =
+      targetsHitValue < 5
+        ? 50
+        : durationSecondsValue === ""
+          ? null
+          : Number(durationSecondsValue);
 
     if (
       parsedDuration !== null &&

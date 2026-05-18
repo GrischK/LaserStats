@@ -35,6 +35,7 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const timerStartedAtRef = useRef<number | null>(null);
+  const isIncompleteScore = targetsHit !== null && targetsHit < 5;
 
   useEffect(() => {
     if (!timerRunning) return;
@@ -74,17 +75,35 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
     timerStartedAtRef.current = null;
   }
 
+  function handleTargetsHitChange(value: number) {
+    setTargetsHit(value);
+
+    if (value < 5) {
+      setDurationSeconds("50");
+      handleResetTimer();
+      return;
+    }
+
+    if (targetsHit !== 5 && durationSeconds === "50") {
+      setDurationSeconds("");
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-
-    const duration =
-      durationSeconds === "" ? null : Number(durationSeconds);
 
     if (targetsHit === null) {
       setError("Sélectionnez le nombre de cibles touchées");
       return;
     }
+
+    const duration =
+      targetsHit < 5
+        ? 50
+        : durationSeconds === ""
+          ? null
+          : Number(durationSeconds);
 
     if (
       duration !== null &&
@@ -212,7 +231,7 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
                 <button
                   key={value}
                   type="button"
-                  onClick={() => setTargetsHit(value)}
+                  onClick={() => handleTargetsHitChange(value)}
                   className={`h-14 rounded-lg px-4 text-lg font-bold transition active:translate-y-px ${
                     active
                       ? getScoreButtonClass(value)
@@ -231,7 +250,9 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
             Temps de la session
           </label>
           <p className="mb-2 text-sm text-[var(--muted-foreground)]">
-            Optionnel
+            {isIncompleteScore
+              ? "Fixé automatiquement à 50 s si la cible n’est pas terminée"
+              : "Optionnel"}
           </p>
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--muted)] p-4">
             <p className="text-xs uppercase tracking-wide text-[var(--muted-foreground)]">
@@ -250,7 +271,7 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
                     : "Démarrer le chrono"
                 }
                 title={timerRunning ? "Arrêter et remplir" : "Démarrer"}
-                disabled={loading}
+                disabled={loading || isIncompleteScore}
                 onClick={timerRunning ? handleStopTimer : handleStartTimer}
                 className={`flex min-h-14 w-full items-center justify-center rounded-lg px-3 py-3 transition hover:brightness-95 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 ${
                   timerRunning
@@ -269,7 +290,7 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
                 type="button"
                 aria-label="Réinitialiser le chrono"
                 title="Reset"
-                disabled={loading}
+                disabled={loading || isIncompleteScore}
                 onClick={handleResetTimer}
                 className="flex min-h-14 w-14 items-center justify-center rounded-lg bg-[var(--card)] text-[var(--muted-foreground)] ring-1 ring-inset ring-[var(--border)] transition hover:bg-[var(--muted)] hover:text-[var(--fg)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -286,7 +307,8 @@ export default function SessionForm({ runnerId, onCreated }: Props) {
             value={durationSeconds}
             onChange={(e) => setDurationSeconds(e.target.value)}
             placeholder="Ex: 35 secondes"
-            className="mt-4 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
+            disabled={isIncompleteScore}
+            className="mt-4 w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-4 py-3 text-base outline-none transition disabled:cursor-not-allowed disabled:opacity-70 focus:border-[var(--accent-sport)] focus:ring-2 focus:ring-[var(--accent-sport)]/20"
           />
         </div>
 
